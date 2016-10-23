@@ -43,6 +43,22 @@ public class HibernateInterceptor extends EmptyInterceptor {
                 state[userName] = com.michael.core.context.SecurityContext.getEmpName();
                 o.setCreatorName(com.michael.core.context.SecurityContext.getEmpName());
             }
+
+            // 设置修改时间
+            int modifiedDatetimeIndex = ArrayUtils.indexOf(propertyNames, SystemPropertyConstant.MODIFIED_DATETIME);
+            if (modifiedDatetimeIndex != -1) {
+                state[modifiedDatetimeIndex] = new Date();
+            }
+            // 设置修改人
+            int modifierId = ArrayUtils.indexOf(propertyNames, SystemPropertyConstant.MODIFIER_ID);
+            if (modifierId != -1) {
+                state[modifierId] = SecurityContext.getEmpId();
+            }
+
+            int modifierName = ArrayUtils.indexOf(propertyNames, SystemPropertyConstant.MODIFIER_NAME);
+            if (modifierName != -1) {
+                state[modifierName] = com.michael.core.context.SecurityContext.getEmpName();
+            }
             return true;
         }
 

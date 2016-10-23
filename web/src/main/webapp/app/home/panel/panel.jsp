@@ -36,46 +36,10 @@
     <div class="box">
         <div id="appBar" style="height: 100%;width: 100%;"></div>
     </div>
-    <div class="box">
-        <div class="table-responsive panel panel-table" style="height: auto;padding: 0;">
-            <table class="table table-striped table-hover">
-                <caption style="font-size: 18px; padding: 5px; font-weight: 700;">技术漏洞 Top10</caption>
-                <thead class="table-header">
-                <tr>
-                    <td style="width: 20px;">序号</td>
-                    <td style="width: 150px;">漏洞名称</td>
-                    <td style="width: 100px;">漏洞等级</td>
-                    <td style="width: 120px;">漏洞编号</td>
-                    <td style="width: 80px;">涉及资产数</td>
-                </tr>
-                </thead>
-                <tbody class="table-body">
-                <tr ng-show="!bugs.length">
-                    <td colspan="8" class="text-center">没有查询到数据！</td>
-                </tr>
-                <tr bindonce ng-repeat="foo in bugs" ng-cloak>
-                    <td bo-text="$index+1"></td>
-                    <td bo-text="foo.name|substr:30" bo-title="foo.name" class="text-left"></td>
-                    <td bo-text="foo.riskLevel"></td>
-                    <td bo-text="foo.code"></td>
-                    <td bo-text="foo.count"></td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <div class="box">
-        <div id="riskBar" style="height: 100%;width: 100%;"></div>
-    </div>
-    <div class="box">
-        <div id="bugBar" style="height: 100%;width: 100%;"></div>
-    </div>
-    </div>
 </div>
 </body>
 <script type="text/javascript" src="<%=contextPath%>/app/home/panel/panel.js"></script>
 <script type="text/javascript" src="<%=contextPath%>/vendor/echart/echarts.min.js"></script>
-<script type="text/javascript" src="<%=contextPath%>/app/itsm/bug/bug/bug.js"></script>
 </html>
 
 

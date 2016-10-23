@@ -6,7 +6,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>信息安全管理平台</title>
+    <title>股票管理平台</title>
     <link rel="stylesheet" href="<%=contextPath%>/vendor/bootstrap-v3.0/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="<%=contextPath%>/style/standard/css/eccrm-common-new.css"/>
     <link rel="stylesheet" href="<%=contextPath%>/app/main/css/main.css"/>
@@ -30,10 +30,8 @@
     <input type="hidden" id="contextPath" value="<%=contextPath%>/"/>
     <div id="header" style="display: none;">
         <div class="top">
-            <span style="display: inline-block; height: 28px; width: 200px; color: #fff; font-size: 16px; line-height: 28px; margin-left: 8px;font-weight: 700;">
-                <span>i</span><span style="color: #00ff8b;">D</span><span style="color:#ef1a1a;">O</span><span
-                    style="font-weight: 300">-</span>
-                <span style="font-weight: 400">信息安全管理平台</span>
+            <span style="display: inline-block; height: 28px; width: 200px; color: #fff; font-size: 14px; line-height: 28px; margin-left: 8px;font-weight: 700;">
+                <span style="color:#ef1a1a;">股票</span><span style="color: #00ff8b;">管理</span><span >平台</span>
             </span>
             <span style="float: right; margin-right: 125px; color: #ffffff; font-size: 12px;height: 30px;line-height: 30px;position: relative;">
                 <i class="icons icon user" style="position: absolute;top:4px;"></i> <span
