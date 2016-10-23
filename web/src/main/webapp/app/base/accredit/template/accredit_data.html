@@ -1,0 +1,119 @@
+<div class="row" style="position: relative;" ng-cloak ng-show="selectAnyNode" >
+    <div style="height: 30px;position: absolute;top:0;z-index: 99;background-color: #ffffff;" >
+        <button class="btn btn-blue" style="margin-left: 5px;" ng-click="save();" ng-disabled="!checked" >保存授权</button >
+    </div >
+</div >
+<div id="accreditData" class="row panel panel-tree" style="padding:30px 5px 0 5px;" ng-cloak ng-show="selectAnyNode" >
+    <div style="height: 100%;position: relative;" >
+        <div class="tree" style="width: 250px;display: inline-block;z-index: 100;" >
+            <div class="tree-content" >
+                <ul id="resourceTree" class="ztree" ></ul >
+            </div >
+        </div >
+        <div style="position: absolute;width: 100%;padding-left: 260px;height: 100%;z-index: 10;" ng-show="isData" >
+            <div style="height: 100%;width: 100%;margin: 0;padding: 0;overflow: auto;" >
+                <div class="row" >
+                    <label >
+                        <input type="radio" ng-model="checked" value="0" />
+                        <span style="margin: 0 5px;" >全部</span >
+                    </label >
+                </div >
+                <div class="row" >
+                    <label >
+                        <input type="radio" ng-model="checked" value="1"/>
+                        <span style="margin: 0 5px;">个人</span>
+                    </label>
+                </div>
+                <div class="row">
+                    <label>
+                        <input type="radio" ng-model="checked" value="2" />
+                        <span style="margin: 0 5px;" >所属岗位</span >
+                    </label >
+                </div >
+                <div class="row" >
+                    <label >
+                        <input type="radio" ng-model="checked" value="4" />
+                        <span style="margin: 0 5px;" >所属机构</span >
+                    </label >
+                </div >
+                <div class="row" >
+                    <label >
+                        <input type="radio" ng-model="checked" value="3" />
+                        <span style="margin: 0 5px;" >所属机构及下级机构</span >
+                    </label >
+                </div >
+                <div class="row dn">
+                    <label >
+                        <input type="radio" ng-model="checked" value="6" />
+                        <span style="margin: 0 5px;" >所属系统</span >
+                    </label >
+                </div >
+                <div class="row" >
+                    <label >
+                        <input type="checkbox" ng-model="hasMoreOrg" value="5" />
+                        <span style="margin: 0 5px;" >指定机构</span >
+                    </label >
+
+                    <div class="row" style="width: 100%;height: 200px;" ng-cloak ng-show="hasMoreOrg" >
+                        <div class="col-5-half" style="height: 100%;overflow: auto;padding: 5px;" >
+                            <div class="tree" style="width: 100%;" >
+                                <div class="tree-content" >
+                                    <ul id="orgTree" class="ztree" ></ul >
+                                </div >
+                            </div >
+                        </div >
+                        <div class="col-1" style="height: 100%;overflow: hidden;text-align: center;padding: 10px;" >
+                            <div style="height: 160px;margin-top:50%;" >
+                                <div style="text-align: center;" >
+                                    <i class="icons right" ng-click="pickOrg();" title="添加" style="cursor: pointer;" ></i >
+                                </div >
+                            </div >
+                        </div >
+                        <div class="col-5-half" style="height: 100%;overflow: auto;padding: 5px;border: 1px solid #DDDDDD;" >
+                            <div class="table-responsive panel panel-table" >
+                                <table class="table table-striped table-hover" >
+                                    <thead class="table-header" >
+                                    <tr >
+                                        <td >机构名称</td >
+                                        <td class="width-min">操作</td >
+                                    </tr >
+                                    </thead >
+                                    <tbody class="table-body" ng-cloak >
+                                    <tr ng-show="!pickedOrgs || pickedOrgs.length<1" >
+                                        <td colspan="2" class="text-center" >未选择机构！</td >
+                                    </tr >
+                                    <tr ng-repeat="foo in pickedOrgs" >
+                                        <td ng-bind-template="{{ foo.name }}" ></td >
+                                        <td >
+                                            <a ng-click="removeOrg($index);" class="btn btn-tiny" title="删除！" >
+                                                <i class="icons fork" ></i >
+                                            </a >
+                                        </td >
+                                    </tr >
+                                    </tbody >
+                                </table >
+                            </div >
+                        </div >
+                    </div >
+                    <div class="row dn">
+                        <label >
+                            <input type="checkbox" ng-model="hasMoreParam" value="7" />
+                            <span style="margin: 0 5px;" >指定系统</span >
+                        </label >
+
+                        <div class="row" style="width: 100%;" ng-cloak ng-show="hasMoreParam" >
+                            <div style="border: 1px solid #d3d3d3; padding: 5px 10px;margin-left: 20px;" >
+                                <div style="display:inline-block;margin-top:5px;width:90px;" ng-repeat="param in params" >
+                                    <label >
+                                        <input type="checkbox" ng-model="param.checked" />
+                                        <span style="margin-right: 5px;" >{{param.name}}</span >
+                                    </label >
+                                </div >
+                            </div >
+                        </div >
+                    </div >
+                </div >
+            </div >
+        </div >
+    </div >
+</div >

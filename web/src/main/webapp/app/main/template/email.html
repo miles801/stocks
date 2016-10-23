@@ -1,0 +1,59 @@
+<style >
+    .aside-backdrop.am-fade {
+        background: none;
+    }
+
+    .aside-body table tr td {
+        border-right: 1px solid #DDDDDD;
+    }
+</style >
+<div class="aside" tabindex="-1" role="dialog" style="top:auto;bottom:24px;border:1px solid #e5e5e5;" >
+    <div class="aside-dialog" >
+        <div class="aside-content" >
+            <div class="aside-header" style="padding: 1px 15px;" >
+                <button type="button" class="close" ng-click="$hide()" >&times;</button >
+                <h4 class="aside-title" >电子邮件</h4 >
+            </div >
+            <div class="aside-body" style="min-height: 80px;padding:0;max-width: 400px; width: 400px;height: 300px;">
+                <div class="table-responsive panel panel-table first-min">
+                    <table class="table table-striped table-hover last-tr-bottom-border" >
+                        <thead class="table-header" >
+                        <tr >
+                            <td ><i class="glyphicons paperclip" ></i ></td >
+                            <td style=" width: 10px; white-space: nowrap;text-align: center;vertical-align: middle;">
+                                <span title="重要" class="glyphicons circle_exclamation_mark"></span></td>
+                            <td >主题</td >
+                            <td style=" width: 10px; white-space: nowrap;text-align: center;vertical-align: middle;">
+                                发件人
+                            </td>
+                        </tr >
+                        </thead >
+                        <tbody class="table-body" ng-cloak >
+                        <tr ng-show="data.length == 0" >
+                            <td colspan="5" class="text-center" >没有新邮件！</td >
+                        </tr >
+                        <tr ng-repeat="foo in data" >
+                            <td><i class="glyphicons paperclip" ng-show="foo.attachmentName"></i></td>
+                            <td>
+                                <div ng-if="foo.importance =='1'">
+                                    <span title="低" class="glyphicons down_arrow"></span>
+                                </div>
+                                <div ng-if="foo.importance =='2'">
+                                    <span title="普通"></span>
+                                </div>
+                                <div ng-if="foo.importance=='3'">
+                                    <span title="重要" class="glyphicons circle_exclamation_mark"></span>
+                                </div>
+                            </td>
+                            <td><a title="查看邮件" style="cursor: pointer;text-decoration: none;" target="iframe"
+                                   ng-href="app/operating/communicate/Email/receiveEmail/edit/receiveEmail_edit.jsp">{{
+                                foo.subject | substr:20}}</a></td>
+                            <td >{{ foo.sender }}</td >
+                        </tr >
+                        </tbody >
+                    </table >
+                </div >
+            </div >
+        </div >
+    </div >
+</div >

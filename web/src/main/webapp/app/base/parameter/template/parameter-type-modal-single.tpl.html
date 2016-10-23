@@ -1,0 +1,61 @@
+<div class="modal" tabindex="-1" role="dialog" >
+    <div class="modal-dialog" >
+        <div class="modal-content" >
+            <div class="modal-header" >
+                <button type="button" class="close" ng-click="$hide()" >&times;</button >
+                <h4 class="modal-title" >选择参数类型</h4 >
+            </div >
+            <div class="modal-body" >
+                <div class="block" style="padding-top: 5px" >
+                    <div class="row" >
+                        <div class="form-label col-1-half" >
+                            <label >参数名称:</label >
+                        </div >
+                        <input type="text" class="col-4" autofocus placeholder="请输入类型名称" ng-model="condition.name" />
+
+                        <div class="form-label col-2" >
+                            <label >参数编号:</label >
+                        </div >
+                        <input type="text" class="col-4" autofocus placeholder="请输入类型名称" ng-model="condition.code" />
+                    </div >
+                    <div class="row" style="margin: 0" >
+                        <div class="block table-responsive panel panel-table first-min" >
+                            <table class="table table-striped table-hover" >
+                                <thead class="table-header" >
+                                <tr sortable="sortable" sortable-reverse="reverse" >
+                                    <td ></td >
+                                    <td >显示顺序</td >
+                                    <td >名称</td >
+                                    <td >编号</td >
+                                    <td >说明</td >
+                                </tr >
+                                </tr >
+                                </thead >
+                                <tbody class="table-body" ng-cloak >
+                                <tr ng-show="!parameters || !parameters.data" >
+                                    <td colspan="5" style="text-align: center;" >没有符合条件的记录</td >
+                                </tr >
+                                <tr ng-repeat="foo in parameters.data" style="cursor: pointer;" >
+                                    <td >
+                                        <input type="radio" ng-model="$parent.selected.id" ng-value="foo.id" ng-click="$parent.selected=foo" />
+                                    </td >
+                                    <td ng-bind-template="{{ $index+1 }}" ></td >
+                                    <td ng-bind-template="{{ foo.name}}" ></td >
+                                    <td ng-bind-template="{{ foo.code}}" ></td >
+                                    <td ng-bind-template="{{ foo.description|limitTo:50}}" ></td >
+                                </tr >
+                                </tbody >
+                            </table >
+                        </div >
+                        <div eccrm-page="pager" ></div >
+                    </div >
+                </div >
+            </div >
+            <div class="modal-footer" >
+                <button type="button" class="btn btn-default btn-primary" ng-click="confirm();" >确定</button >
+                <button type="button" class="btn btn-default btn-primary" ng-click="selected=null;" >清除</button >
+                <button type="button" class="btn btn-default" ng-click="$hide()" >关闭</button >
+            </div >
+        </div >
+    </div >
+</div >

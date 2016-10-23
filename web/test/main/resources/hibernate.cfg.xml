@@ -1,0 +1,39 @@
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <property name="hibernate.dialect">com.michael.utils.dialect.SQLServerDialect</property>
+        <property name="hibernate.connection.driver_class">com.microsoft.sqlserver.jdbc.SQLServerDriver</property>
+        <property name="hibernate.connection.url">jdbc:sqlserver://localhost:1433;databaseName=dggoa</property>
+        <property name="hibernate.connection.username">sa</property>
+        <property name="hibernate.connection.password">sa</property>
+        <!--<property name="hibernate.dialect">org.hibernate.dialect.MySQL5InnoDBDialect</property>-->
+        <!--<property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>-->
+        <!--<property name="hibernate.connection.url">jdbc:mysql://localhost:3306/tuanyuan</property>-->
+        <!--<property name="hibernate.connection.username">root</property>-->
+        <!--<property name="hibernate.connection.password">michael</property>-->
+        <!--<property name="hibernate.show_sql">false</property>-->
+        <!--<property name="hibernate.hbm2ddl.auto">update</property>-->
+        <mapping resource="mapping/User.hbm.xml"/>
+        <mapping resource="mapping/Employee.hbm.xml"/>
+
+        <mapping resource="mapping/Classify.hbm.xml"/>
+        <mapping resource="mapping/Position.hbm.xml"/>
+        <mapping resource="mapping/Organization.hbm.xml"/>
+        <mapping resource="mapping/PositionEmp.hbm.xml"/>
+
+        <mapping resource="mapping/Menu.hbm.xml"/>
+        <mapping resource="mapping/Resource.hbm.xml"/>
+        <mapping resource="mapping/AccreditMenu.hbm.xml"/>
+        <mapping resource="mapping/AccreditFunc.hbm.xml"/>
+        <mapping resource="mapping/AccreditData.hbm.xml"/>
+
+        <mapping resource="mapping/BusinessParamType.hbm.xml"/>
+        <mapping resource="mapping/BusinessParamItem.hbm.xml"/>
+        <mapping resource="mapping/SysParamType.hbm.xml"/>
+        <mapping resource="mapping/SysParamItem.hbm.xml"/>
+
+        <mapping resource="mapping/Region.hbm.xml"/>
+    </session-factory>
+</hibernate-configuration>

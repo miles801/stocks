@@ -1,0 +1,46 @@
+<div class="modal" tabindex="-1" role="dialog" >
+    <div class="modal-dialog" style="width: 600px;margin-top:50px;" >
+        <div class="modal-content" >
+            <div class="modal-header" >
+                <button type="button" class="close" ng-click="$hide()" >&times;</button >
+                <h4 class="modal-title" >
+                    <span >便签</span >
+                </h4 >
+            </div >
+            <div class="modal-body" >
+                <div class="block" >
+                    <div class="block-content" style="border: 0;" >
+                        <div class="content-wrap" style="padding: 10px;" >
+                            <form name="form" role="form" >
+                                <div class="row" >
+                                    <div class="form-label col-3" >
+                                        <label >标题:</label >
+                                    </div >
+                                    <div class="col-9" >
+                                        <input type="text" name="name" class="col-12" ng-model="bean.title"
+                                               validate validate-required validate-max-length="20" maxlength="20" data-placement="right" />
+                                    </div >
+                                </div >
+                                <div class="row" >
+                                    <div class="form-label col-3" >
+                                        <label >内容:</label >
+                                    </div >
+                                    <div class="col-9" >
+                                        <textarea class="col-12" rows="8" validate validate-max-length="200" maxlength="200"
+                                                  ng-model="bean.content" ></textarea >
+                                    </div >
+                                </div >
+                            </form >
+                        </div >
+                    </div >
+                </div >
+            </div >
+            <div class="modal-footer" >
+                <button type="button" class="btn btn-primary" ng-disabled="form.$invalid" ng-cloak ng-show="pageType=='add'" ng-click="save()" >保存</button >
+                <button type="button" class="btn btn-primary" ng-disabled="form.$invalid" ng-cloak ng-show="pageType=='modify'" ng-click="update()" >更新</button >
+                <button type="button" class="btn btn-default" ng-click="$hide()" >关闭</button >
+            </div >
+        </div >
+    </div >
+</div >
+

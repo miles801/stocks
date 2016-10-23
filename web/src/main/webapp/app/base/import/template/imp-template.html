@@ -1,0 +1,53 @@
+<form name="form" >
+    <div class="row" >
+        <div class="form-label col-1-half" >
+            <label >起始行号:</label >
+        </div >
+        <input type="number" name="startRow" ng-model="beans.startRow" validate validate-required validate-int class="col-2-half" />
+    </div >
+    <div class="row" >
+        <div class="col-1-half" >&nbsp;</div >
+        <div class="col-10-half" >
+            <div class="block" >
+                <div class="block-header" >
+                <span class="header-button" >
+                    <a class="btn btn-green btn-min" ng-click="add();" >添加 </a >
+                </span >
+                </div >
+                <div class="block-content" >
+                    <div class="content-wrap" >
+                        <div class="table-responsive panel panel-table" >
+                            <table class="table table-striped table-hover" >
+                                <thead class="table-header" >
+                                <tr >
+                                    <td style="width:50px;">列号</td>
+                                    <td >字段名称</td >
+                                    <td style="width:30px;" >操作</td >
+                                </tr >
+                                </thead >
+                                <tbody class="table-body" ng-cloak >
+                                <tr ng-show="mappings.length == 0" >
+                                    <td colspan="3" class="text-center" >未添加字段映射！</td >
+                                </tr >
+                                <tr ng-repeat="foo in mappings" >
+                                    <td >
+                                        <input type="text" ng-model="foo.index" validate validate-required validate-int />
+                                    </td >
+                                    <td >
+                                        <select ie-select-fix="fields" ng-model="foo.colName" ng-options="field.value as field.name for field in fields" style="width: 200px;" ></select >
+                                    </td >
+                                    <td >
+                                        <a ng-click="remove($index);" class="btn btn-tiny ph0" title="删除" ng-disabled="foo.disabled" >
+                                            <i class="icons fork" ></i >
+                                        </a >
+                                    </td >
+                                </tr >
+                                </tbody >
+                            </table >
+                        </div >
+                    </div >
+                </div >
+            </div >
+        </div >
+    </div >
+</form >

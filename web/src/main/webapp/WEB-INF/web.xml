@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.0"
+         xmlns="http://java.sun.com/xml/ns/javaee"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+	http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+
+    <!-- 默认的拦截器，放在springmvc前面，允许直接访问静态资源 -->
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>*.html</url-pattern>
+        <url-pattern>*.ico</url-pattern>
+        <url-pattern>*.htm</url-pattern>
+        <url-pattern>*.js</url-pattern>
+        <url-pattern>*.css</url-pattern>
+        <url-pattern>*.png</url-pattern>
+        <url-pattern>*.jpg</url-pattern>
+        <url-pattern>*.gif</url-pattern>
+        <url-pattern>*.ttf</url-pattern>
+        <url-pattern>*.svg</url-pattern>
+        <url-pattern>*.woff</url-pattern>
+        <url-pattern>*.map</url-pattern>
+        <url-pattern>*.swf</url-pattern>
+        <url-pattern>*.mp3</url-pattern>
+        <url-pattern>*.eot</url-pattern>
+        <url-pattern>*.class</url-pattern>
+        <url-pattern>*.jar</url-pattern>
+    </servlet-mapping>
+
+
+
+    <filter>
+        <filter-name>pagerFilter</filter-name>
+        <filter-class>com.michael.core.pager.PagerFilter</filter-class>
+        <async-supported>true</async-supported>
+    </filter>
+    <!-- 附件过滤器-->
+    <filter>
+        <filter-name>attachmentFilter</filter-name>
+        <filter-class>com.michael.base.attachment.AttachmentFilter</filter-class>
+        <async-supported>true</async-supported>
+    </filter>
+    <!-- 编码过滤器 -->
+    <filter>
+        <filter-name>encoding</filter-name>
+        <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+        <async-supported>true</async-supported>
+        <init-param>
+            <param-name>encoding</param-name>
+            <param-value>UTF-8</param-value>
+        </init-param>
+        <init-param>
+            <param-name>forceEncoding</param-name>
+            <param-value>true</param-value>
+        </init-param>
+    </filter>
+
+    <servlet>
+        <servlet-name>springmvc</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>classpath:springmvc-servlet.xml</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>springmvc</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+
+    <filter-mapping>
+        <filter-name>loginFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>pagerFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>encoding</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>attachmentFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <listener>
+        <listener-class>com.michael.core.spring.SpringContextLoader</listener-class>
+    </listener>
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>classpath*:**/applicationContext*.xml</param-value>
+    </context-param>
+
+    <session-config>
+        <session-timeout>60</session-timeout>
+    </session-config>
+    <welcome-file-list>
+        <welcome-file>/</welcome-file>
+        <welcome-file>main</welcome-file>
+    </welcome-file-list>
+</web-app>

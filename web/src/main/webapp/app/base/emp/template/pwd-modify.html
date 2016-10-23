@@ -1,0 +1,59 @@
+<style>
+    .modal-body form > .row {
+        padding-left: 80px;
+    }
+</style>
+<div class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" style="width: 550px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" ng-click="$hide()">&times;</button>
+                <h4 class="modal-title">
+                    <span>密码修改</span>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <form name="form" class="form-horizontal">
+                    <div class="row">
+                        <div class="float w300">
+                            <div class="form-label w100">
+                                <label>原始密码:</label>
+                            </div>
+                            <input class="w200" type="password" ng-model="beans.oldPwd" validate validate-required
+                                   maxlength="16"/>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="float w300">
+                            <div class="form-label w100">
+                                <label>新密码:</label>
+                            </div>
+                            <div class="w200" style="position: relative;">
+                                <input class="w200" type="password" ng-model="beans.newPwd" validate validate-required
+                                       maxlength="16"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="float w300">
+                            <div class="form-label w100">
+                                <label>确认密码:</label>
+                            </div>
+                            <div class="w200" style="position: relative;">
+                                <input class="w200" type="password" ng-model="newPwd2" validate validate-required
+                                       maxlength="16"/>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" ng-cloak class="btn btn-primary" ng-click="update();"
+                        ng-disabled="form.$invalid || (beans.newPwd && beans.newPwd!=newPwd2)">确定
+                </button>
+                <button type="button" class="btn btn-default" ng-click="$hide()">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,74 @@
+<style >
+    .datadic td input {
+        width: 100%;
+    }
+</style >
+<div class="block" >
+    <div class="block-header" >
+            <span class="header-button" >
+                <a class="btn btn-green btn-min" ng-click="addAnd();" >并且 </a >
+                <a class="btn btn-green btn-min" ng-click="addOr();" >或 </a >
+            </span >
+    </div >
+    <div class="block-content" >
+        <div class="content-wrap" >
+            <div class="table-responsive panel panel-table" >
+                <table class="table table-striped table-hover" >
+                    <thead class="table-header" >
+                    <tr >
+                        <td style="width: 30px;" ></td >
+                        <td style="width:120px; " >条件</td >
+                        <td style="width: 120px;" >条件类型</td >
+                        <td >值</td >
+                        <td style="width: 20px;" >操作</td >
+                    </tr >
+                    </thead >
+                    <tbody class="table-body" ng-cloak >
+                    <tr ng-show="items.length == 0" >
+                        <td colspan="5" class="text-center" >未添加条件！</td >
+                    </tr >
+                    <tr ng-repeat="foo in items" class="datadic" ng-show="foo.show" >
+                        <td >{{foo.operate=='AND'?'并且':'或者'}}</td >
+                        <td >
+                            <select ng-change="change(foo)" ng-model="foo.fieldName" ie-select-fix="dic.items"
+                                    ng-options="i.fieldName as i.label for i in dic.items " ></select >
+                        </td >
+                        <td >
+                            <select ng-model="foo.conditionType" ie-select-fix="foo.conditionTypes" ng-options="ct.value as ct.name for ct in foo.conditionTypes " ></select >
+                        </td >
+                        <td style="white-space: normal" >
+                            <input type="text" ng-model="foo.value" ng-if="foo.valueSource=='input' && foo.conditionType!='null' && foo.conditionType!='notnull'" />
+                            <input type="text" ng-model="foo.valueText" ng-if="foo.valueSource=='org'" title="选择机构" />
+                            <input type="text" ng-model="foo.valueText" ng-if="foo.valueSource=='position'"
+                                   title="选择岗位" />
+
+                            <div ng-if="foo.valueSource=='employee'" >
+                                <input type="text" ng-model="foo.valueText" title="选择员工" ng-click="queryEmployee(foo)" />
+                                <i class="icons user" ></i >
+                            </div >
+                            <input type="text" ng-model="foo.valueText" ng-if="foo.valueSource=='user'" />
+                            <input type="text" ng-model="foo.value" ng-if="foo.valueSource=='date'"
+                                   eccrm-my97="{dateFmt:'yyyy-MM-dd HH:mm:ss'}" />
+
+                            <div ng-if="foo.valueSource=='sys' || foo.valueSource=='busi'" >
+                                <span ng-if="foo.conditionType==='in'" >
+                                    <span style="margin:5px" ng-repeat="p in foo.params" ><label ><input type="checkbox" ng-model="p.checked" style="width: 12px;" /> {{p.name}}</label ></span >
+                                </span >
+                                <span ng-if="foo.conditionType!=='in'" >
+                                    <span style="margin:5px" ng-repeat="p in foo.params" ><label ><input type="radio" ng-model="foo.value" ng-value="p.value" style="width: 12px;" /> {{p.name}}</label ></span >
+                                </span >
+
+                            </div >
+                        </td >
+                        <td >
+                            <a ng-click="remove($index);" class="btn btn-tiny ph0" title="删除" ng-disabled="foo.disabled" >
+                                <i class="icons fork" ></i >
+                            </a >
+                        </td >
+                    </tr >
+                    </tbody >
+                </table >
+            </div >
+        </div >
+    </div >
+</div >

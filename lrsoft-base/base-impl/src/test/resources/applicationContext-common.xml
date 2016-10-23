@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns="http://www.springframework.org/schema/beans" xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+			http://www.springframework.org/schema/tx
+			http://www.springframework.org/schema/tx/spring-tx-3.2.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd"
+       default-lazy-init="true">
+    <!-- 数据源配置,使用应用内的DBCP数据库连接池 -->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+        <property name="url" value="${db.jdbcUrl}"/>
+        <property name="username" value="${db.user}"/>
+        <property name="password" value="${db.password}"/>
+        <property name="initialSize" value="${db.minPoolSize}"/>
+        <property name="maxActive" value="${db.maxPoolSize}"/>
+        <property name="maxWait" value="${db.maxWait}"/>
+
+        <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+        <property name="timeBetweenEvictionRunsMillis" value="60000"/>
+
+        <!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+        <property name="minEvictableIdleTimeMillis" value="300000"/>
+
+        <property name="validationQuery" value="SELECT 'x'"/>
+        <property name="testWhileIdle" value="true"/>
+        <property name="testOnBorrow" value="false"/>
+        <property name="testOnReturn" value="false"/>
+
+        <!-- 打开PSCache，并且指定每个连接上PSCache的大小 -->
+        <property name="poolPreparedStatements" value="true"/>
+        <property name="maxPoolPreparedStatementPerConnectionSize" value="20"/>
+
+        <!-- 配置监控统计拦截的filters，去掉后监控界面sql无法统计 -->
+        <property name="filters" value="stat"/>
+    </bean>
+
+    <!-- Hibernate配置 -->
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="mappingLocations">
+            <list>
+                <value>classpath*:mapping/*.hbm.xml</value>
+            </list>
+        </property>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">com.michael.utils.dialect.SQLServerDialect</prop>
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+                <prop key="hibernate.jdbc.fetch_size">5</prop>
+                <prop key="hibernate.jdbc.batch_size">15</prop>
+                <prop key="hibernate.use_outer_join">true</prop>
+                <prop key="hibernate.max_fetch_depth">2</prop>
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.format_sql">false</prop>
+            </props>
+        </property>
+        <property name="entityInterceptor" ref="hibernateInterceptor"/>
+        <!-- 全局过滤器：查询数据时进行过滤 -->
+    </bean>
+    <!-- Hibernate拦截器 -->
+    <bean id="hibernateInterceptor" class="com.michael.base.HibernateInterceptor"/>
+    <!-- 定义系统启动后要执行的操作 -->
+    <bean id="springLoadListenerContainer" class="com.michael.core.spring.SpringLoadListenerContainer">
+        <property name="listeners">
+            <list>
+                <!-- 初始化com.michael.core.SystemContainer-->
+                <bean class="com.michael.core.InitSystemContainer"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- 事务管理器配置,单数据源事务 -->
+    <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory"/>
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!--
+      | 基本事务定义,使用transactionManager作事务管理
+      | 默认get*方法的事务为readonly,其余方法按默认设置
+      | 默认的设置请参考Spring文档事务一章
+      -->
+    <!-- 事务AOP -->
+    <aop:config>
+        <aop:pointcut id="txPointcut" expression="execution(* *..service.impl..*(..))"/>
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="txPointcut"/>
+    </aop:config>
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="get*" read-only="true" propagation="REQUIRED"/>
+            <tx:method name="find*" read-only="true" propagation="REQUIRED"/>
+            <tx:method name="search*" read-only="true" propagation="REQUIRED"/>
+            <tx:method name="query*" read-only="true" propagation="REQUIRED"/>
+            <tx:method name="has*" read-only="true" propagation="REQUIRED"/>
+            <tx:method name="check*" read-only="true" propagation="REQUIRED"/>
+            <tx:method name="*" propagation="REQUIRED"/>
+        </tx:attributes>
+    </tx:advice>
+
+
+</beans>

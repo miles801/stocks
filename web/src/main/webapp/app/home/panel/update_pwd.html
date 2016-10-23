@@ -1,0 +1,43 @@
+<div class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" style="width:700px;height: 300px; ">
+        <div class="modal-content" >
+            <div class="modal-header" static="">
+                <button type="button" class="close" ng-click="$hide()">×</button>
+                <h4 class="modal-title">修改密码</h4>
+            </div>
+            <div class="modal-body">
+                <form name="form" class="form-horizontal" role="form">
+                    <div class="row">
+                        <div class="form-label col-2">
+                            <label validate-error="form.password">原始密码：</label>
+                        </div>
+                        <input class="col-10" type="password" name="password" ng-model="beans.password" validate validate-required validate-min-length="4" validate-max-length="20"/>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-label col-2">
+                            <label validate-error="form.newPassword">新密码：</label>
+                        </div>
+                        <input class="col-10" type="password" name="newPassword" ng-model="beans.newPassword" validate validate-required validate-min-length="4" validate-max-length="20"/>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-label col-2">
+                            <label validate-error="form.redoPassword">确认密码：</label>
+                        </div>
+                        <input class="col-10" type="password" name="redoPassword" ng-model="beans.redoPassword" validate validate-required validate-min-length="4" validate-max-length="20"/>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default btn-primary" ng-click="checkPassword()"
+                        ng-disabled="!form.$valid||beans.redoPassword!=beans.newPassword">
+                    确认
+                </button>
+                <button type="button" class="btn btn-default" ng-click="$hide()">关闭</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+

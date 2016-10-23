@@ -1,0 +1,88 @@
+<div class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" style="width: 800px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" ng-click="$hide()">&times;</button>
+                <h4 class="modal-title">
+                    <span>选择员工</span>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <form name="form" class="form-horizontal">
+                    <div class="row float">
+                        <div class="item w300">
+                            <div class="form-label w100">
+                                <label>姓名:</label>
+                            </div>
+                            <input class="w200" type="text" ng-model="condition.name"/>
+                        </div>
+                        <div class="item w300">
+                            <div class="form-label w100">
+                                <label>工号:</label>
+                            </div>
+                            <input class="w200" type="text" ng-model="condition.loginName"/>
+                        </div>
+                        <!--<div class="item w300">
+                            <div class="form-label w100">
+                                <label>组织机构:</label>
+                            </div>
+                            <div class="w200" style="position: relative;">
+                                <input class="w200" type="text" ztree-single="orgTree" ng-model="condition.orgName"/>
+                                <span class="add-on">
+                                    <i class="icons icon fork" title="清除" ng-click="clearOrg();"></i>
+                                </span>
+                            </div>
+                        </div>-->
+                        <div class="col" style="margin-left: 8px;">
+                            <button type="button" class="btn btn-blue" ng-click="query()">
+                                <span class="glyphicons binoculars"></span>查询
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="table-responsive panel panel-table first-min">
+                            <table class="table table-striped table-hover">
+                                <thead class="table-header">
+                                <tr>
+                                    <td></td>
+                                    <td>姓名</td>
+                                    <td>工号</td>
+                                    <td>性别</td>
+                                    <td>手机</td>
+                                    <td>电话</td>
+                                    <td>组织机构</td>
+                                </tr>
+                                </thead>
+                                <tbody class="table-body">
+                                <tr ng-show="!emps || !emps.data">
+                                    <td colspan="7" class="text-center">没有查询到数据！</td>
+                                </tr>
+                                <tr bindonce ng-repeat="foo in emps.data" ng-click="$parent.selected=foo"
+                                    ng-class="{picked:$parent.selected.id===foo.id}">
+                                    <td>
+                                        <input type="radio" ng-model="$parent.selected" ng-value="foo"/>
+                                    </td>
+                                    <td bo-text="foo.name"></td>
+                                    <td bo-text="foo.loginName"></td>
+                                    <td bo-text="foo.sex"></td>
+                                    <td bo-text="foo.mobile"></td>
+                                    <td bo-text="foo.phone"></td>
+                                    <td bo-text="foo.orgName"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="list-pagination" eccrm-page="pager" style="z-index: 1;"></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" ng-cloak class="btn btn-default btn-primary" ng-click="confirm();"
+                        ng-disabled="!selected">确定
+                </button>
+                <button type="button" class="btn btn-default" ng-click="$hide()">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+

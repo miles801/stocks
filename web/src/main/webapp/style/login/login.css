@@ -1,0 +1,347 @@
+body {
+    background: url(images/user_all_bg.gif) #226cc5 repeat-x 50% top;
+    margin: 200px 0 0;
+    padding: 0;
+    text-decoration: none;
+    font: 12px/150% Arial, "宋体", Helvetica, sans-serif;
+
+}
+
+#user_login {
+    margin: 0;
+    padding: 0;
+}
+
+#user_top {
+    margin: 0;
+    padding: 0;
+}
+
+#user_main {
+    margin: 0;
+    padding: 0;
+}
+
+#user_bottom {
+    margin: 0;
+    padding: 0;
+}
+
+#user_login dl {
+    margin: 0;
+    padding: 0;
+}
+
+#user_login dd {
+    margin: 0;
+    padding: 0;
+}
+
+#user_top {
+    margin: 0;
+    padding: 0;
+}
+
+#user_main {
+    margin: 0;
+    padding: 0;
+}
+
+#user_bottom {
+    margin: 0;
+    padding: 0;
+}
+
+#user_top ul {
+    margin: 0;
+    padding: 0;
+}
+
+#user_main ul {
+    margin: 0;
+    padding: 0;
+}
+
+#user_bottom ul {
+    margin: 0;
+    padding: 0;
+}
+
+#user_top li {
+    margin: 0;
+    padding: 0;
+}
+
+#user_main li {
+    margin: 0;
+    padding: 0;
+}
+
+#user_bottom li {
+    margin: 0;
+    padding: 0;
+}
+
+form {
+    margin: 0;
+    padding: 0;
+}
+
+#user_login {
+    margin: 0 auto;
+    width: 590px
+}
+
+#user_top {
+    clear: both
+}
+
+#user_main {
+    clear: both
+}
+
+#user_bottom {
+    clear: both
+}
+
+#user_top li {
+    float: left;
+    list-style-type: none
+}
+
+#user_main li {
+    float: left;
+    list-style-type: none
+}
+
+#user_bottom li {
+    float: left;
+    list-style-type: none
+}
+
+.user_top_r {
+    background: url(images/user_top_r.gif) no-repeat 50% top
+}
+
+.user_top_c {
+    background: url(images/user_top_c.gif) no-repeat 50% top
+}
+
+.user_top_l {
+    background: url(images/user_top_l.gif) no-repeat 50% top
+}
+
+.user_main_r {
+    background: url(images/user_main_r.gif) #bec5cc no-repeat 50% top
+}
+
+.user_main_c {
+    background: url(images/user_main_c.gif) #bec5cc no-repeat 50% top;
+    width: 280px
+}
+
+.user_main_l {
+    background: url(images/user_main_l.gif) #bec5cc no-repeat 50% top
+}
+
+.user_bottom_r {
+    background: url(images/user_bottom_r.gif) no-repeat 50% top
+}
+
+.user_bottom_c {
+    background: url(images/user_bottom_c.gif) no-repeat 50% top;
+    color: #fff;
+    line-height: 117px;
+    padding-top: 20px;
+    text-align: right
+}
+
+.user_bottom_c a {
+    color: yellow;
+    text-decoration: underline
+}
+
+.user_bottom_c a:hover {
+    color: #c00
+}
+
+.user_bottom_l {
+    background: url(images/user_bottom_l.gif) no-repeat 50% top
+}
+
+.user_top_r {
+    float: left;
+    width: 180px
+}
+
+.user_main_r {
+    float: left;
+    width: 180px
+}
+
+.user_bottom_r {
+    float: left;
+    width: 180px
+}
+
+.user_main_c {
+    float: left;
+    width: 280px
+}
+
+.user_top_c {
+    float: left;
+    width: 280px
+}
+
+.user_bottom_c {
+    float: left;
+    width: 280px
+}
+
+.user_top_l {
+    float: left;
+    width: 129px
+}
+
+.user_main_l {
+    float: left;
+    width: 129px
+}
+
+.user_bottom_l {
+    float: left;
+    width: 129px
+}
+
+.user_top_r {
+    height: 116px
+}
+
+.user_top_c {
+    height: 116px
+}
+
+.user_top_l {
+    height: 116px
+}
+
+.user_main_r {
+    height: 139px
+}
+
+.user_main_c {
+    height: 139px
+}
+
+.user_main_l {
+    height: 139px
+}
+
+.user_main_r {
+    line-height: 139px
+}
+
+.user_bottom_r {
+    height: 117px
+}
+
+.user_bottom_c {
+    height: 117px
+}
+
+.user_bottom_l {
+    height: 117px
+}
+
+.user_main_box {
+    margin: 0;
+    padding: 0;
+}
+
+.user_main_box ul {
+    margin: 0;
+    padding: 0;
+}
+
+.user_main_box li {
+    margin: 0;
+    padding: 0;
+}
+
+.user_main_box ul {
+    clear: both
+}
+
+.user_main_box li {
+    float: left;
+    list-style-type: none
+}
+
+.user_main_box .user_main_text {
+    line-height: 34px;
+    height: 34px
+}
+
+.user_main_box .user_main_input {
+    line-height: 34px;
+    height: 34px
+}
+
+.user_main_box .user_main_text {
+    width: 60px;
+    color: #000
+}
+
+.user_main_box .user_main_input img {
+    margin-bottom: -2px;
+    margin-left: -25px
+}
+
+.input_username {
+    padding-left: 25px;
+    background: url(images/user_login_name.gif) no-repeat;
+    width: 165px;
+    line-height: 20px;
+    height: 21px;
+    border: none;
+    outline: none;
+}
+
+.input_password {
+    padding-left: 25px;
+    background: url(images/user_login_password.gif) no-repeat;
+    width: 165px;
+    line-height: 20px;
+    height: 21px;
+    border: none;
+    outline: none; /* 去掉外边框（在chrome、safari等浏览器下设置border无效） */
+}
+
+.btn_login {
+    width: 111px;
+    height: 122px;
+    margin-top: 6px;
+}
+
+.login-error {
+    color: red;
+    width: 275px;
+    font-size: 14px;
+    text-align: center;
+}
+
+.login_bottom {
+    clear: both;
+    width: 580px;
+    height: 30px;
+    font-size: 14px;
+    margin-top: 5px;
+    padding: 10px 5px;
+    text-align: center;
+    color: #ffff00;
+}
+
+.login_bottom div, span, p {
+    margin: 5px 0;
+}

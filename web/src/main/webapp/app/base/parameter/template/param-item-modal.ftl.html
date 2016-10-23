@@ -1,0 +1,81 @@
+<div class="modal" tabindex="-1" role="dialog" >
+    <div class="modal-dialog" style="width: 800px;" >
+        <div class="modal-content" >
+            <div class="modal-header" ng-cloak >
+                <button type="button" class="close" ng-click="$hide()" >&times;</button >
+                <h4 class="modal-title" >
+                    <span >{{pageType=='add'?'新增':(pageType=='modify'?'更新':'查看')}}参数</span >
+                </h4 >
+            </div >
+            <div class="modal-body" >
+                <form name="form" class="form-horizontal" role="form" >
+                    <div class="row" >
+                        <div class="form-label col-1-half" >
+                            <label >参数名称:</label >
+                        </div >
+                        <input type="text" class="col-10" autofocus="autofocus" placeholder="请输入类型名称" ng-model="beans.name"
+                               validate validate-required data-placement="right" />
+                    </div >
+                    <div class="row" >
+                        <div class="form-label col-1-half" >
+                            <label >参数值:</label >
+                        </div >
+                        <input type="text" class="col-10" ng-model="beans.value"
+                               validate validate-required validate-max-length="60" data-placement="right" />
+                    </div >
+                    <div class="row" >
+                        <div class="form-label col-1-half" >
+                            <label >所属类型:</label >
+                        </div >
+                        <span class="col-2-half" >{{typeName}}</span >
+
+                        <div class="form-label col-1-half" >
+                            <label >显示顺序:</label >
+                        </div >
+                        <input type="number" class="col-2-half" validate validate-required validate-int ng-model="beans.sequenceNo" />
+                    </div >
+                    <div class="row" >
+                        <div class="form-label col-1-half" >
+                            <label >级联类型:</label >
+                        </div >
+                        <div class="pr col-2-half" >
+                            <input type="text" ng-model="beans.cascadeTypeName" ztree-single="cascadeTypeOptions" class="col-12" readonly />
+                        <span class="col add-on" >
+                            <i class="icons circle_fork icon" title="清空" ng-click="beans.cascadeTypeName=null;beans.cascadeTypeCode=null;" ></i >
+                        </span >
+                        </div >
+
+                        <div class="form-label col-1-half" >
+                            <label >级联参数:</label >
+                        </div >
+                        <div class="pr col-2-half" >
+                            <input type="text" class="col-12" ng-model="beans.cascadeItemName" readonly ztree-single="cascadeItemOptions" />
+                            <span class="col add-on" >
+                                <i class="icons circle_fork icon" title="清空" ng-click="beans.cascadeItemValue=null;beans.cascadeItemName=null;" ></i >
+                            </span >
+                        </div >
+
+                        <div class="form-label  col-1-half" >
+                            <label >状态:</label >
+                        </div >
+                        <select ng-model="beans.status" class="col-2" ng-options="foo.value as foo.name for foo in status" ></select >
+                    </div >
+
+                    <div class="row" >
+                        <div class="form-label col-1-half" >
+                            <label >说明:</label >
+                        </div >
+                        <textarea rows="6" class="col-10" ng-model="beans.description" ></textarea >
+                    </div >
+
+                </form >
+            </div >
+            <div class="modal-footer" ng-cloak >
+                <button type="button" class="btn btn-default btn-primary" ng-if="pageType=='add'" ng-click="save();" ng-disabled="form.$invalid" >保存</button >
+                <button type="button" class="btn btn-default btn-primary" ng-if="pageType=='add'" ng-click="save(true);" ng-disabled="form.$invalid" >保存并新建</button >
+                <button type="button" class="btn btn-default btn-primary" ng-if="pageType=='modify'" ng-click="update();" ng-disabled="form.$invalid" >更新</button >
+                <button type="button" class="btn btn-default" ng-click="$hide()" >关闭</button >
+            </div >
+        </div >
+    </div >
+</div >

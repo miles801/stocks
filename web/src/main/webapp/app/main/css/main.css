@@ -1,0 +1,804 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
+html {
+    overflow: hidden;
+    height: 100%;
+}
+
+body {
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
+#container {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0 auto;
+    background-color: white;
+    -moz-box-shadow: 0px 2px 5px #6E6E6E;
+    -webkit-box-shadow: 0px 2px 5px #6E6E6E;
+    box-shadow: 0px 2px 5px #d6d6d6;
+    box-sizing: border-box;
+    border: 1px solid #d6d6d6;
+    border-top: none;
+    border-bottom: none;
+    overflow: hidden;
+}
+
+/*顶部*/
+#header {
+    height: 30px;
+    width: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+#header .top {
+    overflow: hidden;
+    height: 30px;
+    background: #004b92 url(../images/header.png) no-repeat right;
+    position: relative;
+
+}
+
+#header .top .tool {
+    height: 25px;
+    margin-right: 9px;
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    border: 2px solid #fff;
+    right: 0;
+    background-size: 235px 25px;
+    border-top: 0;
+    border-radius: 20px;
+    padding: 5px 0px;
+}
+
+#header .top .tool > div {
+    width: 100%;
+    height: 100%;
+    padding: 0 15px 0 10px;
+}
+
+#header .top .tool a {
+    margin-left: 15px;
+    cursor: pointer;
+    top: -7px;
+    position: relative;
+}
+
+#header .top .tool a i.glyphicons:before {
+    color: white;
+}
+
+#header .top .logo {
+    overflow: hidden;
+    height: 60px;
+    width: 130px;
+    left: 5px;
+    /*background: url('../images/logo.png') no-repeat 0 5px;*/
+    position: absolute;
+    z-index: 2;
+    background-size: contain;
+}
+
+#header .top .login {
+    color: #FFFFF0;
+    width: 200px;
+    height: 80px;
+    position: absolute;
+    right: 10px;
+    top: 20px;
+}
+
+#header .top .login span {
+    float: right;
+    padding-right: 10px;
+}
+
+#header .top .login a {
+    color: #FFFFF0;
+    text-decoration: none;
+}
+
+#header #nav_top {
+    height: 30px;
+    width: 100%;
+    margin: 0;
+    padding: 3px 0 0 0;
+
+    position: absolute;
+    top: 0;
+    right: 0;
+
+    /*display:none;*/
+}
+
+/* 顶部导航条样式 */
+#header #nav_top ul {
+    font-family: '微软雅黑';
+    padding: 0 10px;
+}
+
+#header #nav_top ul.nav {
+    filter: progid:DXImageTransform.Microsoft.Gradient(gradientType=0, startColorStr=#FEFEFA, endColorStr=#E9E9E9);
+    background-image: linear-gradient(top, #FEFEFA 0%, #E9E9E9 100%);
+    background-image: -o-linear-gradient(top, #FEFEFA 0%, #E9E9E9 100%);
+    background-image: -moz-linear-gradient(top, #FEFEFA 0%, #E9E9E9 100%);
+    background-image: -webkit-linear-gradient(top, #FEFEFA 0%, #E9E9E9 100%);
+    background-image: -ms-linear-gradient(top, #FEFEFA 0%, #E9E9E9 100%);
+}
+
+#header #nav_top li.active {
+    color: white; /*激活时白色字体*/
+}
+
+#header #nav_top .nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
+    color: #FFF;
+    background-color: #5493D5; /* 选项背景色 */
+    border: 1px solid #DDD; /* 选项边框 */
+    border-bottom-color: rgba(0, 0, 0, 0);
+}
+
+#header #nav_top .nav.nav-pills li a {
+    color: #000; /*未激活时文字颜色为黑色*/
+    padding: 5px 15px; /*设置选项的高度和宽度*/
+    cursor: pointer;
+}
+
+#header #nav_top .nav.nav-pills li.active a {
+    background-color: #5493D5;
+    border-radius: 5px 5px 0 0;
+    color: #FFFFFF;
+}
+
+#header #nav_top .nav.nav-pills a:hover {
+    background-color: #5493D5;
+    color: #FFFFFF;
+    border-radius: 5px 5px 0 0;
+}
+
+#header .bg_bar {
+    background-color: #5493D5;
+    height: 5px;
+    border: 0;
+    position: relative;
+    z-index: 100;
+}
+
+/*正文*/
+#main {
+    width: 100%;
+    height: 100%;
+    margin: -30px 0 0 0;
+    padding: 30px 0 0 0;
+    overflow: hidden;
+}
+
+#main #accordian {
+    width: 120px;
+    height: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    color: #000000;
+    overflow: hidden;
+    /*Some cool shadow and glow effect*/
+    box-shadow: 0 5px 10px 1px rgba(0, 0, 0, 0.2), 0 0 200px 1px rgba(255, 255, 255, 0.5);
+    float: left;
+    clear: both;
+}
+
+#main #accordian ul {
+    padding-left: 0;
+    margin: 0;
+    height: 100%;
+}
+
+/*heading styles*/
+#main #accordian h3 {
+    font-size: 16px;
+    line-height: 40px;
+    margin: 0;
+    cursor: pointer;
+    background-color: #d5ebff;
+    border-bottom: 1px solid #c0daf1;
+    white-space: nowrap; /*防止折叠时挤开*/
+}
+
+#main #accordian h3 .glyphicons:before {
+    color: #FFF;
+}
+
+/*heading hover effect*/
+#main #accordian h3:hover {
+    text-shadow: 0 0 1px rgba(255, 255, 255, 0.7);
+}
+
+/*iconfont styles*/
+#main #accordian h3 span {
+    font-size: 14px;
+    color: rgb(0, 75, 146);
+    font-weight: 700;
+}
+
+/*list items*/
+#main #accordian li {
+    list-style-type: none;
+}
+
+#main #accordian ul {
+    position: relative;
+    background-color: #d5ebff;
+}
+
+#main #accordian h3 + ul {
+    background-color: #e9f5ff;
+}
+
+#main #accordian h3 + ul li a {
+    color: rgb(53, 67, 80)
+}
+
+#main #accordian li.current h3 {
+    background-color: #004b92;
+}
+
+#main #accordian li.current h3 .menu-text > a {
+    color: #fff;
+}
+
+/*links*/
+#main #accordian ul ul li a {
+    color: #000000;
+    text-decoration: none;
+    line-height: 30px;
+    display: block;
+    padding: 0 15px 0 25px;
+    transition: all 0.15s;
+    white-space: nowrap; /*防止折叠时挤开*/
+    border-bottom: 1px solid #d5ebff;
+    font-size: 12px;
+}
+
+/*hover effect on links*/
+#main #accordian ul ul li a:hover {
+    background: #004b92;
+    color: #fff !important;
+}
+
+/*Lets hide the non active LIs by default*/
+#main #accordian ul ul {
+    display: none;
+}
+
+#main #accordian li.active ul {
+    display: block;
+}
+
+#main #accordian .glyphicon {
+    top: 3px;
+}
+
+#main #accordian .glyphicon.head-icon {
+    padding-left: 5px;
+    color: white;
+}
+
+#main #accordian .menu-text {
+    padding-left: 5px;
+    white-space: nowrap; /*防止折叠时挤开*/
+    display: inline-block;
+    height: 100%;
+    width: 100%;
+}
+
+#main #accordian .menu-children {
+    position: absolute;
+    width: 20px;
+    margin-right: 8px;
+    right: 0;
+}
+
+#main #accordian .menu-children > .icon-down {
+    position: absolute;
+    color: #495a6b;
+}
+
+#main #accordian .current .menu-children > .icon-down {
+    color: #fff;
+}
+
+#main #accordian li.current > a {
+    background-color: #004b92;
+    color: #fff;
+}
+
+#main #accordian .menu-text a {
+    color: #495a6b;
+    display: inline-block;
+    height: 100%;
+    width: 100%;
+    text-decoration: none;
+    line-height: 27px;
+    padding: 0 0;
+    transition: all 0.15s;
+    white-space: nowrap; /*防止折叠时挤开*/
+}
+
+#main #colbar {
+    width: 8px;
+    height: 100%;
+    float: left;
+    text-align: center;
+    position: relative;
+    cursor: pointer;
+    background-color: #c0daf1;
+}
+
+#main #colbar #arrow {
+    height: 70px;
+    width: 100%;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    margin-top: -15px;
+    background-color: #004b92;
+}
+
+#main #colbar #arrow i {
+    display: block;
+    margin: 1px 2px;
+}
+
+#main .content-iframe {
+    height: 100%;
+    width: 100%;
+    margin-left: -130px;
+    padding-left: 130px;
+    box-sizing: border-box;
+    float: left;
+    overflow: hidden;
+}
+
+#main .content-iframe iframe {
+    border: none;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+#footer {
+    height: 30px;
+    font-size: 12px;
+    width: 100%;
+    overflow: hidden;
+    text-align: center;
+}
+
+.footer i {
+    top: 5px;
+    position: relative;
+}
+
+#footer .left {
+    padding: 0 15px;
+}
+
+#footer .center {
+    width: 100%;
+    float: left;
+    color: #FFFFFF !important;
+    margin: 0 -130px 0 -300px;
+    padding: 0 130px 0 300px;
+}
+
+#footer .center .scroller {
+    font-size: 12px;
+    color: #000000;
+    overflow: hidden;
+    position: relative;
+    line-height: 30px;
+    height: 30px;
+    width: 100%;
+}
+
+#footer .center .scroller .scroller-wrap {
+    width: 100%;
+}
+
+#footer .center .scroller .scroller-wrap span {
+    color: #FFFFFF;
+}
+
+#footer .center .scroller .scroller-wrap .important {
+    color: #ff0000;
+}
+
+#footer .center .scroller .scroller-wrap .normal {
+    color: #0000ff;
+}
+
+.footer .right {
+    width: 90px;
+    text-align: right;
+    float: right;
+    margin-right: 15px;
+}
+
+.footer .right i {
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+.arrow-right {
+    width: 0;
+    height: 0;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    border-left: 5px solid #fff;
+    top: 26px;
+    right: -1px;
+    position: relative;
+}
+
+.arrow-left {
+    width: 0;
+    height: 0;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    border-right: 5px solid #fff;
+    top: 26px;
+    position: relative;
+}
+
+.arrow-up {
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+
+    border-bottom: 5px solid #000000;
+}
+
+.arrow-down {
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+
+    border-top: 5px solid #000000;
+}
+
+#static-text span {
+    padding-right: 10px;
+}
+
+.footer {
+    height: 30px;
+    line-height: 30px;
+    background: #004b92;
+    color: #FFF;
+    position: relative;
+}
+
+.footer div {
+    display: inline;
+    float: left;
+}
+
+.footer hr {
+    margin: 0 15px;
+    width: 1px;
+    height: 24px;
+    display: block;
+    float: left;
+    background: url(../images/opcity.png) repeat;
+    border: 0;
+}
+
+.footer .corner {
+    display: block;
+    background: #002b74;
+    width: 65px;
+    text-align: center;
+    position: absolute;
+    top: 0;
+    right: 0;
+    color: #FFF;
+    text-decoration: none;
+}
+
+.head-icon {
+    left: 5px;
+}
+
+ul.nav_menus > li {
+    cursor: pointer;
+}
+
+.modal-dialog {
+    margin-top: 100px;
+}
+
+.modal .modal-header {
+    padding: 5px 15px;
+}
+
+.modal .modal-body {
+    padding: 5px 20px;
+}
+
+.modal .modal-footer {
+    padding: 5px 15px;
+    margin-top: 0;
+}
+
+.mainRight {
+    margin-left: -54px;
+    padding-left: 54px;
+    height: 100%;
+    width: 100%;
+    display: inline-block;
+    overflow: hidden;
+}
+
+.leftbar {
+    width: 50px;
+    height: 100%;
+    background: #555;
+    text-align: center;
+    display: inline-block;
+    position: relative;
+}
+
+.leftbar * {
+    box-sizing: content-box;
+}
+
+.leftbar .LB_container {
+    position: relative;
+    overflow: hidden;
+    width: 50px !important;
+}
+
+.leftbar .LB_container > a {
+    cursor: pointer;
+}
+
+.leftbar .LB_container a {
+    display: block;
+    height: 50px;
+    margin: auto;
+    position: relative;
+    overflow: hidden;
+    top: 0;
+}
+
+.leftbar .LB_container a img {
+    position: absolute;
+    top: 15px;
+    left: 0;
+}
+
+.leftbar .LB_container a.current {
+    background: #d5ebff;
+}
+
+.leftbar .LB_container a.current img {
+    top: -24px;
+    background-color: #d5ebff;
+}
+
+.leftbar .LB_container a:hover {
+    /*background: #4c7d50;*/
+}
+
+.leftbar .LB_container a.current:hover {
+    /*background: #32ff40;*/
+}
+
+.leftbar .btnT, .leftbar .btnB {
+    width: 48px;
+    height: 12px;
+    border: 1px solid #222;
+    position: absolute;
+    left: 0;
+    cursor: pointer;
+}
+
+.leftbar .btnT {
+    background: #333 url(../images/leftbar_btnT.png) center no-repeat;
+    top: 0;
+}
+
+.leftbar .btnB {
+    background: #333 url(../images/leftbar_btnB.png) center no-repeat;
+    bottom: 0;
+}
+
+.leftbar .btnT:hover, .leftbar .btnB:hover {
+    background-color: #555;
+}
+
+.icons-note {
+    width: 30px;
+    height: 24px;
+    display: inline-block;
+    background: url(../images/icon/f4.png) no-repeat;
+}
+
+.icons-logout {
+    width: 30px;
+    height: 24px;
+    display: inline-block;
+    background: url(../images/icon/h13.png) no-repeat;
+}
+
+.icons-msg {
+    width: 30px;
+    height: 24px;
+    display: inline-block;
+    background: url(../images/icon/h11.png) no-repeat;
+}
+
+.icons-sj {
+    width: 10px;
+    height: 13px;
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.leftMenu {
+    width: 149px;
+    float: left;
+    height: 100%;
+    background: #edf8ff;
+    border-right: 1px solid #999;
+}
+
+.rightMain {
+    margin-left: 150px;
+    overflow: hidden;
+}
+
+.leftMenu ul {
+}
+
+.leftMenu ul li {
+    line-height: 30px;
+    border-bottom: 1px solid #999;
+    background: url(../images/leftmenu_title.png) repeat-x left;
+    cursor: pointer;
+}
+
+.leftMenu ul li:hover {
+}
+
+.leftMenu ul li a {
+    background: url(../images/leftmenu_point.png) left no-repeat;
+    padding-left: 16px;
+    font-size: 14px;
+    text-decoration: none;
+    color: #333;
+}
+
+.leftMenu ul ul li {
+    background: none;
+}
+
+.leftMenu ul ul li:hover {
+    background: #63ff6e;
+}
+
+.leftMenu ul ul li a {
+    padding-left: 16px;
+    font-size: 12px;
+    background: none;
+}
+
+hr {
+    border: 0;
+    border-top: 1px solid #CCC;
+    height: 1px;
+    overflow: hidden;
+    margin: 0 auto;
+    padding: 0;
+}
+
+.btnA {
+    border: 1px solid #0087ae;
+    line-height: 22px;
+    padding: 0 12px;
+    color: #FFF;
+    margin: 2px;
+    background: url(../images/btn_A.png) repeat-x left;
+}
+
+.btnB {
+    border: 1px solid #7db5de;
+    line-height: 20px;
+    color: #333;
+    background: url(../images/btn_B.png) repeat-x left;
+}
+
+.leftbar {
+    width: 50px;
+    height: 100%;
+    background: #10334f;
+    text-align: center;
+    position: relative;
+    float: left;
+}
+
+.leftbar .container {
+    border: 1px solid #222;
+    position: relative;
+    overflow: hidden;
+}
+
+.leftbar .container a {
+    display: block;
+    height: 50px;
+    margin: auto;
+    border-bottom: 1px solid #333;
+    position: relative;
+    overflow: hidden;
+    position: relative;
+    top: 0;
+}
+
+.leftbar .container a img {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.leftbar a.current {
+    background: #d5ebff;
+}
+
+.leftbar .container a.current img {
+    top: -50px;
+}
+
+.leftbar .container a:hover {
+    background: #4c7d50;
+}
+
+.leftbar .container a.current:hover {
+    background: #32ff40;
+}
+
+.leftbar .btnT, .leftbar .btnB {
+    width: 48px;
+    height: 12px;
+    border: 1px solid #222;
+    position: absolute;
+    left: 0;
+    cursor: pointer;
+}
+
+.leftbar .btnT {
+    background: #333 url(../images/leftbar_btnT.png) center no-repeat;
+    top: 0;
+}
+
+.leftbar .btnB {
+    background: #333 url(../images/leftbar_btnB.png) center no-repeat;
+    bottom: 0;
+}
+
+.leftbar .btnT:hover, .leftbar .btnB:hover {
+    background-color: #555;
+}

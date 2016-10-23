@@ -1,0 +1,205 @@
+
+.note ul {
+    padding-top: 10px;
+    padding-left: 0;
+}
+
+.note ul li {
+    display: block;
+    width: 200px;
+    height: 180px;
+    color: #666;
+    background: #ffffff;
+    margin: 0 auto 10px 10px;
+    float: left;
+    position: relative;
+    -moz-box-shadow: 1px 1px 5px #666;
+    -webkit-box-shadow: 1px 1px 5px #666;
+    box-shadow: 1px 1px 5px #666;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=5, Direction=135, Color='#666666')";
+    filter: progid:DXImageTransform.Microsoft.Shadow(Strength=5, Direction=135, Color='#666666');
+}
+
+.note ul li span {
+    display: block;
+    line-height: 30px;
+    height: 30px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #333;
+    background: #f6f6f9 url(./images/text.gif) no-repeat 5px;
+    padding-left: 24px;
+}
+
+.note ul li p {
+    display: block;
+    height: 130px;
+    overflow: hidden;
+    cursor: pointer;
+    margin: 5px 10px;
+}
+
+.note ul li a.del {
+    display: block;
+    height: 30px;
+    width: 30px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    font-size: 20px;
+}
+
+.note ul a.addnote {
+    display: block;
+    color: #666;
+    margin: 0 auto 10px 10px;
+    float: left;
+    width: 198px;
+    height: 180px;
+    border: 1px dotted #BBB;
+    text-align: center;
+}
+
+.note ul a.addnote img {
+    margin-top: 50px;
+}
+
+.addnote {
+    text-align: center;
+    padding-top: 10px;
+}
+
+.addnote label {
+    border: 1px solid #CCC;
+    line-height: 40px;
+    display: block;
+    background: #FFF;
+    height: auto;
+    margin: 0 auto 10px;
+    width: 400px;
+    position: relative;
+    text-align: left;
+    background: #F3F3F3;
+    overflow: hidden;
+    clear: both;
+}
+
+.addnote label span {
+    color: #666;
+    background: #F3F3F3;
+    line-height: 40px;
+    display: block;
+    width: 90px;
+    padding-right: 5px;
+    margin-right: 5px;
+    float: left;
+    text-align: right;
+    font-size: 14px;
+}
+
+.addnote label input, .addnote label p {
+    width: 290px;
+    border: 0;
+    margin: 0;
+    padding: 0 5px;
+    line-height: 40px;
+    height: 40px;
+    float: left;
+    color: #333;
+    font-size: 14px;
+    background: #FFF;
+}
+
+.addnote label p {
+    color: #AAA;
+}
+
+.addnote label textarea {
+    width: 290px;
+    border: 0;
+    margin: 0;
+    padding: 0 5px;
+    float: left;
+    color: #333;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.addnote input.submit {
+    background: #f5be19;
+    height: 40px;
+    width: 400px;
+    padding: 0;
+    border: 0;
+    font-size: 14px;
+}
+
+.noteopen ul {
+    padding-top: 10px;
+}
+
+.noteopen ul li {
+    display: block;
+    width: 420px;
+    height: 300px;
+    color: #666;
+    background: #fefecc;
+    margin: 0 auto 10px 10px;
+    float: left;
+    position: relative;
+    -moz-box-shadow: 1px 1px 5px #666;
+    -webkit-box-shadow: 1px 1px 5px #666;
+    box-shadow: 1px 1px 5px #666;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=5, Direction=135, Color='#666666')";
+    filter: progid:DXImageTransform.Microsoft.Shadow(Strength=5, Direction=135, Color='#666666');
+}
+
+.noteopen ul li span {
+    display: block;
+    line-height: 30px;
+    height: 30px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    background: #f8f7b6 url(./images/notepin.jpg) left no-repeat;
+    text-indent: 30px;
+    color: #333;
+}
+
+.noteopen ul li p {
+    display: block;
+    height: 240px;
+    margin: 10px 20px;
+    font-size: 14px;
+    color: #666;
+    line-height: 2;
+}
+
+.noteopen ul li a.del {
+    display: block;
+    height: 30px;
+    width: 30px;
+    background: url(./images/notedel.jpg) no-repeat top;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.pagectrl {
+    font: normal 14px/40px Verdana;
+    text-align: center;
+    clear: both;
+}
+
+.pagectrl a {
+    color: #666;
+    display: block;
+    height: 40px;
+    background: #DDD;
+    border: 1px solid #CCC;
+}
+
+.pagectrl a:hover {
+    color: #F60;
+    background: #EEE;
+}

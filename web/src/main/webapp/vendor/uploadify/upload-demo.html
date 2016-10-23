@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html >
+<head lang="en" >
+    <meta charset="UTF-8" >
+    <title >封装Uploadify.js的Demo</title >
+    <style >
+        pre {
+            border: 1px solid #ddd;
+            background-color: #ddddff;
+            padding: 10px 5px;
+            border-radius: 8px;
+        }
+    </style >
+    <script src="../jquery-v1.8.3/jquery.js" ></script >
+    <script src="../../static/ycrl/javascript/angular-all.js" ></script >
+    <script src="../../static/ycrl/javascript/upload.js" ></script >
+    <script >
+        window.angular.contextPathURL = '/wbs';
+        var app = angular.module('eccrm.upload.demo', [
+            'eccrm.angular'
+        ]);
+        app.controller('UploadCtrl', function ($scope, EccrmUploadContext) {
+            // 附件上传的配置信息
+            $scope.uploadOptions = {
+                onUploadSuccess: function (id) {
+                    alert('上传成功，附件id为：' + id);
+                }
+            };
+
+            // 获得已附件id
+            $scope.showAttachments = function () {
+                var ids = EccrmUploadContext.get();
+                alert(ids);
+            }
+        })
+
+    </script >
+</head >
+<body ng-app="eccrm.upload.demo" ng-controller="UploadCtrl" >
+
+<h3 >上传插件Demo</h3 >
+
+<p >使用说明：</p >
+
+<p >步骤1：引入jquery.js</p >
+
+<p >步骤2：引入angular-all.js</p >
+
+<p >步骤3：引入upload.js</p >
+
+<p >步骤4：在需要上传的html元素上加上属性eccrm-upload="uploadOptions"</p >
+
+<p >步骤5：在Controller中注入服务EccrmUploadContext，并在Controller中配置$scope.uploadOptions对象，可以参考demo.html中的选项</p >
+
+<pre >
+    &lt;script src="../jquery-v1.8.3/jquery.js" &gt;&lt;/script &gt;
+    &lt;script src="../../static/ycrl/javascript/angular-all.js" &gt;&lt;/script &gt;
+    &lt;script src="../../static/ycrl/javascript/upload.js" &gt;&lt;/script &gt;
+    &lt;script &gt;
+        window.angular.contextPathURL = '/wbs';
+        var app = angular.module('eccrm.upload.demo', [
+            'eccrm.angular'
+        ]);
+        app.controller('UploadCtrl', function ($scope, EccrmUploadContext) {
+            // 附件上传的配置信息
+            $scope.uploadOptions = {
+                onUploadSuccess:function(id){
+                    alert('上传成功，附件id为：'+id);
+                }
+            };
+
+            // 获得已附件id
+            $scope.showAttachments = function () {
+                var ids = EccrmUploadContext.get();
+                alert(ids);
+            }
+        })
+    &lt;/script &gt;
+</pre >
+<span eccrm-upload="uploadOptions" ></span >
+<button ng-click="showAttachments()" >显示附件列表</button >
+</body >
+</html >

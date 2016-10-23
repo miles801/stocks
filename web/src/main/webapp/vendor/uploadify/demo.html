@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html >
+<head lang="en" >
+    <meta charset="UTF-8" >
+    <title ></title >
+    <link rel="stylesheet" href="uploadify.css" />
+    <script src="../jquery-v1.8.3/jquery.js" ></script >
+    <script src="jquery.uploadify.min.js" ></script >
+    <script >
+        $(function () {
+            $("#upload").uploadify({
+                // 按钮的高度，单位px
+                height: 30,
+
+                // 上传按钮的宽度，单位px
+                width: 120,
+
+                // uploadify的swf文件的存放位置，默认值为uploadify.swf
+                swf: 'uploadify.swf',
+
+                // 附件要上传的目的地
+                uploader: '<%=contextPath%>/attachment/upload',
+
+                // 要额外传递到服务器端的数据，是一个Object对象
+                // 在服务器端可以通过request.getParameter("description")获取内容
+                formData: {description: '菜单图标', businessType: 'menuIcon'},
+
+                // 允许上传的文件个数（当超过这个个数时，会报错）
+                uploadLimit: 1,
+
+                // 文件大小
+                // 值可以是number或者String
+                // number时，默认单位为kb
+                // string时，支持的单位为B,KB,MB,GB
+                // 设置为0时，表示不限制大小
+                fileSizeLimit: 2000,
+
+                // 上传按钮上要显示的文字
+                // 默认值：'BROWSE'
+                buttonText: '上传图标',
+
+                // 上传按钮样式
+                buttonClass: '',
+
+                // 当文件被加入到上传队列时，是否自动上传
+                // 默认值：true
+                // 当设置为false后，可以通过upload方法手动开启上传
+                auto: false,
+
+                // 是否在同一个对话框中允许选择多个文件
+                // 默认值：true
+                multi: false,
+
+                // 文件上传所使用的传输方式
+                // 默认值：'post'
+                // 可选值：'post','get'
+                method: 'post',
+
+                // 允许上传的文件格式
+                // 默认值：'*.*'
+                // 值为一个字符串，多个文件格式使用;进行分隔
+                // 例如：'*.png;*.jpg;*.gif'
+                fileTypeExts: '*.png;*.jpg;*.gif',
+
+                // 上传成功后，等待number秒后，则视为上传成功
+                // 默认值：30
+                successTimeout: 5,
+
+                // 如果上传失败时，是否再次上传
+                // 默认值：false
+                // 如果设置为true，则当上传失败时，会再次尝试上传
+                requeueErrors: false,
+
+                // 是否从上传队列中移除已经完成的文件
+                // 默认值：true
+                removeCompleted: false,
+
+                // 上传队列同时能够上传的文件的数量
+                // 默认值：999
+                // 当选择的文件数量超过了允许的值时，会触发onSelectError事件
+                queueSizeLimit: 10,
+
+                // 上传时，展示给用户的信息
+                // 默认值：'percentage'（表示上传百分比）
+                // 可选值：'speed'，表示上传的速度（例如10KB/s)
+                progressData: 'speed',
+
+                // 禁用缓存
+                // 默认值：true
+                preventCaching: true,
+
+
+                // =================== 事件 ================
+
+                // 当文件被选中时要触发的事件
+                // 每选择一个文件都会触发一次
+                onSelect: function (file) {
+
+                },
+
+                // 当文件上传完毕时要触发的事件（不管文件是真的上传成功还是返回了错误）
+                // 同onSelect一样，每个文件上传完毕都会触发一次
+                // 回调参数：上传成功时返回file对象，上传失败时为返回的错误信息
+                onUploadComplete: function (file) {
+
+                },
+
+                // 当每个文件在上传时更新了进度时触发
+                // 参数：
+                //   file：被上传的文件
+                //   bytesUploaded：已经被上传的文件大小
+                //   bytesTotal：文件总大小
+                //   totalBytesUploaded：所有被上传的文件当前已经上传的总大小
+                //   totalBytesTotal：所有要上传的文件的总大小
+                onUploadProgress: function (file, bytesUploaded, bytesTotal, totalBytesUploaded, totalBytesTotal) {
+
+                },
+
+
+                // 文件开始上传时触发的事件
+                // 参数：
+                //    file：即将被上传的文件对象
+                onUploadStart: function (file) {
+
+                },
+
+                // 文件上传成功后的回调
+                // 回调参数：
+                //   file：被上传的文件的信息，包括文件名称、大小等
+                //   data：服务器端响应的数据，值为字符串
+                //   response：
+                onUploadSuccess: function (file, data, response) {
+
+                },
+
+                // 上传失败时要触发的事件
+                // 回调参数：
+                //    file：被上传的文件对象
+                //    errorCode：返回的错误码
+                //    errorMsg：返回的错误信息
+                //    errorString：友好的错误提示信息
+                onUploadError: function (file, errorCode, errorMsg, errorString) {
+
+                },
+
+                // 当在当前浏览器中没有检测到Flash插件时要触发的事件
+                onFallback: function () {
+
+                }
+
+            });
+
+            // uploadify可调用的方法
+
+            // 取消上传
+            $("#upload").uploadify('cancel');
+
+            // 开始上传
+            $("#upload").uploadify('upload');
+
+            // 禁用上传
+            $("#upload").uploadify('disable');
+
+            // 销毁上传
+            $("#upload").uploadify('disable');
+
+            // 设置上传参数信息
+            // 参数1：'settings'，该值固定
+            // 参数2：'配置的key的名称'
+            // 参数3：'配置的key对应的值'
+            $("#upload").uploadify('settings','buttonText','上传');
+        });
+    </script >
+</head >
+<body >
+
+<input id="upload" type="text" />
+
+</body >
+</html >

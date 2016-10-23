@@ -1,0 +1,41 @@
+/*错误页面的css：404,500,400等*/
+body {
+    margin: 230px 0px 0px 0px;
+    text-align: center;
+    font-family: 'Lucida Grande', Geneva, Verdana, Arial, sans-serif;
+    font-size: 15px;
+    background: #e6e7e8 url(../images/errorbkg.png) no-repeat top center;
+}
+
+.wrappper {
+    width: 600px;
+    margin: auto;
+    text-align: left;
+    line-height: 20px;
+    padding-top: 20px;
+}
+
+h2 {
+    color: #424242;
+    display: block;
+    font-family: Myriad Pro, Helvetica;
+    font-size: 25px;
+    font-weight: normal;
+    letter-spacing: -0.03em;
+    margin-top: 5px;
+}
+
+.message {
+    text-align: left;
+    padding-left: 60px;
+    padding-right: 60px;
+    padding-top: 10px;
+}
+
+.error-content{
+    width: 100%;
+    height: 200px;
+    overflow: auto;
+    font-size: 14px;
+    color: #B50000;
+}

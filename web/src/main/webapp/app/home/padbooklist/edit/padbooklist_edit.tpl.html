@@ -1,0 +1,72 @@
+
+<div class="modal" tabindex="-1" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header" static>
+				<button type="button" class="close" ng-click="$hide()">&times;</button>
+				<h4 class="modal-title">编辑便签</h4>
+			</div>
+			<div class="modal-body">
+				<div class="block-content">
+					<div class="content-wrap">
+						<form name="form" class="form-horizontal" role="form">
+							<div style="display: none;">
+								<input type="hidden" ng-model="page.type"
+									ng-init="page.type='${pageType}'" /> <input type="hidden"
+									ng-model="notebook.id" ng-init="notebook.id=('${id}') || null" />
+							</div>
+							<div style="margin-left:-25px">
+								<div class="row">
+									<div class="form-label col-2">
+										<label>事项:</label>
+									</div>
+									<input class="col-5" type="text" ng-model="notebook.title"
+										name="title" validate-max-length="100" /> <span
+										class="error col middel" ng-show="form.title.$invalid"
+										ng-cloak>{{ form.title.$error }} </span>
+								</div>
+								<div class="row">
+									<div class="form-label col-2">
+										<label>便签内容:</label>
+									</div>
+									<textarea class="col-9-half" rows="8" ng-model="notebook.content"
+										name="content" required validate-max-length="1000"></textarea>
+									<span ng-cloak class="error"
+										style="color: #ff3412;margin-top:-120px">
+										<span ng-show="form.content.$error.maxLength">超出最大长度</span>
+									</span>
+								</div>
+
+								<div class="row">
+									<div class="form-label col-2">
+										<label>记录人:</label>
+									</div>
+									<span class="col-3-half"
+                                          ng-bind-template="{{notebook.creatorName}}"></span>
+
+                                    <div class="form-label col-2">
+										<label>记录时间:</label>
+									</div>
+									<span class="col-3-half"
+										ng-bind-template="{{notebook.createdDatetime | date:'yyyy-MM-dd HH:mm:ss' }}"></span>
+								</div>
+						</form>
+					</div>
+				</div>
+</div>
+			</div>
+			<div class="modal-footer">
+
+				<button type="button" class="btn btn-default btn-primary"
+					ng-click="update()" ng-disabled="!form.$valid">更新</button>
+
+				<button type="button" class="btn btn-default btn-primary"
+                        ng-click="remove(notebook.id)">删除
+                </button>
+
+                <button type="button" class="btn btn-default" ng-click="$hide()">关闭</button>
+			</div>
+		
+	</div>
+</div>
+</div>

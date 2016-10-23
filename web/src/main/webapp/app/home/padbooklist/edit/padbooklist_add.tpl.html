@@ -1,0 +1,65 @@
+
+<div class="modal" tabindex="-1" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header" static>
+				<button type="button" class="close" ng-click="$hide()">&times;</button>
+				<h4 class="modal-title">添加便签</h4>
+			</div>
+			<div class="modal-body">
+				<div class="block-content">
+					<div class="content-wrap">
+						<form name="form" class="form-horizontal" role="form">
+							<div style="display: none;">
+								<input type="hidden" ng-model="page.type"
+									ng-init="page.type='${pageType}'" />
+							</div>
+							<div style="margin-left:-25px">
+								<div class="row">
+									<div class="form-label col-2">
+										<label>事项:</label>
+									</div>
+									<input class="col-5" type="text" ng-model="notebook.title"
+                                           name="title" validate
+                                           validate-required
+                                           autofocus validate-max-length="45"/>
+                                </div>
+								<div class="row">
+									<div class="form-label col-2">
+										<label>便签内容:</label>
+									</div>
+									<textarea class="col-9-half" rows="8" ng-model="notebook.content"
+                                              name="content" validate
+                                              validate-required
+                                              validate-max-length="500"></textarea>
+
+                                </div>
+								<div class="row">
+									<div class="form-label col-2">
+										<label>记录人:</label>
+									</div>
+									<span class="col-3-half"
+										ng-bind-template="{{notebook.createdUserName || notebook.createdUser.username}}"></span>
+									<div class="form-label col-2">
+										<label>记录时间:</label>
+									</div>
+									<span class="col-3-half"
+										ng-bind-template="{{notebook.createdDatetime | date:'yyyy-MM-dd HH:mm:ss' }}"></span>
+								</div>
+						</form>
+					</div>
+				</div>
+
+			</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default btn-primary"
+					ng-click="save()" ng-disabled="!form.$valid">保存</button>
+
+				<button type="button" class="btn btn-default" ng-click="$hide()">关闭</button>
+
+			
+		</div>
+	</div>
+</div>
+</div>

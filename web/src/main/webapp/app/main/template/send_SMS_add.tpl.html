@@ -1,0 +1,76 @@
+<div class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content" style="width:650px;">
+            <div class="modal-header" static="">
+                <button type="button" class="close" ng-click="$hide()">×</button>
+                <h4 class="modal-title" >短信发送</h4>
+            </div>
+            <div class="modal-body">
+                <div class="block-content">
+                    <div class="content-wrap">
+                        <form name="form" class="form-horizontal" role="form">
+                            <div style="display: none;">
+                                <input type="hidden" ng-model="page.type" ng-init="page.type='${pageType}'"/>
+                                <input type="hidden" ng-model="sendSMS.id" ng-init="sendSMS.id=('${id}') || null"/>
+                            </div>
+
+                            <div class="row">
+                                <div class="form-label col-2">
+                                    <label>手机号码:</label>
+                                </div>
+                                <input class="col-10" type="text" ng-model="sendSMS.project"/>
+<!--                                <span class="add-on">
+                        <i class="glyphicons user icon"></i>
+                    </span>-->
+                            </div>
+
+                            <div class="row">
+                                <div class="form-label col-2">
+                                    <label>短信内容:</label>
+                                </div>
+                                <textarea class="col-10" rows="3" ng-model="sendSMS.remark"></textarea>
+                            </div>
+                            <div class="row">
+                                <div class="form-label col-2">
+                                    <label></label>
+                                </div>
+                                <div class="col-3-half">
+                                    <label style="cursor: pointer;margin-right: 10px;">
+                                        <input name="sendType" type="radio" ng-model="email.sendType" ng-value="false"
+                                               checked="checked"/> 立即发送
+                                    </label>
+                                    <label style="cursor: pointer;margin-right: 10px;">
+                                        <input name="sendType" type="radio" ng-model="email.sendType" ng-value="true"/> 定时发送
+                                    </label>
+                                </div>
+                                <div ng-show="email.sendType">
+                                    <div class="form-label col-3">
+                                        <label>发送时间:</label>
+                                    </div>
+                                    <input type="text" class="col-3-half" date-type="string" bs-datepicker
+                                           ng-model="email.planSendDate" data-date-format="yyyy-MM-dd" readonly
+                                           autoclose="true"
+                                           placeholder="选择日期" data-container="body" data-placement="top"/>
+                                <span class="add-on col">
+                                    <i class="glyphicons calendar icon" title="清除时间" ng-click="email.planSendDate='';"></i>
+                                </span>
+                                </div>
+
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default btn-primary" ng-click="save();"
+                        ng-disabled="form.$invalid">发送
+                </button>
+                <button type="button" class="btn btn-default btn-primary" ng-click="$hide()"
+                        >取消发送
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div/>
+

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>lrsoft-base</artifactId>
+        <groupId>com.michael</groupId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>base-impl</artifactId>
+    <dependencies>
+        <dependency>
+            <groupId>com.michael</groupId>
+            <artifactId>base-api</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+
+        <!-- 拼音 -->
+        <dependency>
+            <groupId>com.belerweb</groupId>
+            <artifactId>pinyin4j</artifactId>
+            <version>2.5.0</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.ycrl.thirdparty</groupId>
+            <artifactId>utils-pinyin</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+    </dependencies>
+</project>

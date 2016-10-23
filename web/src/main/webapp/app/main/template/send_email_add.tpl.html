@@ -1,0 +1,172 @@
+<div class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content" style="width:650px;">
+            <div class="modal-header" static="">
+                <button type="button" class="close" ng-click="close()">×</button>
+                <h4 class="modal-title" >邮件发送</h4>
+            </div>
+            <div class="modal-body">
+                <div class="block-content">
+                    <div class="content-wrap">
+                        <form name="form" class="form-horizontal" role="form">
+                            <div style="display: none;">
+                                <input type="hidden" ng-model="page.type" ng-init="page.type='${pageType}'"/>
+                                <input type="hidden" id="pageType" value="${pageType}"/>
+                                <input type="hidden" id="id" value="${id}"/>
+                            </div>
+                            <div class="row">
+                                <div class="form-label col-1-half">
+                                    <label>账户:</label>
+                                </div>
+                                <!--<select name="sender" ng-model="email.sender"
+                                        ng-options="foo.code as foo.name  for foo in senders" class="col-3-half" validate
+                                        validate-required autofocus
+                                        >
+                                    <option value="">请选择</option>
+                                </select>-->
+                                <select class="col-3-half">
+
+                                    <option value="cs@ulane.com.cn">cs@ulane.com.cn</option>
+                                </select>
+                                <div class="col-6 " style="margin-left:20px;">
+	                       	<span ng-show="addCopyer" ng-init="addCopyer=true">
+			                    <button type="button" class="btn btn-green btn-min" ng-click="showAddCopyer()"> 增加抄送
+                                </button>
+	                       	</span>
+	                       	<span ng-show="deleteCopyer">
+			                    <button type="button" class="btn btn-green btn-min" ng-click="showDeleteCopyer()">
+                                    删除抄送
+                                </button>
+	                       	</span>
+	                       	<span ng-show="addSecretSender" ng-init="addSecretSender=true">
+			                    <button type="button" class="btn btn-green btn-min" ng-click="showAddSecretSender()">
+                                    增加密送
+                                </button>
+	                       	</span>
+	                       	<span ng-show="deleteSecretSender">
+			                    <button type="button" class="btn btn-green btn-min" ng-click="showDeleteSecretSender()">
+                                    删除密送
+                                </button>
+	                       	</span>
+                            </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-label col-1-half">
+                                    <label>收件人:</label>
+                                </div>
+                                <input class="col-10" type="text" name="AddressName" ng-model="email.AddressName"
+                                       ng-click="addAddressee()" validate validate-required autofocus
+                                       validate-min-length="2"/>
+                                    <span class="add-on col" title="清除">
+                                        <i class="glyphicons user icon" ng-click="clearAddressees();"></i>
+                                    </span>
+                            </div>
+                            <div class="row" ng-show="isShowCopyer">
+                                <div class="form-label col-1-half">
+                                    <label>抄送人:</label>
+                                </div>
+                                <input class="col-6-half" type="text" ng-model="email.copyName" ng-click="addCopyers()"/>
+							<span class="add-on col">
+							    <i class="glyphicons user icon" ng-click="clearCopyers();"></i>
+							</span>
+                            </div>
+                            <div class="row" ng-show="isShowSecretSender">
+                                <div class="form-label col-1-half">
+                                    <label>密送人:</label>
+                                </div>
+                                <input class="col-6-half" type="text" ng-model="email.secretName"
+                                       ng-click="addSecretSenders()"/>
+							<span class="add-on col">
+							    <i class="glyphicons user icon" ng-click="clearSecretSenders();"></i>
+							</span>
+                            </div>
+
+                            <div class="row">
+                                <div class="form-label col-1-half">
+                                    <label>标题:</label>
+                                </div>
+                                <input class="col-10" name="title" type="text" ng-model="email.title" validate validate-required
+                                       autofocus
+                                       validate-min-length="2" validate-max-length="200"/>
+                            </div>
+                            <div class="row">
+                               <!-- <div class="form-label col-1-half">
+                                    <label>内容:</label>
+                                </div>
+                                <select ng-model="email.template" class="col-3-half">
+                                    <option value="">请选择</option>
+                                    <option value="1">模版一</option>
+                                    <option value="2">模版二</option>
+                                </select>-->
+                                <div class="form-label col-1-half">
+                                    <label>重要程度:</label>
+                                </div>
+                                <select ng-model="email.importance" class="col-3-half">
+                                    <option value="">请选择</option>
+                                    <option value="1">低</option>
+                                    <option value="2">普通</option>
+                                    <option value="3">紧急</option>
+                                </select>
+                            </div>
+                            <div class="row">
+                                <div class="form-label col-1-half">
+                                    <label></label>
+                                </div>
+                                <div class="col-3-half">
+                                    <label style="cursor: pointer;margin-right: 10px;">
+                                        <input name="sendType" type="radio" ng-model="email.sendType" ng-value="false"
+                                               checked="checked"/> 立即发送
+                                    </label>
+                                    <label style="cursor: pointer;margin-right: 10px;">
+                                        <input name="sendType" type="radio" ng-model="email.sendType" ng-value="true"/> 定时发送
+                                    </label>
+                                </div>
+                                <div ng-show="email.sendType">
+                                    <div class="form-label col-3">
+                                        <label>计划发送时间:</label>
+                                    </div>
+                                    <input class="col-3-half ng-pristine ng-valid" type="text" ng-model="condition.endDateEnd"
+                                           bs-datepicker readonly data-min-date="{{condition.endDateStart}}"/>
+                                    <span class="add-on col">
+                                        <i class="glyphicons calendar icon" title="清除时间"
+                                           ng-click="condition.endDateEnd=undefined;"></i>
+                                    </span>
+
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-label col-1-half">
+                                    <label></label>
+                                </div>
+                                <div class="col-10">
+                                    <script id="container" ng-bind-template="{{email.content}}" ng-cloak
+                                            type="text/plain"></script>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-label col-1-half">
+                                    <label>附件:</label>
+                                </div>
+                                <div class="col-10-half">
+                                    <div eccrm-upload="uploadOptions" ng-click="getInfo()"></div>
+                                </div>
+                            </div>
+
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default btn-primary"  ng-click="save();"
+                        ng-disabled="form.$invalid">发送
+                </button>
+                <button type="button" class="btn btn-default btn-primary"   ng-click="close()"
+                       >取消发送
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div/>
+

@@ -1,0 +1,23 @@
+<form name="form" role="form" >
+    <div class="row" ng-show="modules">
+        <button class="btn btn-blue" style="margin-left: 5px;" ng-click="save();" ng-disabled="$invalid" >保存授权</button >
+    </div >
+    <div class="row legend" style="margin-top: 10px;" ng-cloak ng-repeat="module in modules" >
+        <div class="legend-title" style="padding: 0 15px;" >
+            {{module.name}}
+        </div >
+        <div class="block" style="border-radius:0;" >
+            <div class="block-content" >
+                <div class="content-wrap" style="padding: 5px 5px 40px 5px" >
+                    <div class="row" ng-show="module.data && module.data.length>0" >
+                        <a ng-click="checkAll(module.data);" class="btn btn-blue-dark" style="margin-left: 5px;border-color: #B0D1E9;color: #000000;" >全选</a >
+                        <a ng-click="clearAll(module.data)" class="btn btn-blue-dark" style="margin-left: 5px;border-color: #B0D1E9;color: #000000;" >清空</a >
+                    </div >
+                    <div style="float: left;margin-left: 10px;" ng-repeat="foo in module.data" >
+                        <label ><input type="checkbox" ng-model="foo.checked" /><span style="margin-left: 3px;" >{{foo.name}}</span ></label >
+                    </div >
+                </div >
+            </div >
+        </div >
+    </div >
+</form >

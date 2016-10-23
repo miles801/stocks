@@ -1,0 +1,79 @@
+<style>
+
+    table.tableGrid {
+        border: 1px solid #b4d1e7;
+        line-height: 28px;
+        border-collapse: collapse;
+        border-spacing: 0;
+        white-space: nowrap;
+        width: 100%;
+    }
+
+    table.tableGrid th, table.tableGrid td {
+        border: 1px solid #b4d1e7;
+        padding: 0 5px;
+        text-align: center;
+    }
+
+    table.tableGrid th {
+        line-height: 30px;
+        color: rgb(0, 75, 146);
+    }
+
+    table.tableGrid .evenRowClass {
+        background: #f4fcff;
+    }
+
+    table.tableGrid .oddRowClass {
+        background: #FFF;
+    }
+
+    table.tableGrid .activeRowClass {
+        background: #b7ffb5;
+    }
+
+    table.tableGrid td.al {
+        text-align: left;
+    }
+</style>
+<div class="form-label col-1-half" ng-if="options.showLabel" ng-cloak>
+    <label>{{options.labelText}}:</label>
+</div>
+<div ng-class="{'col-10-half':options.showLabel,'col-12':!options.showLabel}" ng-cloak>
+    <div class="row" ng-show="options.maxFile > (attachments.length || 0) " ng-if="!options.readonly">
+        <input type="file" class="col-4">
+    </div>
+    <div class="row" ng-if="options.showTable">
+        <table class="tableGrid">
+            <tr>
+                <th style="text-align: left;">附件名称</th>
+                <th style="text-align: left;" ng-cloak ng-if="options.showUrl">访问地址</th>
+                <th style="width: 150px;">附件大小</th>
+                <th style="width: 80px">操作</th>
+            </tr>
+            <tr ng-cloak ng-show="!attachments || !attachments.length">
+                <td colspan="4" style="text-align: center;">无附件!</td>
+            </tr>
+            <tr bindonce ng-repeat="at in attachments">
+                <td style="text-align: left" bo-text="at.fileName"></td>
+                <td style="text-align: left" bo-text="at.id|linkAddr" ng-cloak bo-if="options.showUrl"></td>
+                <td bo-text="at.size | fileSize"></td>
+                <td>
+                    <a title="删除附件" ng-if="options.canDelete" ng-click="deleteAttachment($index,at.id)"
+                       style="cursor: pointer;"><i class="icons fork"></i></a>
+                    <a title="下载" ng-if="options.canDownload" ng-click="download(at.id)"
+                       style="cursor: pointer;margin-left: 8px;"><i class="icons download"></i></a>
+                    <a title="查看图片" ng-if="options.canDownload && at.isImage" ng-click="showImage(at.id,at.fileName)"
+                       style="cursor: pointer;margin-left: 8px;"><i class="icons view"></i></a>
+
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: right;" colspan="4">
+                    <span>可上传数量:</span>
+                    <span style="margin-left: 8px;">{{attachments.length || 0}}/{{options.maxFile || 1}}</span>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>

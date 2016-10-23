@@ -1,0 +1,322 @@
+.clearfix {
+    *zoom: 1
+}
+
+.rate-header * {
+    font: 12px/1.5 tahoma, arial, "\5b8b\4f53";
+}
+
+.rate-score, .rate-graph {
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+    vertical-align: top
+}
+
+.rate-score {
+    width: 75px;
+    padding: 0 20px;
+    border-right: 1px dotted #ddd;
+    text-align: center
+}
+
+.rate-score h4 {
+    color: #404040;
+    font-size: 12px;
+    font-weight: 100
+}
+
+.rate-score strong {
+    color: #f60;
+    font-family: arial;
+    font-size: 32px;
+    line-height: 32px;
+    margin: 0 2px
+}
+
+.rate-score p {
+    padding-top: 1px;
+    padding-left: 7px;
+    text-align: left
+}
+
+.rate-score .score-value-no, .rate-score .score-value-no em {
+    background: url(../images/satisfaction_star.png) no-repeat 0 -27px
+}
+
+.rate-score .score-value-no em, .rate-score .score-value-no {
+    display: block;
+    width: 60px;
+    height: 12px;
+    overflow: hidden
+}
+
+.rate-score .score-value-no em {
+    background-position: 0 -15px
+}
+
+.rate-score .score-value-5 em {
+    width: 60px
+}
+
+.rate-score .score-value-4d9 em {
+    width: 58px
+}
+
+.rate-score .score-value-4d8 em {
+    width: 57px
+}
+
+.rate-score .score-value-4d7 em {
+    width: 56px
+}
+
+.rate-score .score-value-4d6 em {
+    width: 55px
+}
+
+.rate-score .score-value-4d5 em {
+    width: 54px
+}
+
+.rate-score .score-value-4d4 em {
+    width: 53px
+}
+
+.rate-score .score-value-4d3 em {
+    width: 52px
+}
+
+.rate-score .score-value-4d2 em {
+    width: 51px
+}
+
+.rate-score .score-value-4d1 em {
+    width: 50px
+}
+
+.rate-score .score-value-4 em {
+    width: 49px
+}
+
+.rate-score .score-value-3d9 em {
+    width: 46px
+}
+
+.rate-score .score-value-3d8 em {
+    width: 45px
+}
+
+.rate-score .score-value-3d7 em {
+    width: 44px
+}
+
+.rate-score .score-value-3d6 em {
+    width: 43px
+}
+
+.rate-score .score-value-3d5 em {
+    width: 42px
+}
+
+.rate-score .score-value-3d4 em {
+    width: 41px
+}
+
+.rate-score .score-value-3d3 em {
+    width: 40px
+}
+
+.rate-score .score-value-3d2 em {
+    width: 39px
+}
+
+.rate-score .score-value-3d1 em {
+    width: 38px
+}
+
+.rate-score .score-value-3 em {
+    width: 37px
+}
+
+.rate-score .score-value-2d9 em {
+    width: 34px
+}
+
+.rate-score .score-value-2d8 em {
+    width: 33px
+}
+
+.rate-score .score-value-2d7 em {
+    width: 32px
+}
+
+.rate-score .score-value-2d6 em {
+    width: 31px
+}
+
+.rate-score .score-value-2d5 em {
+    width: 30px
+}
+
+.rate-score .score-value-2d4 em {
+    width: 29px
+}
+
+.rate-score .score-value-2d3 em {
+    width: 28px
+}
+
+.rate-score .score-value-2d2 em {
+    width: 27px
+}
+
+.rate-score .score-value-2d1 em {
+    width: 26px
+}
+
+.rate-score .score-value-2 em {
+    width: 25px
+}
+
+.rate-score .score-value-1d9 em {
+    width: 22px
+}
+
+.rate-score .score-value-1d8 em {
+    width: 21px
+}
+
+.rate-score .score-value-1d7 em {
+    width: 20px
+}
+
+.rate-score .score-value-1d6 em {
+    width: 19px
+}
+
+.rate-score .score-value-1d5 em {
+    width: 18px
+}
+
+.rate-score .score-value-1d4 em {
+    width: 17px
+}
+
+.rate-score .score-value-1d3 em {
+    width: 16px
+}
+
+.rate-score .score-value-1d2 em {
+    width: 15px
+}
+
+.rate-score .score-value-1d1 em {
+    width: 14px
+}
+
+.rate-score .score-value-1 em {
+    width: 13px
+}
+
+.rate-score .score-value-0d9 em {
+    width: 10px
+}
+
+.rate-score .score-value-0d8 em {
+    width: 9px
+}
+
+.rate-score .score-value-0d7 em {
+    width: 8px
+}
+
+.rate-score .score-value-0d6 em {
+    width: 7px
+}
+
+.rate-score .score-value-0d5 em {
+    width: 6px
+}
+
+.rate-score .score-value-0d4 em {
+    width: 5px
+}
+
+.rate-score .score-value-0d3 em {
+    width: 4px
+}
+
+.rate-score .score-value-0d2 em {
+    width: 3px
+}
+
+.rate-score .score-value-0d1 em {
+    width: 2px
+}
+
+.rate-score .score-value-0 em {
+    width: 1px
+}
+
+.rate-graph {
+    padding-left: 90px;
+    padding-top: 22px;
+    width: 450px
+}
+
+.graph-scroller, .rate-graph .graph-scroller em {
+    background: url(../images/satisfaction.png) no-repeat
+}
+
+.graph-scroller {
+    width: 400px;
+    height: 16px;
+    text-align: left;
+    position: relative
+}
+
+.rate-graph .graph-scroller span {
+    position: absolute;
+    height: 22px;
+    top: -24px;
+    left: 13px
+}
+
+.rate-graph .graph-scroller em {
+    background-position: -417px 2px;
+    color: #fff;
+    display: block;
+    float: right;
+    height: 23px;
+    width: 30px;
+    line-height: 19px;
+    text-align: center
+}
+
+.graph-desc {
+    padding-left: 40px;
+    margin-top: 5px;
+}
+
+.graph-desc li {
+    list-style: none;
+    float: left;
+    width: 80px;
+    text-align: center;
+    color: gray
+}
+
+.rate-header {
+    border: 1px solid #c8c8c8;
+    border-bottom: 0;
+    padding: 10px 0;
+    border-bottom: 1px solid #c8c8c8
+}
+
+.rate-with-compose .rate-header {
+    border-bottom: 1px solid #c8c8c8
+}
+
+.rate-header-tags .rate-graph {
+}

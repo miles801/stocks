@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.michael</groupId>
+        <artifactId>lrsoft</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <artifactId>web</artifactId>
+    <packaging>war</packaging>
+    <version>1.0.0-SNAPSHOT</version>
+    <name>web</name>
+    <dependencies>
+        <!-- 基础模块 -->
+        <dependency>
+            <groupId>com.michael</groupId>
+            <artifactId>base-web</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+
+        <!-- 定制化模块 -->
+        <dependency>
+            <groupId>com.michael</groupId>
+            <artifactId>lrsoft-stock</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>jstl</groupId>
+            <artifactId>jstl</artifactId>
+            <version>1.2</version>
+        </dependency>
+
+    </dependencies>
+
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <name>dev</name>
+            </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <id>p</id>
+            <properties>
+                <name>p</name>
+            </properties>
+        </profile>
+    </profiles>
+    <build>
+        <finalName>itsm</finalName>
+        <filters>
+            <filter>src/main/resources/config-${name}.properties</filter>
+        </filters>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>*/**</include>
+                </includes>
+                <excludes>
+                    <exclude>config-dev.properties</exclude>
+                    <exclude>config-p.properties</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>config.properties</include>
+                </includes>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+    </build>
+</project>

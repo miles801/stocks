@@ -1,0 +1,46 @@
+<style >
+    .aside-backdrop.am-fade {
+        background: none;
+    }
+
+    .aside-body table tr td {
+        border-right: 1px solid #DDDDDD;
+    }
+</style >
+<div class="aside" tabindex="-1" role="dialog" style="top:auto;bottom:24px;border:1px solid #e5e5e5;" >
+    <div class="aside-dialog" >
+        <div class="aside-content" >
+            <div class="aside-header" style="padding: 1px 15px;" >
+                <button type="button" class="close" ng-click="$hide()" >&times;</button >
+                <h4 class="aside-title" >待办工单</h4 >
+            </div >
+            <div class="aside-body" style="min-height: 80px;padding:0;max-width: 400px; width: 400px;height: 300px;">
+                <div class="table-responsive panel panel-table" >
+                    <table class="table table-striped table-hover last-tr-bottom-border" >
+                        <thead class="table-header" >
+                        <tr >
+                            <td >主题</td >
+                            <td style=" width: 10px; white-space: nowrap;text-align: center;vertical-align: middle;">
+                                类型
+                            </td>
+                            <td style=" width: 10px; white-space: nowrap;text-align: center;vertical-align: middle;">
+                                剩余时间
+                            </td>
+                        </tr >
+                        </thead >
+                        <tbody class="table-body" ng-cloak >
+                        <tr ng-show="data.length == 0" >
+                            <td colspan="4" class="text-center" >没有新任务！</td >
+                        </tr >
+                        <tr ng-repeat="foo in data" >
+                            <td >{{ foo.subject }}</td >
+                            <td >{{ foo.type }}</td >
+                            <td >{{ foo.remainDate | eccrmDatetime }}</td >
+                        </tr >
+                        </tbody >
+                    </table >
+                </div >
+            </div >
+        </div >
+    </div >
+</div >
