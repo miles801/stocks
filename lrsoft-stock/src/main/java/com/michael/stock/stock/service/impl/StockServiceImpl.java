@@ -7,6 +7,7 @@ import com.michael.base.parameter.service.ParameterContainer;
 import com.michael.core.SystemContainer;
 import com.michael.core.beans.BeanWrapBuilder;
 import com.michael.core.beans.BeanWrapCallback;
+import com.michael.core.hibernate.HibernateUtils;
 import com.michael.core.hibernate.validator.ValidatorUtils;
 import com.michael.core.pager.PageVo;
 import com.michael.poi.adapter.AnnotationCfgAdapter;
@@ -150,11 +151,12 @@ public class StockServiceImpl implements StockService, BeanWrapCallback<Stock, S
     @Override
     public Map<String, Object> syncStock() {
         // 从指定网站获取列表，然后解析
-        String url = "http://www.bestopview.com/stocklist.html";
+        String url = "http://quote.eastmoney.com/stocklist.html";
         HttpClient httpClient = new DefaultHttpClient();
         HttpGet httpget = new HttpGet(url);
         List<String> codes = stockDao.queryCode();
-        int i = 0;
+        Session session = HibernateUtils.getSession(false);
+        int i = 0;  // 添加的总个数
         try {
             HttpResponse response = httpClient.execute(httpget);
             int status = response.getStatusLine().getStatusCode();
@@ -162,7 +164,7 @@ public class StockServiceImpl implements StockService, BeanWrapCallback<Stock, S
                 InputStream input = response.getEntity().getContent();
                 String content = IOUtils.toString(input, "gb2312");//新浪股票接口使用的是GBK编码
                 input.close();
-                Pattern pattern = Pattern.compile("<li><a href=.+>(.+)\\((\\d{6})\\)</a></li>");
+                Pattern pattern = Pattern.compile("<li><a .* href=.+>(.+)\\((\\d{6})\\)</a></li>");
                 Matcher matcher = pattern.matcher(content);
                 while (matcher.find()) {
                     String code = matcher.group(2);
@@ -174,11 +176,17 @@ public class StockServiceImpl implements StockService, BeanWrapCallback<Stock, S
                     stock.setCode(code);
                     stock.setName(name);
                     stockDao.save(stock);
+                    codes.add(code);
                     i++;
+                    if (i % 20 == 0) {
+                        session.flush();
+                        session.clear();
+                    }
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
+            Assert.isTrue(false, e.getMessage());
         }
         httpClient.getConnectionManager().shutdown();
         Map<String, Object> map = new HashMap<>();
