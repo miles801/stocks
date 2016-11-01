@@ -1,14 +1,14 @@
 /**
- * 数据库列表
+ * Fn数据库列表
  * Created by Michael .
  */
 (function (window, angular, $) {
-    var app = angular.module('stock.db.dB.list', [
+    var app = angular.module('stock.db.fnDB.list', [
         'eccrm.angular',
         'eccrm.angularstrap',
-        'stock.db.dB'
+        'stock.db.fnDB'
     ]);
-    app.controller('Ctrl', function ($scope, CommonUtils, AlertFactory, ModalFactory, DBService, DBParam) {
+    app.controller('Ctrl', function ($scope, CommonUtils, AlertFactory, ModalFactory, FnDBService, FnDBParam) {
         var defaults = {}; // 默认查询条件
 
         $scope.condition = angular.extend({}, defaults);
@@ -20,9 +20,9 @@
         };
 
 
-        // 参数：类型
+        // 参数：所属数据库
         $scope.types = [{name: '全部'}];
-        DBParam.type(function (o) {
+        FnDBParam.type(function (o) {
             $scope.types.push.apply($scope.types, o);
         });
 
@@ -32,11 +32,10 @@
         };
         $scope.pager = {
             fetch     : function () {
-                var param = angular.extend({start: this.start, limit: this.limit}, $scope.condition);
+                var param = angular.extend({}, {start: this.start, limit: this.limit}, $scope.condition);
                 $scope.beans = [];
-                $scope.items && ($scope.items.length = 0);
                 return CommonUtils.promise(function (defer) {
-                    var promise = DBService.pageQuery(param, function (data) {
+                    var promise = FnDBService.pageQuery(param, function (data) {
                         param = null;
                         $scope.beans = data.data || {total: 0};
                         defer.resolve($scope.beans);
@@ -62,7 +61,7 @@
                 scope   : $scope,
                 content : '<span class="text-danger">数据一旦删除将不可恢复，请确认!</span>',
                 callback: function () {
-                    var promise = DBService.deleteByIds({ids: id}, function () {
+                    var promise = FnDBService.deleteByIds({ids: id}, function () {
                         AlertFactory.success('删除成功!');
                         $scope.query();
                     });
@@ -74,8 +73,8 @@
         // 新增
         $scope.add = function () {
             CommonUtils.addTab({
-                title   : '新增数据库',
-                url     : '/stock/db/dB/add',
+                title   : '新增Fn数据库',
+                url     : '/stock/db/fnDB/add',
                 onUpdate: $scope.query
             });
         };
@@ -83,8 +82,8 @@
         // 更新
         $scope.modify = function (id) {
             CommonUtils.addTab({
-                title   : '更新数据库',
-                url     : '/stock/db/dB/modify?id=' + id,
+                title   : '更新Fn数据库',
+                url     : '/stock/db/fnDB/modify?id=' + id,
                 onUpdate: $scope.query
             });
         };
@@ -92,8 +91,8 @@
         // 查看明细
         $scope.view = function (id) {
             CommonUtils.addTab({
-                title: '查看数据库',
-                url  : '/stock/db/dB/detail?id=' + id
+                title: '查看Fn数据库',
+                url  : '/stock/db/fnDB/detail?id=' + id
             });
         };
 
@@ -107,7 +106,7 @@
             var o = angular.extend({}, $scope.condition);
             o.start = null;
             o.limit = null;
-            window.open(CommonUtils.contextPathURL('/stock/db/dB/export?' + encodeURI(encodeURI($.param(o)))));
+            window.open(CommonUtils.contextPathURL('/stock/db/fnDB/export?' + encodeURI(encodeURI($.param(o)))));
         };
 
     });

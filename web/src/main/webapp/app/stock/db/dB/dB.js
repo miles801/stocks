@@ -19,7 +19,7 @@
             update: {method: 'POST', params: {method: 'update'}, isArray: false},
 
             // 不带分页的列表查询
-            query: {method: 'POST', params: {method: 'query'}, isArray: false},
+            query: {method: 'POST', params: {method: 'query', orderBy: 'dbDate', reverse: false}, isArray: false},
 
             // 根据id查询信息
             get: {method: 'GET', params: {method: 'get', id: '@id'}, isArray: false},

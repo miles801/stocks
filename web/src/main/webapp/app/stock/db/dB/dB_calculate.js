@@ -6,19 +6,43 @@
     var app = angular.module('stock.db.dB.calculate', [
         'eccrm.angular',
         'eccrm.angularstrap',
+        'stock.db.fnDB',
         'stock.db.dB'
     ]);
-    app.controller('Ctrl', function ($scope, CommonUtils, AlertFactory, ModalFactory, DBService, DBParam) {
-        var defaults = {}; // 默认查询条件
+    app.controller('Ctrl', function ($scope, $q, CommonUtils, AlertFactory, ModalFactory, DBService, DBParam, FnDBService) {
 
-        $scope.condition = angular.extend({}, defaults);
-
-        // 重置查询条件并查询
-        $scope.reset = function () {
-            $scope.condition = angular.extend({}, defaults);
-            $scope.query();
+        $scope.height = $('body').height() - 40;
+        $scope.condition = {
+            type    : '1',
+            days    : 10,
+            fnDateGe: moment().add(-5, 'y').format('YYYY-MM-DD'),
+            fnDateLt: moment().format('YYYY-MM-DD')
         };
 
+        var char1 = echarts.init(document.getElementById('char1'));
+        var charOption = {
+            title  : {
+                text: '集团数分布'
+            },
+            tooltip: {
+                trigger    : 'axis',
+                axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                    type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                }
+            },
+            xAxis  : {
+                type: 'category',
+                data: []
+            },
+            yAxis  : {
+                type: 'value'
+            },
+            series : [
+                {name: '集团数', type: 'bar', data: [0], label: {normal: {show: true, position: 'inside'}}}
+            ]
+        };
+
+        $scope.groupCount = 0;    // 集团数
 
         // 参数：类型
         $scope.types = [{name: '全部'}];
@@ -28,85 +52,56 @@
 
         // 查询数据
         $scope.query = function () {
-            $scope.pager.query();
-        };
-        $scope.pager = {
-            fetch     : function () {
-                var param = angular.extend({}, {start: this.start, limit: this.limit}, $scope.condition);
-                $scope.beans = [];
-                return CommonUtils.promise(function (defer) {
-                    var promise = DBService.pageQuery(param, function (data) {
-                        param = null;
-                        $scope.beans = data.data || {total: 0};
-                        defer.resolve($scope.beans);
-                    });
-                    CommonUtils.loading(promise, 'Loading...');
-                });
-            },
-            finishInit: function () {
-                this.query();
-            }
-        };
-
-        // 删除或批量删除
-        $scope.remove = function (id) {
-            if (!id) {
-                var ids = [];
-                angular.forEach($scope.items || [], function (o) {
-                    ids.push(o.id);
-                });
-                id = ids.join(',');
-            }
-            ModalFactory.confirm({
-                scope   : $scope,
-                content : '<span class="text-danger">数据一旦删除将不可恢复，请确认!</span>',
-                callback: function () {
-                    var promise = DBService.deleteByIds({ids: id}, function () {
-                        AlertFactory.success('删除成功!');
-                        $scope.query();
-                    });
-                    CommonUtils.loading((promise));
-                }
-            });
-        };
-
-        // 新增
-        $scope.add = function () {
-            CommonUtils.addTab({
-                title   : '新增数据库',
-                url     : '/stock/db/dB/add',
-                onUpdate: $scope.query
-            });
-        };
-
-        // 更新
-        $scope.modify = function (id) {
-            CommonUtils.addTab({
-                title   : '更新数据库',
-                url     : '/stock/db/dB/modify?id=' + id,
-                onUpdate: $scope.query
-            });
-        };
-
-        // 查看明细
-        $scope.view = function (id) {
-            CommonUtils.addTab({
-                title: '查看数据库',
-                url  : '/stock/db/dB/detail?id=' + id
-            });
-        };
-
-
-        // 导出数据
-        $scope.exportData = function () {
-            if ($scope.pager.total < 1) {
-                AlertFactory.error('未获取到可以导出的数据!请先查询出数据!');
+            if ($scope.form.$invalid) {
                 return;
             }
-            var o = angular.extend({}, $scope.condition);
-            o.start = null;
-            o.limit = null;
-            window.open(CommonUtils.contextPathURL('/stock/db/dB/export?' + encodeURI(encodeURI($.param(o)))));
+            $scope.load({});
+            var promise = DBService.query($scope.condition, function (o) {
+                var xAxis = [];     // x横坐标，值为时间
+                var series = [];    // 图表的具体数据
+                $scope.dates = o.data || [];
+                var promise = [];
+                angular.forEach($scope.dates, function (d) {
+                    var x = moment(d.dbDate).format('YYYY-MM-DD');
+                    xAxis.push(x);
+                    var condition = angular.extend({originDate: d.dbDate}, $scope.condition);
+                    // 查询每一个日期计算出来的Fn日期集合
+                    var defer = FnDBService.query(condition, function (foo) {
+                        d.data = foo.data || [];
+                        // 计算集团数
+                        var date = null;
+                        var count = 0;
+                        angular.forEach(d.data || [], function (tmp) {
+                            var tmpTime = moment(tmp.fnDate);
+                            if (date != null) {
+                                if (tmpTime.diff(date, 'days', true) <= $scope.condition.days) {
+                                    count++;
+                                }
+                            }
+                            date = tmpTime;
+                        });
+                        series.push(count);
+                        d.count = count;
+                    });
+                    promise.push(defer);
+                });
+                $q.all(promise).then(function () {
+                    CommonUtils.delay(function () {
+                        // 这里已经获取到所有的
+                        charOption.xAxis.data = xAxis;
+                        charOption.series[0].data = series;
+                        char1.setOption(charOption);
+                    }, 300);
+                });
+            });
+            CommonUtils.loading(promise);
+        };
+
+        $scope.checked = null;
+        $scope.load = function (foo) {
+            $scope.checked = foo.id;        // 用于区分是哪一个对象被选择
+            $scope.groupCount = foo.count;  // 集团数
+            $scope.beans1 = foo.data;       // Fn数据列表
         };
 
     });

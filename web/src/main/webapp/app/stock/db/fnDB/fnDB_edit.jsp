@@ -1,9 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%String contextPath = request.getContextPath();%><!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>数据库编辑</title>
+    <title>Fn数据库编辑</title>
     <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8"/>
     <link rel="stylesheet" type="text/css" href="<%=contextPath%>/vendor/bootstrap-v3.0/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="<%=contextPath%>/style/standard/css/eccrm-common-new.css">
@@ -16,7 +16,7 @@
     </script>
 </head>
 <body>
-<div class="main" ng-app="stock.db.dB.edit" ng-controller="Ctrl" style="overflow: auto;">
+<div class="main" ng-app="stock.db.fnDB.edit" ng-controller="Ctrl" style="overflow: auto;">
     <div class="block">
         <div class="block-header">
                 <span class="header-button">
@@ -38,28 +38,32 @@
                     <div class="row float">
                         <div class="item w300">
                             <div class="form-label w100">
-                                <label validate-error="form.type">类型:</label>
+                                <label>所属数据库:</label>
                             </div>
-                            <select class="w200" ng-model="beans.type" name="type" validate validate-required ng-options="foo.value as foo.name for foo in types"
-                                    <c:if test="${pageType ne 'add'}">disabled</c:if>> </select>
-
+                            <input type="text" class="w200" ng-model="beans.type" validate validate-required maxlength="40"/>
                         </div>
                         <div class="item w300">
                             <div class="form-label w100">
-                                <label validate-error="form.dbDate">时间:</label>
+                                <label>日期:</label>
                             </div>
                             <div class="w200 pr">
-                                <input type="text" class="w200" ng-model="beans.dbDate" eccrm-my97="{}" readonly placeholder="点击选择日期" validate validate-required name="dbDate"/>
-                                <span class="add-on"><i class="icons icon clock" ng-click="beans.dbDate=null" title="点击清除日期"></i></span>
+                                <input type="text" class="w200" ng-model="beans.fnDate" eccrm-my97="{}" readonly placeholder="点击选择日期"/>
+                                <span class="add-on"><i class="icons icon clock" ng-click="beans.fnDate=null" title="点击清除日期"></i></span>
                             </div>
                         </div>
-                        <div class="item w300" ng-cloak ng-if="beans.type=='fn'">
+                        <div class="item w300">
                             <div class="form-label w100">
-                                <label>日期2:</label>
+                                <label>fn系数:</label>
+                            </div>
+                            <input type="text" class="w200" ng-model="beans.fn" validate validate-required maxlength=""/>
+                        </div>
+                        <div class="item w300">
+                            <div class="form-label w100">
+                                <label>原始日期:</label>
                             </div>
                             <div class="w200 pr">
-                                <input type="text" class="w200" ng-model="beans.dbDate2" eccrm-my97="{}" readonly placeholder="点击选择日期"/>
-                                <span class="add-on"><i class="icons icon clock" ng-click="beans.dbDate2=null" title="点击清除日期"></i></span>
+                                <input type="text" class="w200" ng-model="beans.originDate" eccrm-my97="{}" readonly placeholder="点击选择日期"/>
+                                <span class="add-on"><i class="icons icon clock" ng-click="beans.originDate=null" title="点击清除日期"></i></span>
                             </div>
                         </div>
                     </div>
@@ -97,6 +101,6 @@
     </div>
 </div>
 </body>
-<script type="text/javascript" src="<%=contextPath%>/app/stock/db/dB/dB.js"></script>
-<script type="text/javascript" src="<%=contextPath%>/app/stock/db/dB/dB_edit.js"></script>
+<script type="text/javascript" src="<%=contextPath%>/app/stock/db/fnDB/fnDB.js"></script>
+<script type="text/javascript" src="<%=contextPath%>/app/stock/db/fnDB/fnDB_edit.js"></script>
 </html>

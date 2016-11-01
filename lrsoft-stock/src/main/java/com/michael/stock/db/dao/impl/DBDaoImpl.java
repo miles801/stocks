@@ -6,6 +6,7 @@ import com.michael.stock.db.bo.DBBo;
 import com.michael.stock.db.dao.DBDao;
 import com.michael.stock.db.domain.DB;
 import org.hibernate.Criteria;
+import org.hibernate.criterion.Order;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
 
@@ -33,6 +34,7 @@ public class DBDaoImpl extends HibernateDaoHelper implements DBDao {
     public List<DB> query(DBBo bo) {
         Criteria criteria = createCriteria(DB.class);
         initCriteria(criteria, bo);
+        criteria.addOrder(Order.asc("dbDate"));
         return criteria.list();
     }
 
