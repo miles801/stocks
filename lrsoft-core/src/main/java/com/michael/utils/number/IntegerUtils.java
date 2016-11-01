@@ -172,4 +172,27 @@ public class IntegerUtils {
         }
         return times;
     }
+
+
+    /**
+     * 菲波那切数列
+     *
+     * @param n 系数，必须大于0
+     */
+    public static int fn(int n) {
+        Assert.isTrue(n > 0, "系数必须大于0!");
+        if (n == 1 || n == 2) {
+            return 1;
+        }
+        int result = 0;
+        int a = 1;
+        int b = 1;
+        for (int i = 3; i <= n; i++) {
+            result = a + b;
+            a = b;
+            b = result;
+        }
+        return result;
+    }
+
 }
