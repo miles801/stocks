@@ -892,8 +892,11 @@
                             this.total = 0;
                         },
                         initPaginationInfo: function (total) {
-                            this.total = total || 0;
-                            this.totalPage = Math.ceil(total / this.limit) || 1;
+                            // 仅仅在第一页的时候设置total，否则都不设置
+                            if (this.start == 0) {
+                                this.total = total || 0;
+                                this.totalPage = Math.ceil(total / this.limit) || 1;
+                            }
                         },
                         finishInit: $.noop,//初始化完成的回调
                         load: function () {
