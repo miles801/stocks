@@ -43,15 +43,6 @@
                                 <span class="add-on"><i class="icons icon clock" ng-click="condition.dbDate=null" title="点击清除日期"></i></span>
                             </div>
                         </div>
-                        <div class="item w300">
-                            <div class="form-label w100">
-                                <label>日期2:</label>
-                            </div>
-                            <div class="w200 pr">
-                                <input type="text" class="w200" ng-model="condition.dbDate2" eccrm-my97="{}" readonly placeholder="点击选择日期"/>
-                                <span class="add-on"><i class="icons icon clock" ng-click="condition.dbDate2=null" title="点击清除日期"></i></span>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -80,13 +71,14 @@
                                 <td style="width: 20px;">序号</td>
                                 <td>类型</td>
                                 <td>时间</td>
-                                <td>日期2</td>
+                                <td style="width: 120px;">最后更新</td>
+                                <td style="width: 120px;">最后更新时间</td>
                                 <td>操作</td>
                             </tr>
                             </thead>
                             <tbody class="table-body">
                             <tr ng-show="!beans || !beans.total">
-                                <td colspan="6" class="text-center">没有查询到数据！</td>
+                                <td colspan="7" class="text-center">没有查询到数据！</td>
                             </tr>
                             <tr bindonce ng-repeat="foo in beans.data" ng-cloak>
                                 <td><input type="checkbox" ng-model="foo.isSelected"/></td>
@@ -95,7 +87,8 @@
                                     <a ng-click="view(foo.id)" bo-text="foo.typeName" class="cp" title="点击查看详情"></a>
                                 </td>
                                 <td bo-text="foo.dbDate|eccrmDate"></td>
-                                <td bo-text="foo.dbDate2|eccrmDate"></td>
+                                <td bo-text="foo.modifierName"></td>
+                                <td bo-text="foo.modifiedDatetime|eccrmDatetime"></td>
                                 <td class="text-left">
                                     <a class="btn-op blue" ng-click="modify(foo.id);">编辑</a>
                                     <a class="btn-op red" ng-click="remove(foo.id);">删除</a>
