@@ -6,9 +6,9 @@ import com.michael.base.attachment.vo.AttachmentVo;
 import com.michael.base.parameter.service.ParameterContainer;
 import com.michael.core.beans.BeanWrapBuilder;
 import com.michael.core.beans.BeanWrapCallback;
-import com.michael.core.hibernate.HibernateUtils;
 import com.michael.core.hibernate.validator.ValidatorUtils;
 import com.michael.core.pager.PageVo;
+import com.michael.core.pager.Pager;
 import com.michael.stock.stock.bo.StockDayBo;
 import com.michael.stock.stock.dao.StockDayDao;
 import com.michael.stock.stock.domain.StockDay;
@@ -25,7 +25,10 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.LinkedList;
 import java.util.List;
+
+import static com.michael.core.hibernate.HibernateUtils.getSession;
 
 /**
  * @author Michael
@@ -55,9 +58,10 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
     @Override
     public PageVo pageQuery(StockDayBo bo) {
         PageVo vo = new PageVo();
-        Long total = stockDayDao.getTotal(bo);
-        vo.setTotal(total);
-        if (total == null || total == 0) return vo;
+        if (Pager.getStart() == 0) {
+            Long total = stockDayDao.getTotal(bo);
+            vo.setTotal(total);
+        }
         List<StockDay> stockDayList = stockDayDao.pageQuery(bo);
         List<StockDayVo> vos = BeanWrapBuilder.newInstance()
                 .setCallback(this)
@@ -92,10 +96,11 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
     }
 
 
+    @SuppressWarnings("unchecked")
     public void importData(String[] attachmentIds) {
         Logger logger = Logger.getLogger(StockDayServiceImpl.class);
         Assert.notEmpty(attachmentIds, "数据导入失败!数据文件不能为空，请重试!");
-        Session session = HibernateUtils.getSession(false);
+        Session session = getSession(false);
         int index = 0;
         int x = 1;
         for (String id : attachmentIds) {
@@ -106,8 +111,24 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
             logger.info(String.format("开始导入数据%d/%d....", x++, attachmentIds.length));
             try {
                 List<String> content = FileUtils.readLines(file);
+                LinkedList<StockDay> stocks = new LinkedList<>();  // 用于保存最近的6条记录
+                for (int i = 0; i < 5; i++) {
+                    StockDay sd = new StockDay();
+                    sd.setP1(0d);
+                    sd.setP2(0d);
+                    sd.setP3(0d);
+                    sd.setP4(0d);
+                    sd.setP5(0d);
+                    sd.setYesterdayClosePrice(0d);
+                    sd.setKey("000000");
+                    sd.setKey3("000");
+                    sd.setClosePrice(0d);
+                    sd.setUpdown(0d);
+                    stocks.add(sd);
+                }
                 final int size = content.size();
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+
                 for (int i = 1; i < size; i++) {
                     String line = content.get(i).replaceAll("\"", "");
                     String[] arr = line.split(",");
@@ -115,7 +136,38 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
                     stockDay.setCode(arr[0]);
                     stockDay.setName(arr[1]);
                     stockDay.setBusinessDate(sdf.parse(arr[2]));
-                    stockDay.setKey(arr[3]);
+                    stockDay.setClosePrice(Double.parseDouble(arr[3]));
+                    stockDay.setOpenPrice(Double.parseDouble(arr[4]));
+                    stockDay.setLowPrice(Double.parseDouble(arr[5]));
+                    stockDay.setHighPrice(Double.parseDouble(arr[6]));
+                    StockDay last = stocks.getLast();
+                    // 今日涨跌
+                    stockDay.setUpdown(stockDay.getClosePrice() - last.getClosePrice());
+                    // 第1日
+                    stockDay.setKey(last.getKey().substring(1) + (stockDay.getUpdown() > 0 ? "1" : "0"));
+                    stockDay.setKey3(last.getKey3().substring(1) + (stockDay.getUpdown() > 0 ? "1" : "0"));
+                    stockDay.setDate3(stocks.get(3).getBusinessDate());
+                    stockDay.setDate6(stocks.get(0).getBusinessDate());
+                    stockDay.setYesterdayClosePrice(last.getClosePrice());
+                    stockDay.setYang(stockDay.getOpenPrice() > stockDay.getClosePrice());   // 阴阳
+                    if (last.getClosePrice() != 0d) {
+                        stockDay.setP1((stockDay.getClosePrice() - last.getClosePrice()) / last.getClosePrice());
+                        // 第2日
+                        stockDay.setP2((stockDay.getClosePrice() - stocks.get(4).getClosePrice()) / last.getClosePrice());
+                        // 第3日
+                        stockDay.setP3((stockDay.getClosePrice() - stocks.get(3).getClosePrice()) / last.getClosePrice());
+                        // 第4日
+                        stockDay.setP4((stockDay.getClosePrice() - stocks.get(2).getClosePrice()) / last.getClosePrice());
+                        // 第5日
+                        stockDay.setP5((stockDay.getClosePrice() - stocks.get(1).getClosePrice()) / last.getClosePrice());
+                        // 下一日高低
+                        last.setNextHigh(stockDay.getHighPrice() - last.getClosePrice() / last.getClosePrice());
+                        last.setNextLow(stockDay.getLowPrice() - last.getClosePrice() / last.getClosePrice());
+                        session.update(last);
+                    }
+
+                    stocks.remove(0);
+                    stocks.add(stockDay);
                     session.save(stockDay);
                     index++;
                     if (index % 20 == 0) {
@@ -130,6 +182,7 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
             }
             logger.info(String.format("导入数据成功,用时(%d)s，共导入%d条数据....", (System.currentTimeMillis() - start) / 1000, index));
         }
+        // fixme 触发周K的定时器
     }
 
     @Override
