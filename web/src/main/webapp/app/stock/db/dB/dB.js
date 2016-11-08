@@ -24,6 +24,9 @@
             // 根据id查询信息
             get: {method: 'GET', params: {method: 'get', id: '@id'}, isArray: false},
 
+            // 计算
+            calculate: {method: 'GET', params: {method: 'calculate', type: '@type'}, isArray: false},
+
             // 分页查询
             pageQuery: {
                 method : 'POST',

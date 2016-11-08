@@ -14,6 +14,7 @@
     <script type="text/javascript" src="<%=contextPath%>/static/ycrl/javascript/angular-all.js"></script>
     <script type="text/javascript" src="<%=contextPath%>/static/ycrl/javascript/angular-strap-all.js"></script>
     <script type="text/javascript" src="<%=contextPath%>/vendor/My97DatePicker/WdatePicker.js"></script>
+    <script type="text/javascript" src="<%=contextPath%>/vendor/moment/moment.min.js" class="js"></script>
     <script>
         window.angular.contextPathURL = '<%=contextPath%>';
     </script>
@@ -104,6 +105,7 @@
                             <tr>
                                 <td class="width-min">序号</td>
                                 <td>股票编号</td>
+                                <td>交易时间</td>
                                 <td>6线组合</td>
                                 <td>日期段</td>
                                 <td>第七日_h</td>
@@ -118,11 +120,12 @@
                             </thead>
                             <tbody class="table-body">
                             <tr ng-show="pager.total==0">
-                                <td colspan="12" class="text-center">没有查询到数据！</td>
+                                <td colspan="13" class="text-center">没有查询到数据！</td>
                             </tr>
                             <tr bindonce ng-repeat="foo in beans.data" ng-cloak>
                                 <td bo-text="pager.start+$index+1"></td>
                                 <td bo-text="foo.code"></td>
+                                <td bo-text="foo.businessDate|eccrmDate"></td>
                                 <td bo-text="foo.key"></td>
                                 <td >
                                     <span>{{foo.date6|date:'yyyyMMdd'}}</span>

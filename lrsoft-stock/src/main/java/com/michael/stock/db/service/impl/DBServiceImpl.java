@@ -16,8 +16,9 @@ import com.michael.stock.db.vo.DBVo;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+
+import static com.michael.core.hibernate.HibernateUtils.getSession;
 
 /**
  * @author Michael
@@ -47,7 +48,7 @@ public class DBServiceImpl implements DBService, BeanWrapCallback<DB, DBVo> {
     @Override
     public void update(DB dB) {
         validate(dB);
-        Date originDate = (Date) HibernateUtils.getSession(false)
+        Date originDate = (Date) getSession(false)
                 .createQuery("select d.dbDate from " + DB.class.getName() + " d where d.id=?")
                 .setParameter(0, dB.getId())
                 .uniqueResult();
@@ -91,6 +92,78 @@ public class DBServiceImpl implements DBService, BeanWrapCallback<DB, DBVo> {
                 dBDao.delete(db);
             }
         }
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<Map<String, Object>> calculate(int type) {
+        // 加载所有的日期
+        List<Date> dates = HibernateUtils.getSession(false)
+                .createQuery("select distinct o.dbDate from " + DB.class.getName() + " o order by o.dbDate asc")
+                .list();
+        List<Map<String, Object>> data = new ArrayList<>();
+        final int size = dates.size();
+        if (size < type + 1) {
+            return data;
+        }
+        if (type == 3) {
+            int f1 = 0, f2 = 1, f3 = 2, f4 = 3;
+            for (; f1 < size - 3; f1++) {   // 第一层游标
+                long d1 = dates.get(f1).getTime();
+                for (f2 = f1 + 1; f2 < size - 2; f2++) {
+                    long d2 = dates.get(f2).getTime();
+                    for (f3 = f2 + 1; f3 < size - 1; f3++) {
+                        long d3 = dates.get(f3).getTime();
+                        for (f4 = f3 + 1; f4 < size; f4++) {
+                            long d4 = dates.get(f4).getTime();
+                            if (d1 == d2 + d3 - d4) {
+                                Map<String, Object> map = new HashMap<>();
+                                map.put("bk", d1);
+                                map.put("a1", d2);
+                                map.put("a2", d3);
+                                map.put("a3", d4);
+                                data.add(map);
+                                break;
+                            }
+                            if (d1 > d2 + d3 - d4) {
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        } else if (type == 4) {
+            int f1 = 0, f2 = 1, f3 = 2, f4 = 3, f5 = 4;
+            for (; f1 < size - 4; f1++) {   // 第一层游标
+                long d1 = dates.get(f1).getTime();
+                for (f2 = f1 + 1; f2 < size - 3; f2++) {
+                    long d2 = dates.get(f2).getTime();
+                    for (f3 = f2 + 1; f3 < size - 2; f3++) {
+                        long d3 = dates.get(f3).getTime();
+                        for (f4 = f3 + 1; f4 < size - 1; f4++) {
+                            long d4 = dates.get(f4).getTime();
+                            for (f5 = f4 + 1; f5 < size; f5++) {
+                                long d5 = dates.get(f5).getTime();
+                                if (d1 == d2 + d3 + d4 - f5) {
+                                    Map<String, Object> map = new HashMap<>();
+                                    map.put("bk", d1);
+                                    map.put("a1", d2);
+                                    map.put("a2", d3);
+                                    map.put("a3", d4);
+                                    map.put("a4", d5);
+                                    data.add(map);
+                                    break;
+                                }
+                                if (d1 > d2 + d3 + d4 - d5) {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return data;
     }
 
     @Override

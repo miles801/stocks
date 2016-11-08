@@ -6,6 +6,7 @@ import com.michael.stock.db.domain.DB;
 import com.michael.stock.db.vo.DBVo;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Michael
@@ -50,4 +51,10 @@ public interface DBService {
     void deleteByIds(String[] ids);
 
 
+    /**
+     * 计算
+     *
+     * @param type 运算方式
+     */
+    List<Map<String, Object>> calculate(int type);
 }

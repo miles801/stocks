@@ -18,6 +18,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Michael
@@ -99,6 +100,13 @@ public class DBCtrl extends BaseController {
         String[] idArr = ids.split(",");
         dBService.deleteByIds(idArr);
         GsonUtils.printSuccess(response);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/calculate", params = {"type"}, method = RequestMethod.GET)
+    public void calculate(int type, HttpServletResponse response) {
+        List<Map<String, Object>> data = dBService.calculate(type);
+        GsonUtils.printData(response, data);
     }
 
 

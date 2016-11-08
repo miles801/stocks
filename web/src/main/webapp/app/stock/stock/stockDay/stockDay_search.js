@@ -26,8 +26,11 @@
         };
         $scope.pager = {
             fetch: function () {
-                var param = angular.extend({}, {start: this.start, limit: this.limit}, $scope.condition);
+                var param = angular.extend({start: this.start, limit: this.limit}, $scope.condition);
                 $scope.beans = [];
+                if(param.businessDateLt) {
+                    param.businessDateLt = moment(param.businessDateLt).add(1, 'd').format('YYYY-MM-DD');
+                }
                 return CommonUtils.promise(function (defer) {
                     var promise = StockDayService.pageQuery(param, function (data) {
                         param = null;
