@@ -32,6 +32,7 @@ import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Michael
@@ -43,7 +44,7 @@ public class StockDayCtrl extends BaseController {
     private StockDayService stockDayService;
 
 
-    @RequestMapping(value = {""}, method=RequestMethod.GET )
+    @RequestMapping(value = {""}, method = RequestMethod.GET)
     public String toList() {
         return "stock/stock/stockDay/stockDay_list";
     }
@@ -119,7 +120,7 @@ public class StockDayCtrl extends BaseController {
     @RequestMapping(value = "/export", method = RequestMethod.GET)
     public String export(HttpServletRequest request, HttpServletResponse response) {
         Gson gson = new GsonBuilder().registerTypeAdapter(Date.class, new DateStringConverter("yyyy-MM-dd HH:mm:ss"))
-            .create();
+                .create();
         StockDayBo bo = GsonUtils.wrapDataToEntity(request, StockDayBo.class);
         List<StockDayVo> data = stockDayService.query(bo);
         String json = gson.toJson(data);
@@ -128,7 +129,7 @@ public class StockDayCtrl extends BaseController {
         o.add("c", element);
         String disposition = null;//
         try {
-            disposition = "attachment;filename=" + URLEncoder.encode("日K数据"+new SimpleDateFormat("yyyyMMdd").format(new Date())+".xlsx", "UTF-8");
+            disposition = "attachment;filename=" + URLEncoder.encode("日K数据" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + ".xlsx", "UTF-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -178,5 +179,23 @@ public class StockDayCtrl extends BaseController {
     public void importData(@RequestParam String attachmentIds, HttpServletResponse response) {
         stockDayService.importData(attachmentIds.split(","));
         GsonUtils.printSuccess(response);
+    }
+
+    // 3线分析报告
+    @ResponseBody
+    @RequestMapping(value = "/report3", method = RequestMethod.POST)
+    public void report3(HttpServletRequest request, HttpServletResponse response) {
+        StockDayBo bo = GsonUtils.wrapDataToEntity(request, StockDayBo.class);
+        List<Map<String, Object>> data = stockDayService.report3(bo);
+        GsonUtils.printData(response, data);
+    }
+
+    // 6线分析报告
+    @ResponseBody
+    @RequestMapping(value = "/report6", method = RequestMethod.POST)
+    public void report6(HttpServletRequest request, HttpServletResponse response) {
+        StockDayBo bo = GsonUtils.wrapDataToEntity(request, StockDayBo.class);
+        List<Map<String, Object>> data = stockDayService.report6(bo);
+        GsonUtils.printData(response, data);
     }
 }

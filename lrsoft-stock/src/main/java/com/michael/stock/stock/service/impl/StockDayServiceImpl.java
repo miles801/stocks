@@ -6,6 +6,7 @@ import com.michael.base.attachment.vo.AttachmentVo;
 import com.michael.base.parameter.service.ParameterContainer;
 import com.michael.core.beans.BeanWrapBuilder;
 import com.michael.core.beans.BeanWrapCallback;
+import com.michael.core.hibernate.HibernateUtils;
 import com.michael.core.hibernate.validator.ValidatorUtils;
 import com.michael.core.pager.PageVo;
 import com.michael.core.pager.Pager;
@@ -14,9 +15,12 @@ import com.michael.stock.stock.dao.StockDayDao;
 import com.michael.stock.stock.domain.StockDay;
 import com.michael.stock.stock.service.StockDayService;
 import com.michael.stock.stock.vo.StockDayVo;
+import com.michael.utils.string.StringUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.transform.Transformers;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -25,8 +29,10 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import static com.michael.core.hibernate.HibernateUtils.getSession;
 
@@ -95,6 +101,66 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
         return vos;
     }
 
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<Map<String, Object>> report3(StockDayBo bo) {
+        Session session = HibernateUtils.getSession(false);
+        String sql = "select code,s_key3 key1," +
+                "sum(case isYang when 1 then 1 else 0 end) yang," +
+                "sum(case isYang when 0 then 1 else 0 end) yin," +
+                "sum(highPrice) high," +
+                "sum(lowPrice) low from stock_day where 1=1 ";
+        List<Object> params = new ArrayList<>();
+        if (bo != null) {
+            if (StringUtils.isNotEmpty(bo.getKey3())) {
+                sql += " and s_key3=? ";
+                params.add(bo.getKey3());
+            }
+            if (bo.getBusinessDate() != null) {
+                sql += " and businessDate=?";
+                params.add(bo.getBusinessDate());
+            }
+        }
+        sql += "group by code,s_key3 ";
+        Query query = session.createSQLQuery(sql);
+        int index = 0;
+        for (Object o : params) {
+            query.setParameter(index++, o);
+        }
+        return query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
+                .list();
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<Map<String, Object>> report6(StockDayBo bo) {
+        Session session = HibernateUtils.getSession(false);
+        String sql = "select code,s_key as key1," +
+                "sum(case isYang when 1 then 1 else 0 end) yang," +
+                "sum(case isYang when 0 then 1 else 0 end) yin," +
+                "sum(highPrice) high," +
+                "sum(lowPrice) low from stock_day where 1=1 ";
+        List<Object> params = new ArrayList<>();
+        if (bo != null) {
+            if (StringUtils.isNotEmpty(bo.getKey())) {
+                sql += " and s_key=? ";
+                params.add(bo.getKey());
+            }
+            if (bo.getBusinessDate() != null) {
+                sql += " and businessDate=?";
+                params.add(bo.getBusinessDate());
+            }
+        }
+        sql += " group by code,s_key ";
+        Query query = session.createSQLQuery(sql);
+        int index = 0;
+        for (Object o : params) {
+            query.setParameter(index++, o);
+        }
+        return query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
+                .list();
+    }
 
     @SuppressWarnings("unchecked")
     public void importData(String[] attachmentIds) {

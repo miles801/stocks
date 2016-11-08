@@ -1,7 +1,7 @@
 /**
-* 日K
-* Created by Michael .
-*/
+ * 日K
+ * Created by Michael .
+ */
 (function (angular) {
     var app = angular.module('stock.stock.stockDay', [
         'ngResource',
@@ -28,16 +28,24 @@
             get: {method: 'GET', params: {method: 'get', id: '@id'}, isArray: false},
 
             // 分页查询
-            pageQuery: {method: 'POST', params: {method: 'pageQuery', limit: '@limit', start: '@start'}, isArray: false},
+            pageQuery: {
+                method: 'POST',
+                params: {method: 'pageQuery', limit: '@limit', start: '@start'},
+                isArray: false
+            },
 
             // 根据id字符串（使用逗号分隔多个值）
-            deleteByIds: {method: 'DELETE', params: {method: 'delete', ids: '@ids'}, isArray: false}
+            deleteByIds: {method: 'DELETE', params: {method: 'delete', ids: '@ids'}, isArray: false},
+
+            // 3线分析报告
+            report3: {method: 'POST', params: {method: 'report3'}, isArray: false},
+            // 6线分析报告
+            report6: {method: 'POST', params: {method: 'report6'}, isArray: false}
         })
     });
 
-    app.service('StockDayParam', function(ParameterLoader) {
-        var o = {
-        };
+    app.service('StockDayParam', function (ParameterLoader) {
+        var o = {};
         return o;
     });
 

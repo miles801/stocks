@@ -1,7 +1,7 @@
 /**
-* 股票
-* Created by Michael .
-*/
+ * 股票
+ * Created by Michael .
+ */
 (function (angular) {
     var app = angular.module('stock.stock.stock', [
         'ngResource',
@@ -28,23 +28,26 @@
             get: {method: 'GET', params: {method: 'get', id: '@id'}, isArray: false},
 
             // 分页查询
-            pageQuery: {method: 'POST', params: {method: 'pageQuery', limit: '@limit', start: '@start'}, isArray: false},
+            pageQuery: {
+                method: 'POST',
+                params: {method: 'pageQuery', limit: '@limit', start: '@start'},
+                isArray: false
+            },
 
             // 根据id字符串（使用逗号分隔多个值）
             deleteByIds: {method: 'DELETE', params: {method: 'delete', ids: '@ids'}, isArray: false},
 
             // 股票同步
-            sync: {method: 'POST', params: {method:'sync'}, isArray: false}
+            sync: {method: 'POST', params: {method: 'sync'}, isArray: false}
 
         })
     });
 
-    app.service('StockParam', function(ParameterLoader) {
-        var o = {
-        };
+    app.service('StockParam', function (ParameterLoader) {
+        var o = {};
 
         // 状态
-        o['status'] = function(callback){
+        o['status'] = function (callback) {
             ParameterLoader.loadSysParam('STOCK_STATUS', callback);
         };
 

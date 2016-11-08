@@ -4,7 +4,10 @@ import com.michael.core.pager.PageVo;
 import com.michael.stock.stock.bo.StockDayBo;
 import com.michael.stock.stock.domain.StockDay;
 import com.michael.stock.stock.vo.StockDayVo;
+
 import java.util.List;
+import java.util.Map;
+
 /**
  * @author Michael
  */
@@ -46,4 +49,8 @@ public interface StockDayService {
     * @param attachmentIds 上传的附件列表
     */
     void importData(String []attachmentIds);
+
+    List<Map<String, Object>> report3(StockDayBo bo);
+
+    List<Map<String, Object>> report6(StockDayBo bo);
 }
