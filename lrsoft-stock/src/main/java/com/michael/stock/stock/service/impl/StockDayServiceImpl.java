@@ -15,6 +15,7 @@ import com.michael.stock.stock.dao.StockDayDao;
 import com.michael.stock.stock.domain.StockDay;
 import com.michael.stock.stock.service.StockDayService;
 import com.michael.stock.stock.vo.StockDayVo;
+import com.michael.utils.number.IntegerUtils;
 import com.michael.utils.string.StringUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -117,12 +118,19 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
                 sql += " and s_key3=? ";
                 params.add(bo.getKey3());
             }
+            if (StringUtils.isNotEmpty(bo.getCode())) {
+                sql += " and code=? ";
+                params.add(bo.getCode());
+            }
             if (bo.getBusinessDate() != null) {
                 sql += " and businessDate=?";
                 params.add(bo.getBusinessDate());
             }
         }
         sql += "group by code,s_key3 ";
+        if (IntegerUtils.isBigger(Pager.getStart(), 0)) {
+            sql += " limit " + Pager.getStart() + "," + IntegerUtils.add(Pager.getLimit(), 0);
+        }
         Query query = session.createSQLQuery(sql);
         int index = 0;
         for (Object o : params) {
@@ -147,12 +155,19 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
                 sql += " and s_key=? ";
                 params.add(bo.getKey());
             }
+            if (StringUtils.isNotEmpty(bo.getCode())) {
+                sql += " and code=? ";
+                params.add(bo.getCode());
+            }
             if (bo.getBusinessDate() != null) {
                 sql += " and businessDate=?";
                 params.add(bo.getBusinessDate());
             }
         }
         sql += " group by code,s_key ";
+        if (IntegerUtils.isBigger(Pager.getStart(), 0)) {
+            sql += " limit " + Pager.getStart() + "," + IntegerUtils.add(Pager.getLimit(), 0);
+        }
         Query query = session.createSQLQuery(sql);
         int index = 0;
         for (Object o : params) {
