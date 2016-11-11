@@ -17,18 +17,7 @@
     </script>
     <style>
         .titem {
-            cursor: pointer;
             padding: 5px 10px;
-        }
-
-        .titem.checked {
-            background: #7687ff;
-            color: #FFFFFF;
-        }
-
-        .titem:hover {
-            text-decoration: underline;
-            color: #ff1b08;
         }
     </style>
 </head>
@@ -38,7 +27,8 @@
         <div class="row float">
             <div class="item w200">
                 <div class="form-label w80"><label validate-error="form.type">类型:</label></div>
-                <select class="w120" ng-model="condition.type" ng-options="foo.value as foo.name for foo in types" validate validate-required name="type"> </select>
+                <select class="w120" ng-model="condition.type" ng-options="foo.value as foo.name for foo in types"
+                        validate validate-required name="type" ng-change="query();"> </select>
             </div>
             <div class="item w200">
                 <div class="form-label w80">
@@ -69,17 +59,16 @@
     </form>
     <div class="ycrl split"></div>
     <div class="row pr">
-        <div style="width: 20%;float: left;padding: 20px;">
+        <div style="width: 200px;float: left;padding: 20px;">
             <div style="width: 100%;height: 500px;border: 1px solid #ddd;">
-                <div ng-repeat="foo in dates" ng-cloak class="titem" ng-class="{checked:checked==foo.id}">
-                    <span ng-click="load(foo)" style="display: block;">{{foo.dbDate | eccrmDate}}</span>
+                <div ng-repeat="foo in dates" ng-cloak class="titem">
+                    <span style="display: block;">{{foo.dbDate | eccrmDate}}</span>
                 </div>
             </div>
         </div>
-        <div style="width: 35%;float: left;padding: 20px;" ng-style="{height:height+'px'}">
+        <div style="width: 350px;float: left;padding: 20px;height: 500px;overflow: auto;">
             <div class="table-responsive panel panel-table" style="padding: 0;">
                 <table class="table table-striped table-hover">
-                    <caption style="font-weight: 700;padding: 0 20px 10px;font-size: 14px;" ng-cloak>集团数：{{groupCount}}</caption>
                     <thead class="table-header">
                     <tr>
                         <td style="width: 20px;">序号</td>
@@ -100,7 +89,7 @@
                 </table>
             </div>
         </div>
-        <div style="width: 35%;float: left;" ng-style="{height:height+'px'}">
+        <div style="width: 600px;float: left;" ng-style="{height:height+'px'}">
             <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
             <div id="char1" style="width: 80%;height:400px;margin:0 auto;"></div>
         </div>
