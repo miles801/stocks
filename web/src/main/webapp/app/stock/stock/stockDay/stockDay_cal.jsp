@@ -48,11 +48,47 @@
                         <thead class="table-header">
                         <tr>
                             <td class="width-min">序号</td>
-                            <td>bk</td>
-                            <td>A1</td>
-                            <td>A2</td>
-                            <td style="width: inherit">A3</td>
-                            <td style="width: inherit" ng-cloak ng-if="type=='4'">A4</td>
+                            <td class="cp" ng-click="orderBy='bk';reverse=!reverse">BK
+                                <span>
+                                        <span ng-show="orderBy=='bk'">
+                                            <span ng-show="reverse">▼</span>
+                                            <span ng-show="!reverse">▲</span>
+                                        </span>
+                                </span>
+                            </td>
+                            <td class="cp" ng-click="orderBy='a1';reverse=!reverse">A1
+                                <span>
+                                        <span ng-show="orderBy=='a1'">
+                                            <span ng-show="reverse">▼</span>
+                                            <span ng-show="!reverse">▲</span>
+                                        </span>
+                                </span>
+                            </td>
+                            <td class="cp" ng-click="orderBy='a2';reverse=!reverse">A2
+                                <span>
+                                        <span ng-show="orderBy=='a2'">
+                                            <span ng-show="reverse">▼</span>
+                                            <span ng-show="!reverse">▲</span>
+                                        </span>
+                                </span>
+                            </td>
+                            <td class="cp" style="width: inherit" ng-click="orderBy='a3';reverse=!reverse">A3
+                                <span>
+                                        <span ng-show="orderBy=='a3'">
+                                            <span ng-show="reverse">▼</span>
+                                            <span ng-show="!reverse">▲</span>
+                                        </span>
+                                </span>
+                            </td>
+                            <td style="width: inherit" ng-cloak ng-if="type=='4'" class="cp"
+                                ng-click="orderBy='a4';reverse=!reverse">A4
+                                <span>
+                                        <span ng-show="orderBy=='a4'">
+                                            <span ng-show="reverse">▼</span>
+                                            <span ng-show="!reverse">▲</span>
+                                        </span>
+                                </span>
+                            </td>
                         </tr>
                         </thead>
                         <tbody class="table-body">
@@ -60,7 +96,7 @@
                             <td colspan="5" class="text-center" ng-cloak ng-if="type=='3'">没有查询到数据！</td>
                             <td colspan="6" class="text-center" ng-cloak ng-if="type=='4'">没有查询到数据！</td>
                         </tr>
-                        <tr bindonce ng-repeat="foo in beans" ng-cloak>
+                        <tr bindonce ng-repeat="foo in beans|orderBy:orderBy:reverse" ng-cloak>
                             <td bo-text="$index+1"></td>
                             <td bo-text="foo.bk|eccrmDate"></td>
                             <td bo-text="foo.a1|eccrmDate"></td>

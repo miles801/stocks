@@ -10,11 +10,13 @@
     ]);
     app.controller('Ctrl', function ($scope, CommonUtils, AlertFactory, ModalFactory, DBService) {
 
+        $scope.orderBy = 'bk';
+        $scope.reverse = false;
         $scope.type = 3;
 
         // 查询数据
         $scope.query = function () {
-            var promise = DBService.calculate({type:$scope.type}, function (data) {
+            var promise = DBService.calculate({type: $scope.type}, function (data) {
                 $scope.beans = data.data || [];
             });
             CommonUtils.loading(promise, 'Loading...');
