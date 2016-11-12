@@ -78,6 +78,12 @@ public class StockDay extends CommonDomain {
     @Column
     private Boolean isYang;
 
+    @ApiField("6日阳的个数")
+    private Integer yangCount;
+    @ApiField("3日阳的个数")
+    private Integer yangCount3;
+
+
     @ApiField(value = "开盘价")
     @Column(name = "openPrice")
     private Double openPrice;
@@ -89,6 +95,19 @@ public class StockDay extends CommonDomain {
     @Column
     private Double lowPrice;
 
+    @ApiField("6日最高均价")
+    @Column
+    private Double avgHighPrice;
+    @ApiField("6日最低均价")
+    @Column
+    private Double avgLowPrice;
+
+    @ApiField("3日最高均价")
+    @Column
+    private Double avgHighPrice3;
+    @ApiField("3日最低均价")
+    @Column
+    private Double avgLowPrice3;
     @ApiField(value = "收盘价")
     @Column(name = "closePrice")
     private Double closePrice;
@@ -100,6 +119,54 @@ public class StockDay extends CommonDomain {
     @ApiField(value = "今日涨跌")
     @Column(name = "s_updown")
     private Double updown;
+
+    public Integer getYangCount() {
+        return yangCount;
+    }
+
+    public void setYangCount(Integer yangCount) {
+        this.yangCount = yangCount;
+    }
+
+    public Integer getYangCount3() {
+        return yangCount3;
+    }
+
+    public void setYangCount3(Integer yangCount3) {
+        this.yangCount3 = yangCount3;
+    }
+
+    public Double getAvgHighPrice3() {
+        return avgHighPrice3;
+    }
+
+    public void setAvgHighPrice3(Double avgHighPrice3) {
+        this.avgHighPrice3 = avgHighPrice3;
+    }
+
+    public Double getAvgLowPrice3() {
+        return avgLowPrice3;
+    }
+
+    public void setAvgLowPrice3(Double avgLowPrice3) {
+        this.avgLowPrice3 = avgLowPrice3;
+    }
+
+    public Double getAvgHighPrice() {
+        return avgHighPrice;
+    }
+
+    public void setAvgHighPrice(Double avgHighPrice) {
+        this.avgHighPrice = avgHighPrice;
+    }
+
+    public Double getAvgLowPrice() {
+        return avgLowPrice;
+    }
+
+    public void setAvgLowPrice(Double avgLowPrice) {
+        this.avgLowPrice = avgLowPrice;
+    }
 
     public Boolean getYang() {
         return isYang;

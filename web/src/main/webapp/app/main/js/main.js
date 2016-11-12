@@ -138,7 +138,7 @@ $(function () {
         $scope.showHome = function () {
             $scope.fold();
             $colbar.hide();
-            $iframe.attr('src', CommonUtils.contextPathURL('/app/home/panel/panel.jsp')).show();
+            $iframe.attr('src', CommonUtils.contextPathURL('/app/stock/stock/stockDay/stockDay_result.jsp')).show();
         };
 
 

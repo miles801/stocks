@@ -55,19 +55,6 @@
                             <input type="text" class="w120" ng-model="condition.code"
                                    maxlength="10"/>
                         </div>
-                        <div class="item w200">
-                            <div class="form-label w80">
-                                <label>交易时间:</label>
-                            </div>
-                            <div class="pr w120">
-                                <input type="text" class="w120" ng-model="condition.businessDate" readonly
-                                       eccrm-my97="{}"/>
-                                <span class="add-on">
-                                    <i class="icons icon clock" ng-click="condition.businessDate=null"
-                                       title="点击清除"></i>
-                                </span>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -79,6 +66,9 @@
                 <div class="header-text">
                     <span>分析结果</span>
                 </div>
+                <div class="header-button">
+                    <a type="button" class="btn btn-green btn-min" ng-click="exportData();"> 导出 </a>
+                </div>
             </div>
             <div class="block-content">
                 <div class="content-wrap">
@@ -87,28 +77,68 @@
                             <thead class="table-header">
                             <tr>
                                 <td class="width-min">序号</td>
-                                <td>股票代码</td>
-                                <td>特征值</td>
-                                <td>七阳比</td>
-                                <td>7H均值</td>
-                                <td>7L均值</td>
-                                <td style="width: inherit">总线</td>
+                                <td class="cp" ng-click="order('code');">股票代码
+                                    <span>
+                                        <span ng-show="condition.orderBy=='code'">
+                                        <span ng-show="condition.reverse">▼</span>
+                                        <span ng-show="!condition.reverse">▲</span>
+                                    </span>
+                                    </span>
+                                </td>
+                                <td class="cp" ng-click="order('key1');">特征值
+                                    <span>
+                                        <span ng-show="condition.orderBy=='key'">
+                                        <span ng-show="condition.reverse">▼</span>
+                                        <span ng-show="!condition.reverse">▲</span>
+                                    </span>
+                                    </span>
+                                </td>
+                                <td class="cp" ng-click="order('yangCount');">七阳比
+                                    <span>
+                                        <span ng-show="condition.orderBy=='yangCount'">
+                                        <span ng-show="condition.reverse">▼</span>
+                                        <span ng-show="!condition.reverse">▲</span>
+                                    </span>
+                                    </span>
+                                </td>
+                                <td class="cp" ng-click="order('avgHighPrice');">7H均值
+                                    <span>
+                                        <span ng-show="condition.orderBy=='avgHighPrice'">
+                                        <span ng-show="condition.reverse">▼</span>
+                                        <span ng-show="!condition.reverse">▲</span>
+                                    </span>
+                                    </span>
+                                </td>
+                                <td class="cp" ng-click="order('avgLowPrice');">7L均值
+                                    <span>
+                                        <span ng-show="condition.orderBy=='avgLowPrice'">
+                                        <span ng-show="condition.reverse">▼</span>
+                                        <span ng-show="!condition.reverse">▲</span>
+                                    </span>
+                                    </span>
+                                </td>
+                                <td style="width: inherit" class="cp" ng-click="order('yangCount');">总线
+                                    <span>
+                                        <span ng-show="condition.orderBy=='yangCount'">
+                                        <span ng-show="condition.reverse">▼</span>
+                                        <span ng-show="!condition.reverse">▲</span>
+                                    </span>
+                                    </span>
+                                </td>
                             </tr>
                             </thead>
                             <tbody class="table-body">
-                            <tr ng-show="!beans.length">
+                            <tr ng-show="!beans.total">
                                 <td colspan="7" class="text-center">没有查询到数据！</td>
                             </tr>
-                            <tr bindonce ng-repeat="foo in beans" ng-cloak>
+                            <tr bindonce ng-repeat="foo in beans.data" ng-cloak>
                                 <td bo-text="$index+1"></td>
                                 <td bo-text="foo.code"></td>
-                                <td bo-text="foo.key1"></td>
-                                <td>
-                                    <span bo-text="(foo.yang/(foo.yang+foo.yin))*100|number:2"></span> %
-                                </td>
-                                <td bo-text="(foo.high/(foo.yang+foo.yin))|number:3"></td>
-                                <td bo-text="(foo.low/(foo.yang+foo.yin))|number:3"></td>
-                                <td bo-text="foo.yang" style="width: inherit"></td>
+                                <td bo-text="foo.key"></td>
+                                <td bo-text="foo.percent"></td>
+                                <td bo-text="foo.avgHighPrice|number:3"></td>
+                                <td bo-text="foo.avgLowPrice|number:3"></td>
+                                <td bo-text="foo.yangCount" style="width: inherit"></td>
                             </tr>
                             </tbody>
                         </table>

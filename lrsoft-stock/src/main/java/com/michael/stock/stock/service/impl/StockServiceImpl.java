@@ -19,11 +19,14 @@ import com.michael.poi.imp.cfg.Configuration;
 import com.michael.stock.stock.bo.StockBo;
 import com.michael.stock.stock.dao.StockDao;
 import com.michael.stock.stock.domain.Stock;
+import com.michael.stock.stock.domain.StockDay;
 import com.michael.stock.stock.dto.StockDTO;
+import com.michael.stock.stock.service.StockRequestInstance;
 import com.michael.stock.stock.service.StockService;
 import com.michael.stock.stock.vo.StockVo;
 import com.michael.utils.beans.BeanCopyUtils;
 import com.michael.utils.string.StringUtils;
+import com.miles.stock.utils.StockUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
@@ -171,16 +174,18 @@ public class StockServiceImpl implements StockService, BeanWrapCallback<Stock, S
                     if (codes.contains(code)) {
                         continue;
                     }
-                    String name = matcher.group(1);
-                    Stock stock = new Stock();
-                    stock.setCode(code);
-                    stock.setName(name);
-                    stockDao.save(stock);
-                    codes.add(code);
-                    i++;
-                    if (i % 20 == 0) {
-                        session.flush();
-                        session.clear();
+                    if (code.matches("[036]\\d{5}")) {
+                        String name = matcher.group(1);
+                        Stock stock = new Stock();
+                        stock.setCode(code);
+                        stock.setName(name);
+                        stockDao.save(stock);
+                        codes.add(code);
+                        i++;
+                        if (i % 20 == 0) {
+                            session.flush();
+                            session.clear();
+                        }
                     }
                 }
             }
@@ -192,6 +197,25 @@ public class StockServiceImpl implements StockService, BeanWrapCallback<Stock, S
         Map<String, Object> map = new HashMap<>();
         map.put("add", i);
         return map;
+    }
+
+
+    @Override
+    public Map<String, Object> syncStockBusiness(String... stocks) {
+        if (stocks == null || stocks.length == 0) {
+            return null;
+        }
+        String content = StockRequestInstance.getInstance().getStockRequest().get(stocks);
+        String stockResult[] = content.split(";");
+        List<com.miles.stock.domain.Stock> stockList = StockUtils.wrapToStock(stockResult);
+        if (stockList != null) {
+            for (com.miles.stock.domain.Stock s : stockList) {
+                StockDay day = new StockDay();
+                // fixme 查询这只股票前6天的数据
+                //
+            }
+        }
+        return null;
     }
 
     public void importData(String[] attachmentIds) {

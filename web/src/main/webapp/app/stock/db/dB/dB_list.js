@@ -74,7 +74,7 @@
         // 新增
         $scope.add = function () {
             CommonUtils.addTab({
-                title   : '新增数据库',
+                title: '新增导入日期',
                 url     : '/stock/db/dB/add',
                 onUpdate: $scope.query
             });
@@ -83,7 +83,7 @@
         // 更新
         $scope.modify = function (id) {
             CommonUtils.addTab({
-                title   : '更新数据库',
+                title: '更新导入日期',
                 url     : '/stock/db/dB/modify?id=' + id,
                 onUpdate: $scope.query
             });
@@ -92,7 +92,7 @@
         // 查看明细
         $scope.view = function (id) {
             CommonUtils.addTab({
-                title: '查看数据库',
+                title: '查看导入日期',
                 url  : '/stock/db/dB/detail?id=' + id
             });
         };

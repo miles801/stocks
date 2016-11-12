@@ -8,13 +8,16 @@ import com.michael.core.beans.BeanWrapBuilder;
 import com.michael.core.beans.BeanWrapCallback;
 import com.michael.core.hibernate.HibernateUtils;
 import com.michael.core.hibernate.validator.ValidatorUtils;
+import com.michael.core.pager.Order;
 import com.michael.core.pager.PageVo;
 import com.michael.core.pager.Pager;
 import com.michael.stock.stock.bo.StockDayBo;
 import com.michael.stock.stock.dao.StockDayDao;
 import com.michael.stock.stock.domain.StockDay;
+import com.michael.stock.stock.domain.StockWeek;
 import com.michael.stock.stock.service.StockDayService;
 import com.michael.stock.stock.vo.StockDayVo;
+import com.michael.utils.number.DoubleUtils;
 import com.michael.utils.number.IntegerUtils;
 import com.michael.utils.string.StringUtils;
 import org.apache.commons.io.FileUtils;
@@ -30,10 +33,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.michael.core.hibernate.HibernateUtils.getSession;
 
@@ -168,6 +168,12 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
         if (IntegerUtils.isBigger(Pager.getStart(), 0)) {
             sql += " limit " + Pager.getStart() + "," + IntegerUtils.add(Pager.getLimit(), 0);
         }
+        if (Pager.getOrder() != null && Pager.getOrder().hasNext()) {
+            Order o = Pager.getOrder().next();
+            sql += " order by " + o.getName() + (o.isReverse() ? " desc " : " asc ");
+        } else {
+            sql += " order by code asc ";
+        }
         Query query = session.createSQLQuery(sql);
         int index = 0;
         for (Object o : params) {
@@ -175,6 +181,14 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
         }
         return query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
                 .list();
+    }
+
+    @Override
+    public Date lastDay() {
+        return (Date) HibernateUtils.getSession(false)
+                .createQuery("select distinct max(o.businessDate) from " + StockDay.class.getName() + " o ")
+                .setMaxResults(1)
+                .uniqueResult();
     }
 
     @SuppressWarnings("unchecked")
@@ -191,7 +205,7 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
             long start = System.currentTimeMillis();
             logger.info(String.format("开始导入数据%d/%d....", x++, attachmentIds.length));
             try {
-                List<String> content = FileUtils.readLines(file);
+                List<String> content = FileUtils.readLines(file, "gbk");
                 LinkedList<StockDay> stocks = new LinkedList<>();  // 用于保存最近的6条记录
                 for (int i = 0; i < 5; i++) {
                     StockDay sd = new StockDay();
@@ -215,6 +229,15 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
                     String[] arr = line.split(",");
                     StockDay stockDay = new StockDay();
                     stockDay.setCode(arr[0]);
+                    if (i == 1) {
+                        // 清空这支股票的历史数据
+                        session.createQuery("delete from " + StockDay.class.getName() + " s where s.code=?")
+                                .setParameter(0, stockDay.getCode())
+                                .executeUpdate();
+                        session.createQuery("delete from " + StockWeek.class.getName() + " s where s.code=?")
+                                .setParameter(0, stockDay.getCode())
+                                .executeUpdate();
+                    }
                     stockDay.setName(arr[1]);
                     stockDay.setBusinessDate(sdf.parse(arr[2]));
                     stockDay.setClosePrice(Double.parseDouble(arr[3]));
@@ -246,7 +269,16 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
                         last.setNextLow(stockDay.getLowPrice() - last.getClosePrice() / last.getClosePrice());
                         session.update(last);
                     }
-
+                    double avgHigh = DoubleUtils.add(stockDay.getHighPrice(), last.getHighPrice(), stocks.get(4).getHighPrice(), stocks.get(3).getHighPrice(), stocks.get(2).getHighPrice(), stocks.get(1).getHighPrice());
+                    double avgLow = DoubleUtils.add(stockDay.getLowPrice(), last.getLowPrice(), stocks.get(4).getLowPrice(), stocks.get(3).getLowPrice(), stocks.get(2).getLowPrice(), stocks.get(1).getLowPrice());
+                    double avgHigh3 = DoubleUtils.add(stockDay.getHighPrice(), last.getHighPrice(), stocks.get(4).getHighPrice());
+                    double avgLow3 = DoubleUtils.add(stockDay.getLowPrice(), last.getLowPrice(), stocks.get(4).getLowPrice());
+                    stockDay.setAvgHighPrice(avgHigh / 6);
+                    stockDay.setAvgLowPrice(avgLow / 6);
+                    stockDay.setAvgHighPrice3(avgHigh3 / 3);
+                    stockDay.setAvgLowPrice3(avgLow3 / 3);
+                    stockDay.setYangCount(stockDay.getKey().replaceAll("0", "").length());
+                    stockDay.setYangCount3(stockDay.getKey3().replaceAll("0", "").length());
                     stocks.remove(0);
                     stocks.add(stockDay);
                     session.save(stockDay);

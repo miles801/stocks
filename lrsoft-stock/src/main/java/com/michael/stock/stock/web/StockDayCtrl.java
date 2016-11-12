@@ -13,6 +13,7 @@ import com.michael.stock.stock.domain.StockDay;
 import com.michael.stock.stock.service.StockDayService;
 import com.michael.stock.stock.vo.StockDayVo;
 import com.michael.utils.gson.DateStringConverter;
+import com.michael.utils.gson.DoubleConverter;
 import com.michael.utils.gson.GsonUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Controller;
@@ -29,10 +30,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Michael
@@ -186,8 +187,13 @@ public class StockDayCtrl extends BaseController {
     @RequestMapping(value = "/report3", method = RequestMethod.POST)
     public void report3(HttpServletRequest request, HttpServletResponse response) {
         StockDayBo bo = GsonUtils.wrapDataToEntity(request, StockDayBo.class);
-        List<Map<String, Object>> data = stockDayService.report3(bo);
-        GsonUtils.printData(response, data);
+        PageVo pageVo = stockDayService.pageQuery(bo);
+        List<StockDayVo> data = pageVo.getData();
+        DecimalFormat df = new DecimalFormat("##.## %");
+        for (StockDayVo o : data) {
+            o.setPercent(df.format(o.getYangCount3() / 3.0));
+        }
+        GsonUtils.printData(response, pageVo);
     }
 
     // 6线分析报告
@@ -195,7 +201,54 @@ public class StockDayCtrl extends BaseController {
     @RequestMapping(value = "/report6", method = RequestMethod.POST)
     public void report6(HttpServletRequest request, HttpServletResponse response) {
         StockDayBo bo = GsonUtils.wrapDataToEntity(request, StockDayBo.class);
-        List<Map<String, Object>> data = stockDayService.report6(bo);
+        PageVo pageVo = stockDayService.pageQuery(bo);
+        List<StockDayVo> data = pageVo.getData();
+        DecimalFormat df = new DecimalFormat("##.## %");
+        for (StockDayVo o : data) {
+            o.setPercent(df.format(o.getYangCount() / 6.0));
+        }
+        GsonUtils.printData(response, pageVo);
+    }
+
+    // 查询最后一个交易日
+    @ResponseBody
+    @RequestMapping(value = "/lastDay", method = RequestMethod.GET)
+    public void lastDay(HttpServletRequest request, HttpServletResponse response) {
+        Date data = stockDayService.lastDay();
         GsonUtils.printData(response, data);
     }
+
+
+    // 导出数据
+    @RequestMapping(value = "/export-result", method = RequestMethod.GET)
+    public String exportResult(HttpServletRequest request, HttpServletResponse response) {
+        Gson gson = new GsonBuilder().registerTypeAdapter(Double.class, new DoubleConverter()).create();
+        StockDayBo bo = GsonUtils.wrapDataToEntity(request, StockDayBo.class);
+        List<StockDayVo> data = stockDayService.query(bo);
+        DecimalFormat df = new DecimalFormat("##.## %");
+        for (StockDayVo o : data) {
+            o.setPercent(df.format(o.getYangCount() / 6.0));
+        }
+        String json = gson.toJson(data);
+        JsonElement element = gson.fromJson(json, JsonElement.class);
+        JsonObject o = new JsonObject();
+        o.add("c", element);
+        String disposition = null;//
+        try {
+            disposition = "attachment;filename=" + URLEncoder.encode("风险估值结果" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + ".xlsx", "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        response.setContentType("application/vnd.ms-excel");
+        response.setHeader("Content-disposition", disposition);
+        try {
+            InputStream inputStream = StockDayCtrl.class.getClassLoader().getResourceAsStream("export_stockDayResult.xlsx");
+            Assert.notNull(inputStream, "数据导出失败!模板文件不存在，请与管理员联系!");
+            new ExportEngine().export(response.getOutputStream(), inputStream, o);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }

@@ -5,6 +5,7 @@ import com.michael.stock.stock.bo.StockDayBo;
 import com.michael.stock.stock.domain.StockDay;
 import com.michael.stock.stock.vo.StockDayVo;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -53,4 +54,6 @@ public interface StockDayService {
     List<Map<String, Object>> report3(StockDayBo bo);
 
     List<Map<String, Object>> report6(StockDayBo bo);
+
+    Date lastDay();
 }

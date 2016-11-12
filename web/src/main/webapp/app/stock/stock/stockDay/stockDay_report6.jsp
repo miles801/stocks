@@ -66,7 +66,7 @@
             </div>
         </div>
     </div>
-    <div class="list-result no-pagination">
+    <div class="list-result">
         <div class="block">
             <div class="block-header">
                 <div class="header-text">
@@ -88,18 +88,16 @@
                             </tr>
                             </thead>
                             <tbody class="table-body">
-                            <tr ng-show="!beans.length">
+                            <tr ng-show="!pager.total">
                                 <td colspan="7" class="text-center">没有查询到数据！</td>
                             </tr>
-                            <tr bindonce ng-repeat="foo in beans" ng-cloak>
+                            <tr bindonce ng-repeat="foo in beans.data" ng-cloak>
                                 <td bo-text="$index+1"></td>
                                 <td bo-text="foo.code"></td>
-                                <td bo-text="foo.key1"></td>
-                                <td>
-                                    <span bo-text="(foo.yang/(foo.yang+foo.yin))*100|number:2"></span> %
-                                </td>
-                                <td bo-text="(foo.high/(foo.yang+foo.yin))|number:3"></td>
-                                <td bo-text="(foo.low/(foo.yang+foo.yin))|number:3"></td>
+                                <td bo-text="foo.key"></td>
+                                <td bo-text="foo.percent"></td>
+                                <td bo-text="foo.avgHighPrice|number:3"></td>
+                                <td bo-text="foo.avgLowPrice|number:3"></td>
                             </tr>
                             </tbody>
                         </table>
@@ -108,6 +106,7 @@
             </div>
         </div>
     </div>
+    <div class="list-pagination" eccrm-page="pager"></div>
 </div>
 </body>
 <script type="text/javascript" src="<%=contextPath%>/app/stock/stock/stockDay/stockDay.js"></script>

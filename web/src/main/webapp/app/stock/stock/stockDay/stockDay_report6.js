@@ -22,12 +22,25 @@
 
         // 查询数据
         $scope.query = function () {
-            var promise = StockDayService.report6($scope.condition, function (data) {
-                $scope.beans = data.data || [];
-            });
-            CommonUtils.loading(promise, 'Loading...');
+            $scope.pager.query();
         };
 
-        $scope.query();
+        $scope.pager = {
+            fetch: function () {
+                $scope.beans = [];
+                var param = angular.extend({start: this.start, limit: this.limit}, $scope.condition);
+                return CommonUtils.promise(function (defer) {
+                    var promise = StockDayService.report6(param, function (data) {
+                        $scope.beans = data.data || {total: 0};
+                        defer.resolve($scope.beans);
+                    });
+                    CommonUtils.loading(promise, 'Loading...');
+                });
+            },
+            finishInit: function () {
+                this.query();
+            }
+        };
+
     });
 })(window, angular, jQuery);

@@ -38,9 +38,20 @@
             deleteByIds: {method: 'DELETE', params: {method: 'delete', ids: '@ids'}, isArray: false},
 
             // 3线分析报告
-            report3: {method: 'POST', params: {method: 'report3', start: '@start', limit: '@limit'}, isArray: false},
+            report3: {
+                method: 'POST',
+                params: {method: 'report3', start: '@start', limit: '@limit', orderBy: '@orderBy', reverse: '@reverse'},
+                isArray: false
+            },
             // 6线分析报告
-            report6: {method: 'POST', params: {method: 'report6', start: '@start', limit: '@limit'}, isArray: false}
+            report6: {
+                method: 'POST',
+                params: {method: 'report6', start: '@start', limit: '@limit', orderBy: '@orderBy', reverse: '@reverse'},
+                isArray: false
+            },
+
+            // 最后一个交易日
+            lastDay: {method: 'GET', params: {method: 'lastDay'}, isArray: false}
         })
     });
 
