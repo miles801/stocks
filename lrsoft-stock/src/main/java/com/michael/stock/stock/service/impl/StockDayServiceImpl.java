@@ -19,6 +19,7 @@ import com.michael.stock.stock.service.StockDayService;
 import com.michael.stock.stock.service.StockRequestInstance;
 import com.michael.stock.stock.vo.StockDayVo;
 import com.michael.utils.date.DateUtils;
+import com.michael.utils.string.StringUtils;
 import com.miles.stock.utils.StockUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -31,6 +32,7 @@ import org.springframework.util.Assert;
 import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -157,6 +159,110 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
                 .list();
     }
 
+    public PageVo result3(StockDayBo bo) {
+        PageVo vo = new PageVo();
+        Session session = HibernateUtils.getSession(false);
+        String sql = "select code,s_key3 as key1," +
+                "sum(case isYang when 1 then 1 else 0 end) as yang," +
+                "sum(nextHigh) nextHigh,sum(nextLow) nextLow,count(id) counts " +
+                "from stock_day where 1=1 ";
+        List<Object> params = new ArrayList<>();
+//        params.add(bo.getBusinessDateGe());
+//        params.add(bo.getBusinessDateLt());
+        if (StringUtils.isNotEmpty(bo.getKey3())) {
+            sql += " and s_key3=? ";
+            params.add(bo.getKey3());
+        }
+        if (StringUtils.isNotEmpty(bo.getCode())) {
+            sql += " and code=? ";
+            params.add(bo.getCode());
+        }
+        sql += " group by code,s_key3 ";
+
+        String totalSql = "select count(a.code) from (" + sql + ") a";
+        Query totalQuery = session.createSQLQuery(totalSql);
+        int index = 0;
+        for (Object o : params) {
+            totalQuery.setParameter(index++, o);
+        }
+        BigInteger bigInteger = (BigInteger) totalQuery.uniqueResult();
+        vo.setTotal(bigInteger.longValue());
+        if (vo.getTotal() == 0) {
+            return vo;
+        }
+
+        if (Pager.getOrder() != null && Pager.getOrder().hasNext()) {
+            Order o = Pager.getOrder().next();
+            sql += " order by " + o.getName() + (o.isReverse() ? " desc " : " asc ");
+        } else {
+            sql += " order by s_key3 asc ";
+        }
+        Query query = session.createSQLQuery(sql);
+        index = 0;
+        for (Object o : params) {
+            query.setParameter(index++, o);
+        }
+        List<Map<String, Object>> data = query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
+                .setFirstResult(Pager.getStart())
+                .setMaxResults(Pager.getLimit())
+                .list();
+        vo.setData(data);
+        return vo;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public PageVo result6(StockDayBo bo) {
+        PageVo vo = new PageVo();
+        Session session = HibernateUtils.getSession(false);
+        String sql = "select code,s_key as key1," +
+                "sum(case isYang when 1 then 1 else 0 end) as yang," +
+                "sum(nextHigh) nextHigh,sum(nextLow) nextLow,count(id) counts " +
+                "from stock_day where 1=1 ";
+        List<Object> params = new ArrayList<>();
+//        params.add(bo.getBusinessDateGe());
+//        params.add(bo.getBusinessDateLt());
+        if (StringUtils.isNotEmpty(bo.getKey())) {
+            sql += " and s_key=? ";
+            params.add(bo.getKey());
+        }
+        if (StringUtils.isNotEmpty(bo.getCode())) {
+            sql += " and code=? ";
+            params.add(bo.getCode());
+        }
+        sql += " group by code,s_key ";
+
+        String totalSql = "select count(a.code) from (" + sql + ") a";
+        Query totalQuery = session.createSQLQuery(totalSql);
+        int index = 0;
+        for (Object o : params) {
+            totalQuery.setParameter(index++, o);
+        }
+        BigInteger bigInteger = (BigInteger) totalQuery.uniqueResult();
+        vo.setTotal(bigInteger.longValue());
+        if (vo.getTotal() == 0) {
+            return vo;
+        }
+
+        if (Pager.getOrder() != null && Pager.getOrder().hasNext()) {
+            Order o = Pager.getOrder().next();
+            sql += " order by " + o.getName() + (o.isReverse() ? " desc " : " asc ");
+        } else {
+            sql += " order by s_key asc ";
+        }
+        Query query = session.createSQLQuery(sql);
+        index = 0;
+        for (Object o : params) {
+            query.setParameter(index++, o);
+        }
+        List<Map<String, Object>> data = query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
+                .setFirstResult(Pager.getStart())
+                .setMaxResults(Pager.getLimit())
+                .list();
+        vo.setData(data);
+        return vo;
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     public List<Map<String, Object>> report6(StockDayBo bo) {
@@ -184,6 +290,7 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
         return query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
                 .list();
     }
+
 
     @Override
     public Date lastDay() {

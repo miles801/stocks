@@ -55,6 +55,10 @@ public interface StockDayService {
 
     List<Map<String, Object>> report6(StockDayBo bo);
 
+    PageVo result3(StockDayBo bo);
+
+    PageVo result6(StockDayBo bo);
+
     Date lastDay();
 
 

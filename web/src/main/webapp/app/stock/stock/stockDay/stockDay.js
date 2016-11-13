@@ -55,6 +55,18 @@
                 params: {method: 'report6', start: '@start', limit: '@limit', orderBy: '@orderBy', reverse: '@reverse'},
                 isArray: false
             },
+            // 3线估值结果
+            result3: {
+                method: 'POST',
+                params: {method: 'result3', start: '@start', limit: '@limit', orderBy: '@orderBy', reverse: '@reverse'},
+                isArray: false
+            },
+            // 6线估值结果
+            result6: {
+                method: 'POST',
+                params: {method: 'result6', start: '@start', limit: '@limit', orderBy: '@orderBy', reverse: '@reverse'},
+                isArray: false
+            },
 
             // 最后一个交易日
             lastDay: {method: 'GET', params: {method: 'lastDay'}, isArray: false}

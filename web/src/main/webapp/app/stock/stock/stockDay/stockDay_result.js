@@ -54,7 +54,7 @@
                         AlertFactory.error('未获取到最近的交易日!请刷新该页面重试，或者请检查交易数据是否存在!');
                         return;
                     }
-                    var promise = StockDayService.report6(param, function (data) {
+                    var promise = StockDayService.result6(param, function (data) {
                         $scope.beans = data.data || {total: 0};
                         defer.resolve($scope.beans);
                     });

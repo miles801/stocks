@@ -201,6 +201,24 @@ public class StockDayCtrl extends BaseController {
         GsonUtils.printData(response, data);
     }
 
+    // 3线估值结果
+    @ResponseBody
+    @RequestMapping(value = "/result3", method = RequestMethod.POST)
+    public void result3(HttpServletRequest request, HttpServletResponse response) {
+        StockDayBo bo = GsonUtils.wrapDataToEntity(request, StockDayBo.class);
+        PageVo data = stockDayService.result3(bo);
+        GsonUtils.printData(response, data);
+    }
+
+    // 6线估值结果
+    @ResponseBody
+    @RequestMapping(value = "/result6", method = RequestMethod.POST)
+    public void result6(HttpServletRequest request, HttpServletResponse response) {
+        StockDayBo bo = GsonUtils.wrapDataToEntity(request, StockDayBo.class);
+        PageVo data = stockDayService.result6(bo);
+        GsonUtils.printData(response, data);
+    }
+
     // 查询最后一个交易日
     @ResponseBody
     @RequestMapping(value = "/lastDay", method = RequestMethod.GET)
