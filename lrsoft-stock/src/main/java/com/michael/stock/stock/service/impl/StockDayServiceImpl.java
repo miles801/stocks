@@ -222,28 +222,30 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
                     stocks.add(sd);
                 }
                 final int size = content.size();
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+                String titles[] = content.get(0).split("\\s+");
+                String code = titles[0];
+                String name = titles[1];
+                // 清空这支股票的历史数据
+                session.createQuery("delete from " + StockDay.class.getName() + " s where s.code=?")
+                        .setParameter(0, code)
+                        .executeUpdate();
+                session.createQuery("delete from " + StockWeek.class.getName() + " s where s.code=?")
+                        .setParameter(0, code)
+                        .executeUpdate();
                 for (int i = 1; i < size; i++) {
-                    String line = content.get(i).replaceAll("\"", "");
-                    String[] arr = line.split(",");
-                    StockDay stockDay = new StockDay();
-                    stockDay.setCode(arr[0]);
-                    if (i == 1) {
-                        // 清空这支股票的历史数据
-                        session.createQuery("delete from " + StockDay.class.getName() + " s where s.code=?")
-                                .setParameter(0, stockDay.getCode())
-                                .executeUpdate();
-                        session.createQuery("delete from " + StockWeek.class.getName() + " s where s.code=?")
-                                .setParameter(0, stockDay.getCode())
-                                .executeUpdate();
+                    String[] arr = content.get(i).split(";");
+                    if (arr.length != 7) {
+                        continue;
                     }
-                    stockDay.setName(arr[1]);
-                    stockDay.setBusinessDate(sdf.parse(arr[2]));
-                    stockDay.setClosePrice(Double.parseDouble(arr[3]));
-                    stockDay.setOpenPrice(Double.parseDouble(arr[4]));
-                    stockDay.setLowPrice(Double.parseDouble(arr[5]));
-                    stockDay.setHighPrice(Double.parseDouble(arr[6]));
+                    StockDay stockDay = new StockDay();
+                    stockDay.setCode(code);
+                    stockDay.setName(name);
+                    stockDay.setBusinessDate(sdf.parse(arr[0]));
+                    stockDay.setOpenPrice(Double.parseDouble(arr[1]));
+                    stockDay.setHighPrice(Double.parseDouble(arr[2]));
+                    stockDay.setLowPrice(Double.parseDouble(arr[3]));
+                    stockDay.setClosePrice(Double.parseDouble(arr[4]));
                     StockDay last = stocks.getLast();
                     // 今日涨跌
                     stockDay.setUpdown(stockDay.getClosePrice() - last.getClosePrice());
