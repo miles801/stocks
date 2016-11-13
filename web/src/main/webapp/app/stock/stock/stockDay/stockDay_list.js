@@ -9,7 +9,10 @@
         'stock.stock.stockDay'
     ]);
     app.controller('Ctrl', function ($scope, CommonUtils, AlertFactory, ModalFactory, StockDayService, StockDayParam) {
-        var defaults = {}; // 默认查询条件
+        var defaults = {// 默认查询条件
+            orderBy: 'businessDate',
+            reverse: true
+        };
 
         $scope.condition = angular.extend({}, defaults);
 
@@ -25,7 +28,7 @@
             $scope.pager.query();
         };
         $scope.pager = {
-            fetch     : function () {
+            fetch: function () {
                 var param = angular.extend({}, {start: this.start, limit: this.limit}, $scope.condition);
                 $scope.beans = [];
                 return CommonUtils.promise(function (defer) {
@@ -52,8 +55,8 @@
                 id = ids.join(',');
             }
             ModalFactory.confirm({
-                scope   : $scope,
-                content : '<span class="text-danger">数据一旦删除将不可恢复，请确认!</span>',
+                scope: $scope,
+                content: '<span class="text-danger">数据一旦删除将不可恢复，请确认!</span>',
                 callback: function () {
                     var promise = StockDayService.deleteByIds({ids: id}, function () {
                         AlertFactory.success('删除成功!');
@@ -67,8 +70,8 @@
         // 新增
         $scope.add = function () {
             CommonUtils.addTab({
-                title   : '新增日K',
-                url     : '/stock/stock/stockDay/add',
+                title: '新增日K',
+                url: '/stock/stock/stockDay/add',
                 onUpdate: $scope.query
             });
         };
@@ -76,8 +79,8 @@
         // 更新
         $scope.modify = function (id) {
             CommonUtils.addTab({
-                title   : '更新日K',
-                url     : '/stock/stock/stockDay/modify?id=' + id,
+                title: '更新日K',
+                url: '/stock/stock/stockDay/modify?id=' + id,
                 onUpdate: $scope.query
             });
         };
@@ -86,15 +89,15 @@
         $scope.view = function (id) {
             CommonUtils.addTab({
                 title: '查看日K',
-                url  : '/stock/stock/stockDay/detail?id=' + id
+                url: '/stock/stock/stockDay/detail?id=' + id
             });
         };
 
         // 导入数据
         $scope.importData = function (id) {
             CommonUtils.addTab({
-                title  : '导入数据',
-                url    : '/stock/stock/stockDay/import',
+                title: '导入数据',
+                url: '/stock/stock/stockDay/import',
                 onClose: $scope.query
             });
         };

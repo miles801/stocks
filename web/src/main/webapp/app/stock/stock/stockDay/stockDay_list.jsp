@@ -39,26 +39,37 @@
             <div class="block-content">
                 <div class="content-wrap">
                     <div class="row float">
-                        <div class="item w300">
-                            <div class="form-label w100">
+                        <div class="item w200">
+                            <div class="form-label w80">
                                 <label>股票编号:</label>
                             </div>
-                            <input type="text" class="w200" ng-model="condition.code"
+                            <input type="text" class="w120" ng-model="condition.code"
                                    maxlength="10"/>
                         </div>
-                        <div class="item w300">
-                            <div class="form-label w100">
+                        <div class="item w200">
+                            <div class="form-label w80">
                                 <label>股票名称:</label>
                             </div>
-                            <input type="text" class="w200" ng-model="condition.name"
+                            <input type="text" class="w120" ng-model="condition.name"
                                    maxlength="20"/>
                         </div>
-                        <div class="item w300">
-                            <div class="form-label w100">
+                        <div class="item w200">
+                            <div class="form-label w80">
                                 <label>代码:</label>
                             </div>
-                            <input type="text" class="w200" ng-model="condition.key"
+                            <input type="text" class="w120" ng-model="condition.key"
                                    maxlength="10"/>
+                        </div>
+                        <div class="item w200">
+                            <div class="form-label w80">
+                                <label>交易日期:</label>
+                            </div>
+                            <div class="w120 pr">
+                                <input type="text" class="w120" ng-model="condition.businessDate" readonly
+                                       eccrm-my97="{}" ng-change="query();"/>
+                                <span class="add-on"><i class="icons icon clock"
+                                                        ng-click="condition.businessDate=null"></i></span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -72,10 +83,7 @@
                     <span>日K列表</span>
                 </div>
                 <span class="header-button">
-                        <a type="button" class="btn btn-green btn-min" ng-click="exportData();"
-                           ng-disabled="!pager.total" ng-cloak> 导出数据 </a>
                         <a type="button" class="btn btn-green btn-min" ng-click="importData();"> 导入 </a>
-                        <a type="button" class="btn btn-green btn-min" ng-click="add();"> 新建 </a>
                 </span>
             </div>
             <div class="block-content">
@@ -87,17 +95,18 @@
                                 <td class="width-min">序号</td>
                                 <td>股票编号</td>
                                 <td>股票名称</td>
-                                <td>日期</td>
+                                <td>交易日期</td>
                                 <td>昨日收盘价</td>
                                 <td>开盘价</td>
                                 <td>收盘价</td>
                                 <td>涨跌</td>
-                                <td>代码</td>
+                                <td>6日代码</td>
+                                <td>3日代码</td>
                             </tr>
                             </thead>
                             <tbody class="table-body">
                             <tr ng-show="!pager.total">
-                                <td colspan="9" class="text-center">没有查询到数据！</td>
+                                <td colspan="10" class="text-center">没有查询到数据！</td>
                             </tr>
                             <tr bindonce ng-repeat="foo in beans.data" ng-cloak>
                                 <td bo-text="pager.start+$index+1"></td>
@@ -111,6 +120,7 @@
                                 <td bo-text="foo.closePrice|number:3"></td>
                                 <td bo-text="foo.isYang?'阳':'阴'" ng-class="{'red':foo.isYang,'green':!foo.isYang}"></td>
                                 <td bo-text="foo.key"></td>
+                                <td bo-text="foo.key3"></td>
                             </tr>
                             </tbody>
                         </table>
@@ -122,8 +132,6 @@
     <div class="list-pagination" eccrm-page="pager"></div>
 </div>
 </body>
-<script type="text/javascript"
-        src="<%=contextPath%>/app/stock/stock/stockDay/stockDay.js"></script>
-<script type="text/javascript"
-        src="<%=contextPath%>/app/stock/stock/stockDay/stockDay_list.js"></script>
+<script type="text/javascript" src="<%=contextPath%>/app/stock/stock/stockDay/stockDay.js"></script>
+<script type="text/javascript" src="<%=contextPath%>/app/stock/stock/stockDay/stockDay_list.js"></script>
 </html>

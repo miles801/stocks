@@ -16,10 +16,10 @@ import com.michael.stock.stock.dao.StockDayDao;
 import com.michael.stock.stock.domain.StockDay;
 import com.michael.stock.stock.domain.StockWeek;
 import com.michael.stock.stock.service.StockDayService;
+import com.michael.stock.stock.service.StockRequestInstance;
 import com.michael.stock.stock.vo.StockDayVo;
-import com.michael.utils.number.DoubleUtils;
-import com.michael.utils.number.IntegerUtils;
-import com.michael.utils.string.StringUtils;
+import com.michael.utils.date.DateUtils;
+import com.miles.stock.utils.StockUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -104,32 +104,49 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
 
 
     @Override
+    public Map<String, Object> syncStockBusiness(String... stocks) {
+        if (stocks == null || stocks.length == 0) {
+            return null;
+        }
+        String content = StockRequestInstance.getInstance().getStockRequest().get(stocks);
+        String stockResult[] = content.split(";");
+        List<com.miles.stock.domain.Stock> stockList = StockUtils.wrapToStock(stockResult);
+        Date date = DateUtils.getDate(new Date(), 0, 0, 0);
+        if (stockList != null) {
+            for (com.miles.stock.domain.Stock s : stockList) {
+                StockDay day = new StockDay();
+                day.setCode(s.getCode());
+                day.setName(s.getName());
+                day.setBusinessDate(date);
+                day.setHighPrice(Double.parseDouble(s.getTodayHighPrice().toString()));
+                day.setLowPrice(Double.parseDouble(s.getTodayLowPrice().toString()));
+                day.setOpenPrice(Double.parseDouble(s.getOpenPrice().toString()));
+                day.setClosePrice(Double.parseDouble(s.getClosePrice().toString()));
+                day.setYesterdayClosePrice(Double.parseDouble(s.getYesterdayClosePrice().toString()));
+                stockDayDao.save(day);
+            }
+        }
+        return null;
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     public List<Map<String, Object>> report3(StockDayBo bo) {
         Session session = HibernateUtils.getSession(false);
-        String sql = "select code,s_key3 key1," +
-                "sum(case isYang when 1 then 1 else 0 end) yang," +
-                "sum(case isYang when 0 then 1 else 0 end) yin," +
-                "sum(highPrice) high," +
-                "sum(lowPrice) low from stock_day where 1=1 ";
+        String sql = "select s_key3 as key1," +
+                "sum(case isYang when 1 then 1 else 0 end) as yang," +
+                "sum(nextHigh) nextHigh,sum(nextLow) nextLow,count(id) counts " +
+                "from stock_day where businessDate BETWEEN ? and ? and code =? " +
+                "group by s_key3 ";
         List<Object> params = new ArrayList<>();
-        if (bo != null) {
-            if (StringUtils.isNotEmpty(bo.getKey3())) {
-                sql += " and s_key3=? ";
-                params.add(bo.getKey3());
-            }
-            if (StringUtils.isNotEmpty(bo.getCode())) {
-                sql += " and code=? ";
-                params.add(bo.getCode());
-            }
-            if (bo.getBusinessDate() != null) {
-                sql += " and businessDate=?";
-                params.add(bo.getBusinessDate());
-            }
-        }
-        sql += "group by code,s_key3 ";
-        if (IntegerUtils.isBigger(Pager.getStart(), 0)) {
-            sql += " limit " + Pager.getStart() + "," + IntegerUtils.add(Pager.getLimit(), 0);
+        params.add(bo.getBusinessDateGe());
+        params.add(bo.getBusinessDateLt());
+        params.add(bo.getCode());
+        if (Pager.getOrder() != null && Pager.getOrder().hasNext()) {
+            Order o = Pager.getOrder().next();
+            sql += " order by " + o.getName() + (o.isReverse() ? " desc " : " asc ");
+        } else {
+            sql += " order by s_key3 asc ";
         }
         Query query = session.createSQLQuery(sql);
         int index = 0;
@@ -144,35 +161,20 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
     @SuppressWarnings("unchecked")
     public List<Map<String, Object>> report6(StockDayBo bo) {
         Session session = HibernateUtils.getSession(false);
-        String sql = "select code,s_key as key1," +
-                "sum(case isYang when 1 then 1 else 0 end) yang," +
-                "sum(case isYang when 0 then 1 else 0 end) yin," +
-                "sum(highPrice) high," +
-                "sum(lowPrice) low from stock_day where 1=1 ";
+        String sql = "select s_key as key1," +
+                "sum(case isYang when 1 then 1 else 0 end) as yang," +
+                "sum(nextHigh) nextHigh,sum(nextLow) nextLow,count(id) counts " +
+                "from stock_day where businessDate BETWEEN ? and ? and code =? " +
+                "group by s_key ";
         List<Object> params = new ArrayList<>();
-        if (bo != null) {
-            if (StringUtils.isNotEmpty(bo.getKey())) {
-                sql += " and s_key=? ";
-                params.add(bo.getKey());
-            }
-            if (StringUtils.isNotEmpty(bo.getCode())) {
-                sql += " and code=? ";
-                params.add(bo.getCode());
-            }
-            if (bo.getBusinessDate() != null) {
-                sql += " and businessDate=?";
-                params.add(bo.getBusinessDate());
-            }
-        }
-        sql += " group by code,s_key ";
-        if (IntegerUtils.isBigger(Pager.getStart(), 0)) {
-            sql += " limit " + Pager.getStart() + "," + IntegerUtils.add(Pager.getLimit(), 0);
-        }
+        params.add(bo.getBusinessDateGe());
+        params.add(bo.getBusinessDateLt());
+        params.add(bo.getCode());
         if (Pager.getOrder() != null && Pager.getOrder().hasNext()) {
             Order o = Pager.getOrder().next();
             sql += " order by " + o.getName() + (o.isReverse() ? " desc " : " asc ");
         } else {
-            sql += " order by code asc ";
+            sql += " order by s_key asc ";
         }
         Query query = session.createSQLQuery(sql);
         int index = 0;
@@ -246,41 +248,43 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
                     stockDay.setHighPrice(Double.parseDouble(arr[2]));
                     stockDay.setLowPrice(Double.parseDouble(arr[3]));
                     stockDay.setClosePrice(Double.parseDouble(arr[4]));
+                    stockDay.setUpdown(stockDay.getClosePrice() - stockDay.getOpenPrice());
+                    // 6日时间&组合
                     StockDay last = stocks.getLast();
-                    // 今日涨跌
-                    stockDay.setUpdown(stockDay.getClosePrice() - last.getClosePrice());
-                    // 第1日
+                    stockDay.setDate6(stocks.get(0).getBusinessDate());
                     stockDay.setKey(last.getKey().substring(1) + (stockDay.getUpdown() > 0 ? "1" : "0"));
+
+                    // 3日时间&组合
                     stockDay.setKey3(last.getKey3().substring(1) + (stockDay.getUpdown() > 0 ? "1" : "0"));
                     stockDay.setDate3(stocks.get(3).getBusinessDate());
-                    stockDay.setDate6(stocks.get(0).getBusinessDate());
+
+                    // 七日阴阳
+                    if (stockDay.getClosePrice() - stockDay.getOpenPrice() == 0) {
+                        stockDay.setYang(last.getYang());
+                    } else {
+                        stockDay.setYang(stockDay.getClosePrice() - stockDay.getOpenPrice() > 0);
+                    }
+
+                    // 第1日
                     stockDay.setYesterdayClosePrice(last.getClosePrice());
-                    stockDay.setYang(stockDay.getOpenPrice() > stockDay.getClosePrice());   // 阴阳
                     if (last.getClosePrice() != 0d) {
                         stockDay.setP1((stockDay.getClosePrice() - last.getClosePrice()) / last.getClosePrice());
                         // 第2日
-                        stockDay.setP2((stockDay.getClosePrice() - stocks.get(4).getClosePrice()) / last.getClosePrice());
+                        stockDay.setP2((stockDay.getClosePrice() - stocks.get(3).getClosePrice()) / last.getClosePrice());
                         // 第3日
-                        stockDay.setP3((stockDay.getClosePrice() - stocks.get(3).getClosePrice()) / last.getClosePrice());
+                        stockDay.setP3((stockDay.getClosePrice() - stocks.get(2).getClosePrice()) / last.getClosePrice());
                         // 第4日
-                        stockDay.setP4((stockDay.getClosePrice() - stocks.get(2).getClosePrice()) / last.getClosePrice());
+                        stockDay.setP4((stockDay.getClosePrice() - stocks.get(1).getClosePrice()) / last.getClosePrice());
                         // 第5日
-                        stockDay.setP5((stockDay.getClosePrice() - stocks.get(1).getClosePrice()) / last.getClosePrice());
-                        // 下一日高低
+                        stockDay.setP5((stockDay.getClosePrice() - stocks.get(0).getClosePrice()) / last.getClosePrice());
+
+                        // 第七日高
                         last.setNextHigh(stockDay.getHighPrice() - last.getClosePrice() / last.getClosePrice());
+                        // 第七日低
                         last.setNextLow(stockDay.getLowPrice() - last.getClosePrice() / last.getClosePrice());
+
                         session.update(last);
                     }
-                    double avgHigh = DoubleUtils.add(stockDay.getHighPrice(), last.getHighPrice(), stocks.get(4).getHighPrice(), stocks.get(3).getHighPrice(), stocks.get(2).getHighPrice(), stocks.get(1).getHighPrice());
-                    double avgLow = DoubleUtils.add(stockDay.getLowPrice(), last.getLowPrice(), stocks.get(4).getLowPrice(), stocks.get(3).getLowPrice(), stocks.get(2).getLowPrice(), stocks.get(1).getLowPrice());
-                    double avgHigh3 = DoubleUtils.add(stockDay.getHighPrice(), last.getHighPrice(), stocks.get(4).getHighPrice());
-                    double avgLow3 = DoubleUtils.add(stockDay.getLowPrice(), last.getLowPrice(), stocks.get(4).getLowPrice());
-                    stockDay.setAvgHighPrice(avgHigh / 6);
-                    stockDay.setAvgLowPrice(avgLow / 6);
-                    stockDay.setAvgHighPrice3(avgHigh3 / 3);
-                    stockDay.setAvgLowPrice3(avgLow3 / 3);
-                    stockDay.setYangCount(stockDay.getKey().replaceAll("0", "").length());
-                    stockDay.setYangCount3(stockDay.getKey3().replaceAll("0", "").length());
                     stocks.remove(0);
                     stocks.add(stockDay);
                     session.save(stockDay);
@@ -297,7 +301,6 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
             }
             logger.info(String.format("导入数据成功,用时(%d)s，共导入%d条数据....", (System.currentTimeMillis() - start) / 1000, index));
         }
-        // fixme 触发周K的定时器
     }
 
     @Override

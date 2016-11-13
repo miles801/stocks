@@ -63,6 +63,7 @@ public class DateUtils {
     public static Date getDate(Date date, int hour, int minute, int seconds) {
         Calendar c = get(date);
         c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), hour, minute, seconds);
+        c.set(Calendar.MILLISECOND, 0);
         return c.getTime();
     }
 

@@ -30,7 +30,13 @@
             // 分页查询
             pageQuery: {
                 method: 'POST',
-                params: {method: 'pageQuery', limit: '@limit', start: '@start'},
+                params: {
+                    method: 'pageQuery',
+                    limit: '@limit',
+                    start: '@start',
+                    orderBy: '@orderBy',
+                    reverse: '@reverse'
+                },
                 isArray: false
             },
 

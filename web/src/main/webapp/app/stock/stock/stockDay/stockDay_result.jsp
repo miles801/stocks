@@ -85,7 +85,7 @@
                                     </span>
                                     </span>
                                 </td>
-                                <td class="cp" ng-click="order('key1');">特征值
+                                <td class="cp" ng-click="order('key');">特征值
                                     <span>
                                         <span ng-show="condition.orderBy=='key'">
                                         <span ng-show="condition.reverse">▼</span>

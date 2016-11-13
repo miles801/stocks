@@ -1,13 +1,12 @@
 package com.michael.stock.stock.dao.impl;
 
-import com.michael.stock.stock.bo.StockDayBo;
-import com.michael.stock.stock.domain.StockDay;
-import com.michael.stock.stock.dao.StockDayDao;
 import com.michael.core.hibernate.HibernateDaoHelper;
 import com.michael.core.hibernate.criteria.CriteriaUtils;
-import com.michael.utils.string.StringUtils;
+import com.michael.stock.stock.bo.StockDayBo;
+import com.michael.stock.stock.dao.StockDayDao;
+import com.michael.stock.stock.domain.StockDay;
 import org.hibernate.Criteria;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.Order;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
 
@@ -43,6 +42,7 @@ public class StockDayDaoImpl extends HibernateDaoHelper implements StockDayDao {
     public List<StockDay> pageQuery(StockDayBo bo) {
         Criteria criteria = createPagerCriteria(StockDay.class);
         initCriteria(criteria, bo);
+        criteria.addOrder(Order.asc("code"));
         return criteria.list();
     }
 

@@ -34,6 +34,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Michael
@@ -187,13 +188,8 @@ public class StockDayCtrl extends BaseController {
     @RequestMapping(value = "/report3", method = RequestMethod.POST)
     public void report3(HttpServletRequest request, HttpServletResponse response) {
         StockDayBo bo = GsonUtils.wrapDataToEntity(request, StockDayBo.class);
-        PageVo pageVo = stockDayService.pageQuery(bo);
-        List<StockDayVo> data = pageVo.getData();
-        DecimalFormat df = new DecimalFormat("##.## %");
-        for (StockDayVo o : data) {
-            o.setPercent(df.format(o.getYangCount3() / 3.0));
-        }
-        GsonUtils.printData(response, pageVo);
+        List<Map<String, Object>> data = stockDayService.report3(bo);
+        GsonUtils.printData(response, data);
     }
 
     // 6线分析报告
@@ -201,13 +197,8 @@ public class StockDayCtrl extends BaseController {
     @RequestMapping(value = "/report6", method = RequestMethod.POST)
     public void report6(HttpServletRequest request, HttpServletResponse response) {
         StockDayBo bo = GsonUtils.wrapDataToEntity(request, StockDayBo.class);
-        PageVo pageVo = stockDayService.pageQuery(bo);
-        List<StockDayVo> data = pageVo.getData();
-        DecimalFormat df = new DecimalFormat("##.## %");
-        for (StockDayVo o : data) {
-            o.setPercent(df.format(o.getYangCount() / 6.0));
-        }
-        GsonUtils.printData(response, pageVo);
+        List<Map<String, Object>> data = stockDayService.report6(bo);
+        GsonUtils.printData(response, data);
     }
 
     // 查询最后一个交易日
@@ -226,9 +217,6 @@ public class StockDayCtrl extends BaseController {
         StockDayBo bo = GsonUtils.wrapDataToEntity(request, StockDayBo.class);
         List<StockDayVo> data = stockDayService.query(bo);
         DecimalFormat df = new DecimalFormat("##.## %");
-        for (StockDayVo o : data) {
-            o.setPercent(df.format(o.getYangCount() / 6.0));
-        }
         String json = gson.toJson(data);
         JsonElement element = gson.fromJson(json, JsonElement.class);
         JsonObject o = new JsonObject();

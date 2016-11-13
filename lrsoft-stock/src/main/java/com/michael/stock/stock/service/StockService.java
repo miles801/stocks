@@ -56,11 +56,4 @@ public interface StockService {
      */
     Map<String, Object> syncStock();
 
-
-    /**
-     * 同步指定股票当天的交易数据
-     *
-     * @param stocks 股票代号
-     */
-    Map<String, Object> syncStockBusiness(String... stocks);
 }

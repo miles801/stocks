@@ -56,4 +56,12 @@ public interface StockDayService {
     List<Map<String, Object>> report6(StockDayBo bo);
 
     Date lastDay();
+
+
+    /**
+     * 同步指定股票当天的交易数据
+     *
+     * @param stocks 股票代号
+     */
+    Map<String, Object> syncStockBusiness(String... stocks);
 }

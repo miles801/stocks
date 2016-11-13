@@ -93,8 +93,8 @@
                     <span>日K列表</span>
                 </div>
                 <span class="header-button">
-                        <a type="button" class="btn btn-green btn-min" ng-click="exportData();"
-                           ng-disabled="!pager.total" ng-cloak> 导出数据 </a>
+                    <%--<a type="button" class="btn btn-green btn-min" ng-click="exportData();"
+                       ng-disabled="!pager.total" ng-cloak> 导出数据 </a>--%>
                 </span>
             </div>
             <div class="block-content">

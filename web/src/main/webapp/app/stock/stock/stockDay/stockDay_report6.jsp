@@ -35,42 +35,50 @@
             <div class="block-header">
                     <span class="header-button">
                         <a type="button" class="btn btn-green btn-min" ng-click="reset();"> 重置 </a>
-                        <a type="button" class="btn btn-green btn-min" ng-click="query();"> 查询 </a>
+                        <a type="button" class="btn btn-green btn-min" ng-click="query();" ng-cloak
+                           ng-disabled="form.$invalid"> 查询 </a>
                     </span>
             </div>
             <div class="block-content">
                 <div class="content-wrap">
-                    <div class="row float">
-                        <div class="item w200">
-                            <div class="form-label w80">
-                                <label>6线组合:</label>
+                    <form name="form" role="form">
+                        <div class="row float">
+                            <div class="item w200">
+                                <div class="form-label w80">
+                                    <label>股票代码:</label>
+                                </div>
+                                <input type="text" class="w120" ng-model="condition.code"
+                                       maxlength="10" validate validate-required/>
                             </div>
-                            <input type="text" class="w120" ng-model="condition.key"
-                                   maxlength="10"/>
+                            <div class="item w200">
+                                <div class="form-label w80">
+                                    <label>开始时间:</label>
+                                </div>
+                                <div class="pr w120">
+                                    <input type="text" class="w120" ng-model="condition.businessDateGe" readonly
+                                           eccrm-my97="{}" validate validate-required/>
+                                </div>
+                            </div>
+                            <div class="item w200">
+                                <div class="form-label w80">
+                                    <label>截止时间:</label>
+                                </div>
+                                <div class="pr w120">
+                                    <input type="text" class="w120" ng-model="condition.businessDateLt" readonly
+                                           eccrm-my97="{}" validate validate-required/>
+                                </div>
+                            </div>
                         </div>
-                        <div class="item w200">
-                            <div class="form-label w80">
-                                <label>交易时间:</label>
-                            </div>
-                            <div class="pr w120">
-                                <input type="text" class="w120" ng-model="condition.businessDate" readonly
-                                       eccrm-my97="{}"/>
-                                <span class="add-on">
-                                    <i class="icons icon clock" ng-click="condition.businessDate=null"
-                                       title="点击清除"></i>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
-    <div class="list-result">
+    <div class="list-result no-pagination">
         <div class="block">
             <div class="block-header">
                 <div class="header-text">
-                    <span>分析结果</span>
+                    <span>6日K分析结果</span>
                 </div>
             </div>
             <div class="block-content">
@@ -80,24 +88,26 @@
                             <thead class="table-header">
                             <tr>
                                 <td class="width-min">序号</td>
-                                <td>股票代码</td>
                                 <td>6线组合</td>
                                 <td>阳性比</td>
                                 <td>最高值平均值</td>
                                 <td>最低值平均值</td>
+                                <td>总线</td>
                             </tr>
                             </thead>
                             <tbody class="table-body">
-                            <tr ng-show="!pager.total">
-                                <td colspan="7" class="text-center">没有查询到数据！</td>
+                            <tr ng-show="!beans.length">
+                                <td colspan="6" class="text-center">没有查询到数据！</td>
                             </tr>
-                            <tr bindonce ng-repeat="foo in beans.data" ng-cloak>
+                            <tr bindonce ng-repeat="foo in beans" ng-cloak>
                                 <td bo-text="$index+1"></td>
-                                <td bo-text="foo.code"></td>
-                                <td bo-text="foo.key"></td>
-                                <td bo-text="foo.percent"></td>
-                                <td bo-text="foo.avgHighPrice|number:3"></td>
-                                <td bo-text="foo.avgLowPrice|number:3"></td>
+                                <td bo-text="foo.key1"></td>
+                                <td>
+                                    <span bo-text="(foo.yang*100/foo.counts)|number:2"></span> %
+                                </td>
+                                <td bo-text="(foo.nextHigh/foo.counts)|number:3"></td>
+                                <td bo-text="(foo.nextLow/foo.counts)|number:3"></td>
+                                <td bo-text="foo.yang"></td>
                             </tr>
                             </tbody>
                         </table>
@@ -106,7 +116,6 @@
             </div>
         </div>
     </div>
-    <div class="list-pagination" eccrm-page="pager"></div>
 </div>
 </body>
 <script type="text/javascript" src="<%=contextPath%>/app/stock/stock/stockDay/stockDay.js"></script>

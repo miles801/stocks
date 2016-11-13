@@ -18,15 +18,13 @@ import com.michael.poi.core.RuntimeContext;
 import com.michael.poi.imp.cfg.Configuration;
 import com.michael.stock.stock.bo.StockBo;
 import com.michael.stock.stock.dao.StockDao;
+import com.michael.stock.stock.dao.StockDayDao;
 import com.michael.stock.stock.domain.Stock;
-import com.michael.stock.stock.domain.StockDay;
 import com.michael.stock.stock.dto.StockDTO;
-import com.michael.stock.stock.service.StockRequestInstance;
 import com.michael.stock.stock.service.StockService;
 import com.michael.stock.stock.vo.StockVo;
 import com.michael.utils.beans.BeanCopyUtils;
 import com.michael.utils.string.StringUtils;
-import com.miles.stock.utils.StockUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
@@ -58,13 +56,9 @@ public class StockServiceImpl implements StockService, BeanWrapCallback<Stock, S
     @Resource
     private StockDao stockDao;
 
+    @Resource
+    private StockDayDao stockDayDao;
     private Logger logger = Logger.getLogger(StockServiceImpl.class);
-    Map<Integer, String> map = new HashMap<Integer, String>() {{
-        put(1, "000");
-        put(2, "002");
-        put(3, "300");
-        put(4, "600");
-    }};
 
     @Override
     public String save(Stock stock) {
@@ -86,10 +80,6 @@ public class StockServiceImpl implements StockService, BeanWrapCallback<Stock, S
         String code = stock.getCode();
         Assert.isTrue(code.matches("\\d{6}"), "操作失败!错误的股票代码!");
 
-        // 设置类型
-        String key = code.substring(0, 3);
-        int type = getType(key);
-        stock.setType(type);
         // 验证重复 - 编号
         boolean hasCode = stockDao.hasCode(stock.getCode(), stock.getId());
         Assert.isTrue(!hasCode, "操作失败!编号[" + stock.getCode() + "]已经存在!");
@@ -99,17 +89,6 @@ public class StockServiceImpl implements StockService, BeanWrapCallback<Stock, S
         boolean hasName = stockDao.hasName(stock.getName(), stock.getId());
         Assert.isTrue(!hasName, "操作失败!名称[" + stock.getName() + "]已经存在!");
 
-    }
-
-    private int getType(String key) {
-        int type = 1;
-        for (Map.Entry<Integer, String> entry : map.entrySet()) {
-            if (entry.getValue().equals(key)) {
-                type = entry.getKey();
-                break;
-            }
-        }
-        return type;
     }
 
     @Override
@@ -199,24 +178,6 @@ public class StockServiceImpl implements StockService, BeanWrapCallback<Stock, S
         return map;
     }
 
-
-    @Override
-    public Map<String, Object> syncStockBusiness(String... stocks) {
-        if (stocks == null || stocks.length == 0) {
-            return null;
-        }
-        String content = StockRequestInstance.getInstance().getStockRequest().get(stocks);
-        String stockResult[] = content.split(";");
-        List<com.miles.stock.domain.Stock> stockList = StockUtils.wrapToStock(stockResult);
-        if (stockList != null) {
-            for (com.miles.stock.domain.Stock s : stockList) {
-                StockDay day = new StockDay();
-                // fixme 查询这只股票前6天的数据
-                //
-            }
-        }
-        return null;
-    }
 
     public void importData(String[] attachmentIds) {
         Logger logger = Logger.getLogger(StockServiceImpl.class);
