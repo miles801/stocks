@@ -78,7 +78,7 @@
             var o = angular.extend({}, $scope.condition);
             o.start = null;
             o.limit = null;
-            window.open(CommonUtils.contextPathURL('/stock/stock/stockDay/export-result?' + encodeURI(encodeURI($.param(o)))));
+            window.open(CommonUtils.contextPathURL('/stock/stock/stockDay/export-result6?' + encodeURI(encodeURI($.param(o)))));
         };
     });
 })(window, angular, jQuery);

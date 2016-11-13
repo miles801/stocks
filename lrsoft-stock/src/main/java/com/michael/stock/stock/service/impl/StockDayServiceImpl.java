@@ -179,16 +179,18 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
         }
         sql += " group by code,s_key3 ";
 
-        String totalSql = "select count(a.code) from (" + sql + ") a";
-        Query totalQuery = session.createSQLQuery(totalSql);
         int index = 0;
-        for (Object o : params) {
-            totalQuery.setParameter(index++, o);
-        }
-        BigInteger bigInteger = (BigInteger) totalQuery.uniqueResult();
-        vo.setTotal(bigInteger.longValue());
-        if (vo.getTotal() == 0) {
-            return vo;
+        if (Pager.getStart() == null || Pager.getStart() == 0) {
+            String totalSql = "select count(a.code) from (" + sql + ") a";
+            Query totalQuery = session.createSQLQuery(totalSql);
+            for (Object o : params) {
+                totalQuery.setParameter(index++, o);
+            }
+            BigInteger bigInteger = (BigInteger) totalQuery.uniqueResult();
+            vo.setTotal(bigInteger.longValue());
+            if (vo.getTotal() == 0) {
+                return vo;
+            }
         }
 
         if (Pager.getOrder() != null && Pager.getOrder().hasNext()) {
@@ -232,16 +234,18 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
         }
         sql += " group by code,s_key ";
 
-        String totalSql = "select count(a.code) from (" + sql + ") a";
-        Query totalQuery = session.createSQLQuery(totalSql);
         int index = 0;
-        for (Object o : params) {
-            totalQuery.setParameter(index++, o);
-        }
-        BigInteger bigInteger = (BigInteger) totalQuery.uniqueResult();
-        vo.setTotal(bigInteger.longValue());
-        if (vo.getTotal() == 0) {
-            return vo;
+        if (Pager.getStart() == null || Pager.getStart() == 0) {
+            String totalSql = "select count(a.code) from (" + sql + ") a";
+            Query totalQuery = session.createSQLQuery(totalSql);
+            for (Object o : params) {
+                totalQuery.setParameter(index++, o);
+            }
+            BigInteger bigInteger = (BigInteger) totalQuery.uniqueResult();
+            vo.setTotal(bigInteger.longValue());
+            if (vo.getTotal() == 0) {
+                return vo;
+            }
         }
 
         if (Pager.getOrder() != null && Pager.getOrder().hasNext()) {
