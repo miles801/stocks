@@ -69,7 +69,10 @@
             },
 
             // 最后一个交易日
-            lastDay: {method: 'GET', params: {method: 'lastDay'}, isArray: false}
+            lastDay: {method: 'GET', params: {method: 'lastDay'}, isArray: false},
+
+            // 同步股票交易历史
+            sync: {method: 'POST', params: {method: 'sync'}, isArray: false}
         })
     });
 

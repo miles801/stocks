@@ -84,6 +84,7 @@
                 </div>
                 <span class="header-button">
                         <a type="button" class="btn btn-green btn-min" ng-click="importData();"> 导入 </a>
+                        <%--<a type="button" class="btn btn-green btn-min" ng-click="sync();"> 同步今日交易数据 </a>--%>
                 </span>
             </div>
             <div class="block-content">

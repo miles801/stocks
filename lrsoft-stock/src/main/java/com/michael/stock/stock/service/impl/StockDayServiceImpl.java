@@ -20,6 +20,8 @@ import com.michael.stock.stock.service.StockRequestInstance;
 import com.michael.stock.stock.vo.StockDayVo;
 import com.michael.utils.date.DateUtils;
 import com.michael.utils.string.StringUtils;
+import com.miles.stock.core.Configuration;
+import com.miles.stock.sina.SinaStockAdapter;
 import com.miles.stock.utils.StockUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -106,26 +108,104 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
 
 
     @Override
+    @SuppressWarnings("unchecked")
     public Map<String, Object> syncStockBusiness(String... stocks) {
         if (stocks == null || stocks.length == 0) {
             return null;
+        }
+        if (Configuration.getInstance().getStockAdapter() == null) {
+            Configuration.getInstance().setStockAdapter(new SinaStockAdapter());
         }
         String content = StockRequestInstance.getInstance().getStockRequest().get(stocks);
         String stockResult[] = content.split(";");
         List<com.miles.stock.domain.Stock> stockList = StockUtils.wrapToStock(stockResult);
         Date date = DateUtils.getDate(new Date(), 0, 0, 0);
         if (stockList != null) {
+            Session session = HibernateUtils.getSession(false);
             for (com.miles.stock.domain.Stock s : stockList) {
-                StockDay day = new StockDay();
-                day.setCode(s.getCode());
-                day.setName(s.getName());
-                day.setBusinessDate(date);
-                day.setHighPrice(Double.parseDouble(s.getTodayHighPrice().toString()));
-                day.setLowPrice(Double.parseDouble(s.getTodayLowPrice().toString()));
-                day.setOpenPrice(Double.parseDouble(s.getOpenPrice().toString()));
-                day.setClosePrice(Double.parseDouble(s.getClosePrice().toString()));
-                day.setYesterdayClosePrice(Double.parseDouble(s.getYesterdayClosePrice().toString()));
-                stockDayDao.save(day);
+                // 如果该条数据已经有交易数据，则跳过
+                final String code = s.getCode();
+                String id = (String) session.createQuery("select sd.id from " + StockDay.class.getName() + " sd where sd.businessDate=? and sd.code=?")
+                        .setParameter(0, date)
+                        .setParameter(1, code)
+                        .setFirstResult(0)
+                        .setMaxResults(1)
+                        .uniqueResult();
+                if (StringUtils.isNotEmpty(id)) {
+                    continue;
+                }
+                // 获取今天之前5天的交易数据 ,如果不足5日，则添加0补足
+                List<StockDay> history = session.createQuery("from " + StockDay.class.getName() + " sd where sd.businessDate<? and sd.code=? order by sd.businessDate desc")
+                        .setParameter(0, date)
+                        .setParameter(1, code)
+                        .setFirstResult(0)
+                        .setMaxResults(5)
+                        .list();
+                int k = 5 - history.size();
+                for (int i = 0; i < k; i++) {
+                    StockDay foo = new StockDay();
+                    foo.setP1(0d);
+                    foo.setP2(0d);
+                    foo.setP3(0d);
+                    foo.setP4(0d);
+                    foo.setP5(0d);
+                    foo.setYesterdayClosePrice(0d);
+                    foo.setKey("000000");
+                    foo.setKey3("000");
+                    foo.setClosePrice(0d);
+                    foo.setUpdown(0d);
+                    history.add(foo);
+                }
+                StockDay stockDay = new StockDay();
+                stockDay.setCode(code);
+                stockDay.setName(s.getName());
+                stockDay.setBusinessDate(date);
+                stockDay.setHighPrice(Double.parseDouble(s.getTodayHighPrice().toString()));
+                stockDay.setLowPrice(Double.parseDouble(s.getTodayLowPrice().toString()));
+                stockDay.setOpenPrice(Double.parseDouble(s.getOpenPrice().toString()));
+                stockDay.setClosePrice(Double.parseDouble(s.getClosePrice().toString()));
+                stockDay.setYesterdayClosePrice(Double.parseDouble(s.getYesterdayClosePrice().toString()));
+                stockDay.setUpdown(stockDay.getClosePrice() - stockDay.getOpenPrice());
+                // 6日时间&组合
+                stockDay.setDate6(history.get(4).getBusinessDate());
+                final StockDay yesterday = history.get(0);
+                stockDay.setKey(yesterday.getKey().substring(1) + (stockDay.getUpdown() > 0 ? "1" : "0"));
+
+                // 3日时间&组合
+                stockDay.setDate3(history.get(1).getBusinessDate());
+                stockDay.setKey3(yesterday.getKey3().substring(1) + (stockDay.getUpdown() > 0 ? "1" : "0"));
+
+                // 七日阴阳
+                if (stockDay.getClosePrice() - stockDay.getOpenPrice() == 0) {
+                    stockDay.setYang(yesterday.getYang());
+                } else {
+                    stockDay.setYang(stockDay.getClosePrice() - stockDay.getOpenPrice() > 0);
+                }
+
+                // 第1日
+                stockDay.setYesterdayClosePrice(yesterday.getClosePrice());
+                if (yesterday.getClosePrice() != 0d) {
+                    stockDay.setP1((stockDay.getClosePrice() - yesterday.getClosePrice()) / yesterday.getClosePrice());
+                    // 第2日
+                    stockDay.setP2((stockDay.getClosePrice() - history.get(1).getClosePrice()) / yesterday.getClosePrice());
+                    // 第3日
+                    stockDay.setP3((stockDay.getClosePrice() - history.get(2).getClosePrice()) / yesterday.getClosePrice());
+                    // 第4日
+                    stockDay.setP4((stockDay.getClosePrice() - history.get(3).getClosePrice()) / yesterday.getClosePrice());
+                    // 第5日
+                    stockDay.setP5((stockDay.getClosePrice() - history.get(4).getClosePrice()) / yesterday.getClosePrice());
+
+                    // 第七日高
+                    yesterday.setNextHigh(stockDay.getHighPrice() - yesterday.getClosePrice() / yesterday.getClosePrice());
+                    // 第七日低
+                    yesterday.setNextLow(stockDay.getLowPrice() - yesterday.getClosePrice() / yesterday.getClosePrice());
+
+                    session.update(yesterday);
+                }
+                history.remove(4);
+                history.add(0, stockDay);
+
+                stockDayDao.save(stockDay);
             }
         }
         return null;

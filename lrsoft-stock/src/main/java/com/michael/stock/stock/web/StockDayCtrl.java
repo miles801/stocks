@@ -5,12 +5,14 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.michael.common.JspAccessType;
+import com.michael.core.SystemContainer;
 import com.michael.core.pager.PageVo;
 import com.michael.core.pager.Pager;
 import com.michael.core.web.BaseController;
 import com.michael.poi.exp.ExportEngine;
 import com.michael.stock.stock.bo.StockDayBo;
 import com.michael.stock.stock.domain.StockDay;
+import com.michael.stock.stock.schedule.StockBusinessSchedule;
 import com.michael.stock.stock.service.StockDayService;
 import com.michael.stock.stock.vo.StockDayVo;
 import com.michael.utils.gson.DateStringConverter;
@@ -314,4 +316,13 @@ public class StockDayCtrl extends BaseController {
         return null;
     }
 
+
+    // 手动触发股票交易历史的同步
+    @ResponseBody
+    @RequestMapping(value = "/sync", method = RequestMethod.POST)
+    public void sync(HttpServletRequest request, HttpServletResponse response) {
+        StockBusinessSchedule schedule = SystemContainer.getInstance().getBean(StockBusinessSchedule.class);
+        schedule.execute();
+        GsonUtils.printSuccess(response);
+    }
 }

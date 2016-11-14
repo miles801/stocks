@@ -31,13 +31,14 @@ public class StockBusinessSchedule {
             List<String> codes = session.createQuery("select o.code from " + Stock.class.getName() + " o ")
                     .list();
             int size = codes.size();
-            long times = IntegerUtils.times(size, 10);
+            final int batch = 50;
+            long times = IntegerUtils.times(size, batch);
             for (int i = 0; i < times; i++) {
-                int last = (i + 1) * 10;
+                int last = (i + 1) * batch;
                 if (last > size) {
                     last = size;
                 }
-                ThreadPool.getInstance().execute(new StockBusinessThread(codes.subList(i * 10, last).toArray(new String[]{})));
+                ThreadPool.getInstance().execute(new StockBusinessThread(codes.subList(i * batch, last).toArray(new String[]{})));
             }
         }
         StockService stockService = SystemContainer.getInstance().getBean(StockService.class);

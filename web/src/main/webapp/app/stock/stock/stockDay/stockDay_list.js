@@ -39,9 +39,6 @@
                     });
                     CommonUtils.loading(promise, 'Loading...');
                 });
-            },
-            finishInit: function () {
-                this.query();
             }
         };
 
@@ -73,6 +70,13 @@
                 title: '新增日K',
                 url: '/stock/stock/stockDay/add',
                 onUpdate: $scope.query
+            });
+        };
+
+        // 同步今日交易数据
+        $scope.sync = function () {
+            StockDayService.sync(function () {
+                AlertFactory.success('后台同步程序已经启动!请耐心等待...');
             });
         };
 
