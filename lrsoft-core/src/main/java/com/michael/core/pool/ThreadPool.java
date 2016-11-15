@@ -24,7 +24,7 @@ public final class ThreadPool {
 
     private ThreadPool() {
         logger.info("初始化线程池....");
-        executor = new ThreadPoolExecutor(100, 200, 50000L, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(100));
+        executor = new ThreadPoolExecutor(100, 2000, 50000L, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(100));
         logger.info("初始化线程池完成....");
     }
 
