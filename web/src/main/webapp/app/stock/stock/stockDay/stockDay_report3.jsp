@@ -91,14 +91,48 @@
                         <table class="table table-striped table-hover">
                             <thead class="table-header">
                             <tr>
-                                <
                                 <td class="width-min">序号</td>
                                 <td>股票代码</td>
-                                <td>3线组合</td>
-                                <td>阳性比</td>
-                                <td>最高值平均值</td>
-                                <td>最低值平均值</td>
-                                <td>总线</td>
+                                <td class="cp" ng-click="order('key1')">3线组合
+                                    <span>
+                                        <span ng-show="orderBy=='key1'">
+                                            <span ng-show="reverse">▼</span>
+                                            <span ng-show="!reverse">▲</span>
+                                        </span>
+                                    </span>
+                                </td>
+                                <td class="cp" ng-click="order('yang')">阳性比
+                                    <span>
+                                        <span ng-show="orderBy=='yang'">
+                                            <span ng-show="reverse">▼</span>
+                                            <span ng-show="!reverse">▲</span>
+                                        </span>
+                                    </span>
+                                </td>
+                                <td class="cp" ng-click="order('avgHigh')">7H均值
+                                    <span>
+                                        <span ng-show="orderBy=='avgHigh'">
+                                            <span ng-show="reverse">▼</span>
+                                            <span ng-show="!reverse">▲</span>
+                                        </span>
+                                    </span>
+                                </td>
+                                <td class="cp" ng-click="order('avgLow')">7L均值
+                                    <span>
+                                        <span ng-show="orderBy=='avgLow'">
+                                            <span ng-show="reverse">▼</span>
+                                            <span ng-show="!reverse">▲</span>
+                                        </span>
+                                    </span>
+                                </td>
+                                <td class="cp" ng-click="order('yang')" style="width: inherit">总线
+                                    <span>
+                                        <span ng-show="orderBy=='yang'">
+                                            <span ng-show="reverse">▼</span>
+                                            <span ng-show="!reverse">▲</span>
+                                        </span>
+                                    </span>
+                                </td>
                             </tr>
                             </thead>
                             <tbody class="table-body">
@@ -112,8 +146,8 @@
                                 <td>
                                     <span bo-text="(foo.yang*100/foo.counts)|number:2"></span> %
                                 </td>
-                                <td bo-text="(foo.nextHigh/foo.counts)|number:3"></td>
-                                <td bo-text="(foo.nextLow/foo.counts)|number:3"></td>
+                                <td bo-text="foo.avgHigh|number:3"></td>
+                                <td bo-text="foo.avgLow|number:3"></td>
                                 <td bo-text="foo.yang"></td>
                             </tr>
                             </tbody>

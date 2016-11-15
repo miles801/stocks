@@ -9,9 +9,11 @@
         'stock.stock.stockDay'
     ]);
     app.controller('Ctrl', function ($scope, CommonUtils, AlertFactory, ModalFactory, StockDayService, StockDayParam) {
+        $scope.orderBy = 'key1';
         var defaults = {// 默认查询条件
             businessDateGe: moment().add(-1, 'M').format('YYYY-MM-DD'),
-            businessDateLt: moment().format('YYYY-MM-DD')
+            businessDateLt: moment().format('YYYY-MM-DD'),
+            orderBy: 'key1'
         };
 
         $scope.condition = angular.extend({}, defaults);
@@ -49,5 +51,14 @@
         $scope.query = function () {
             $scope.pager.query();
         };
+
+        $scope.order = function (key) {
+            $scope.condition.orderBy = key;
+            $scope.condition.reverse = !$scope.condition.reverse;
+            $scope.orderBy = key;
+            $scope.reverse = $scope.condition.reverse;
+            $scope.query();
+        }
+
     });
 })(window, angular, jQuery);

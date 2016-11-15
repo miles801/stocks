@@ -219,7 +219,7 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
         Session session = HibernateUtils.getSession(false);
         String sql = "select s_key3 as key1,code," +
                 "sum(case isYang when 1 then 1 else 0 end) as yang," +
-                "sum(nextHigh) nextHigh,sum(nextLow) nextLow,count(id) counts " +
+                "sum(nextHigh) as nextHigh,sum(nextLow) as nextLow,count(id) as counts " +
                 "from stock_day where 1=1 ";
         List<Object> params = new ArrayList<>();
         if (bo.getBusinessDateGe() != null) {
@@ -238,12 +238,13 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
             sql += " and s_key3=? ";
             params.add(bo.getKey3());
         }
-        sql += " group by s_key3,code ";
+        sql += " group by s_key,code ";
+        sql = "select t.*,t.nextHigh/t.counts as avgHigh,t.nextLow/t.counts as avgLow from (" + sql + ") t ";
         if (Pager.getOrder() != null && Pager.getOrder().hasNext()) {
             Order o = Pager.getOrder().next();
             sql += " order by " + o.getName() + (o.isReverse() ? " desc " : " asc ");
         } else {
-            sql += " order by s_key3 asc ";
+            sql += " order by t.key1 asc ";
         }
         Query query = session.createSQLQuery(sql);
         int index = 0;
@@ -366,7 +367,7 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
         Session session = HibernateUtils.getSession(false);
         String sql = "select s_key as key1,code," +
                 "sum(case isYang when 1 then 1 else 0 end) as yang," +
-                "sum(nextHigh) nextHigh,sum(nextLow) nextLow,count(id) counts " +
+                "sum(nextHigh) as nextHigh,sum(nextLow) as nextLow,count(id) as counts " +
                 "from stock_day where 1=1 ";
         List<Object> params = new ArrayList<>();
         if (bo.getBusinessDateGe() != null) {
@@ -386,11 +387,12 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
             params.add(bo.getKey());
         }
         sql += " group by s_key,code ";
+        sql = "select t.*,t.nextHigh/t.counts as avgHigh,t.nextLow/t.counts as avgLow from (" + sql + ") t ";
         if (Pager.getOrder() != null && Pager.getOrder().hasNext()) {
             Order o = Pager.getOrder().next();
             sql += " order by " + o.getName() + (o.isReverse() ? " desc " : " asc ");
         } else {
-            sql += " order by s_key asc ";
+            sql += " order by t.key1 asc ";
         }
         Query query = session.createSQLQuery(sql);
         int index = 0;

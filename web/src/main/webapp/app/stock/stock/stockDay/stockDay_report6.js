@@ -10,9 +10,11 @@
         'stock.stock.stockDay'
     ]);
     app.controller('Ctrl', function ($scope, CommonUtils, AlertFactory, ModalFactory, StockDayService, StockDayParam) {
+        $scope.orderBy = 'key1';
         var defaults = {// 默认查询条件
             businessDateGe: moment().add(-1, 'M').format('YYYY-MM-DD'),
-            businessDateLt: moment().format('YYYY-MM-DD')
+            businessDateLt: moment().format('YYYY-MM-DD'),
+            orderBy: 'key1'
         };
 
         $scope.condition = angular.extend({}, defaults);
@@ -33,7 +35,10 @@
                         AlertFactory.warning('请输入正确的股票代码（必须是6位数字）!');
                         return;
                     }
-                    var param = angular.extend({start: $scope.pager.start, limit: $scope.pager.limit}, $scope.condition);
+                    var param = angular.extend({
+                        start: $scope.pager.start,
+                        limit: $scope.pager.limit
+                    }, $scope.condition);
                     if (param.businessDateLt) {
                         param.businessDateLt = moment(param.businessDateLt).add(1, 'd').format('YYYY-MM-DD');
                     }
@@ -49,6 +54,14 @@
         $scope.query = function () {
             $scope.pager.query();
         };
+
+        $scope.order = function (key) {
+            $scope.condition.orderBy = key;
+            $scope.condition.reverse = !$scope.condition.reverse;
+            $scope.orderBy = key;
+            $scope.reverse = $scope.condition.reverse;
+            $scope.query();
+        }
 
     });
 })(window, angular, jQuery);
