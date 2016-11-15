@@ -68,4 +68,11 @@ public interface StockDayService {
      * @param stocks 股票代号
      */
     Map<String, Object> syncStockBusiness(String... stocks);
+
+    /**
+     * 重置第七日数据信息：七日高、七日低、七日阴阳
+     *
+     * @param stocks 股票代码
+     */
+    void reset7DayInfo(String... stocks);
 }

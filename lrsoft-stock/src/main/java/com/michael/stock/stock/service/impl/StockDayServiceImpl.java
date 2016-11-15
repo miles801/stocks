@@ -108,10 +108,47 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
         return vos;
     }
 
+    @Override
+    public void reset7DayInfo(String... stocks) {
+        Session session = HibernateUtils.getSession(false);
+        Logger logger = Logger.getLogger(StockDayService.class);
+        for (String code : stocks) {
+            String id = "0";
+            int i = 0;
+            while (true) {
+                List<StockDay> data = session.createQuery("from " + StockDay.class.getName() + " o where o.id>=? and  o.code=? order by o.id asc")
+                        .setParameter(0, id)
+                        .setParameter(1, code)
+                        .setFirstResult(0)
+                        .setMaxResults(20)
+                        .list();
+                int index = 0;
+                int size = data.size();
+                for (; index < size - 1; index++) {
+                    final StockDay stockDay = data.get(index);
+                    final StockDay stockDay1 = data.get(index + 1);
+                    stockDay.setYang(stockDay1.getUpdown() > 0);
+                    stockDay.setNextHigh(stockDay1.getHighPrice());
+                    stockDay.setNextLow(stockDay1.getLowPrice());
+                    i++;
+                }
+                if (size > 0) {
+                    id = data.get(size - 1).getId();
+                }
+                session.flush();
+                session.clear();
+                if (size < 20) {
+                    break;
+                }
+            }
+            logger.info(String.format("更新%s结束，共计%d条", code, i));
+        }
+    }
 
     @Override
     @SuppressWarnings("unchecked")
     public Map<String, Object> syncStockBusiness(String... stocks) {
+
         if (stocks == null || stocks.length == 0) {
             return null;
         }
