@@ -75,9 +75,10 @@
 
         // 同步今日交易数据
         $scope.sync = function () {
-            StockDayService.sync(function () {
+            var promise = StockDayService.sync(function () {
                 AlertFactory.success('后台同步程序已经启动!请耐心等待...');
             });
+            CommonUtils.loading(promise);
         };
 
         // 更新

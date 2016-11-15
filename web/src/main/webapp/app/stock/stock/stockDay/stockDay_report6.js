@@ -24,24 +24,30 @@
         };
 
 
+        $scope.pager = {
+            limit: 50,
+            fetch: function () {
+                $scope.pager.total = 64 * 3000;
+                return CommonUtils.promise(function (defer) {
+                    if ($scope.condition.code && !(/^\d{6}$/g.test($scope.condition.code))) {
+                        AlertFactory.warning('请输入正确的股票代码（必须是6位数字）!');
+                        return;
+                    }
+                    var param = angular.extend({start: $scope.pager.start, limit: $scope.pager.limit}, $scope.condition);
+                    if (param.businessDateLt) {
+                        param.businessDateLt = moment(param.businessDateLt).add(1, 'd').format('YYYY-MM-DD');
+                    }
+                    var promise = StockDayService.report6(param, function (data) {
+                        $scope.beans = data.data || [];
+                        defer.resolve(64 * 3000);
+                    });
+                    CommonUtils.loading(promise, 'Loading...');
+                });
+            }
+        };
         // 查询数据
         $scope.query = function () {
-            if ($scope.form.$invalid) {
-                AlertFactory.warning('请完善查询条件!');
-                return;
-            }
-            if (!(/^\d{6}$/g.test($scope.condition.code))) {
-                AlertFactory.warning('请输入正确的股票代码（必须是6位数字）!');
-                return;
-            }
-            var param = angular.extend({start: this.start, limit: this.limit}, $scope.condition);
-            if (param.businessDateLt) {
-                param.businessDateLt = moment(param.businessDateLt).add(1, 'd').format('YYYY-MM-DD');
-            }
-            var promise = StockDayService.report6(param, function (data) {
-                $scope.beans = data.data || [];
-            });
-            CommonUtils.loading(promise, 'Loading...');
+            $scope.pager.query();
         };
 
     });

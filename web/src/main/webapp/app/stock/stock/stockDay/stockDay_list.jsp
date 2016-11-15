@@ -84,7 +84,7 @@
                 </div>
                 <span class="header-button">
                         <a type="button" class="btn btn-green btn-min" ng-click="importData();"> 导入 </a>
-                        <%--<a type="button" class="btn btn-green btn-min" ng-click="sync();"> 同步今日交易数据 </a>--%>
+                        <a type="button" class="btn btn-green btn-min" ng-click="sync();"> 同步今日交易数据 </a>
                 </span>
             </div>
             <div class="block-content">
@@ -100,6 +100,8 @@
                                 <td>昨日收盘价</td>
                                 <td>开盘价</td>
                                 <td>收盘价</td>
+                                <td>最高价</td>
+                                <td>最低价</td>
                                 <td>涨跌</td>
                                 <td>6日代码</td>
                                 <td>3日代码</td>
@@ -107,7 +109,7 @@
                             </thead>
                             <tbody class="table-body">
                             <tr ng-show="!pager.total">
-                                <td colspan="10" class="text-center">没有查询到数据！</td>
+                                <td colspan="12" class="text-center">没有查询到数据！</td>
                             </tr>
                             <tr bindonce ng-repeat="foo in beans.data" ng-cloak>
                                 <td bo-text="pager.start+$index+1"></td>
@@ -119,7 +121,9 @@
                                 <td bo-text="foo.yesterdayClosePrice|number:3"></td>
                                 <td bo-text="foo.openPrice|number:3"></td>
                                 <td bo-text="foo.closePrice|number:3"></td>
-                                <td bo-text="foo.isYang?'阳':'阴'" ng-class="{'red':foo.isYang,'green':!foo.isYang}"></td>
+                                <td bo-text="foo.highPrice|number:3"></td>
+                                <td bo-text="foo.lowPrice|number:3"></td>
+                                <td bo-text="foo.updown>0?'阳':'阴'" ng-class="{'red':foo.updown>0,'green':foo.updown<0}"></td>
                                 <td bo-text="foo.key"></td>
                                 <td bo-text="foo.key3"></td>
                             </tr>

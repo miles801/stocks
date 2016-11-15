@@ -47,8 +47,13 @@
                                 <div class="form-label w80">
                                     <label>股票代码:</label>
                                 </div>
-                                <input type="text" class="w120" ng-model="condition.code"
-                                       maxlength="10" validate validate-required/>
+                                <input type="text" class="w120" ng-model="condition.code" maxlength="6"/>
+                            </div>
+                            <div class="item w200">
+                                <div class="form-label w80">
+                                    <label>6线组合:</label>
+                                </div>
+                                <input type="text" class="w120" ng-model="condition.key" maxlength="6"/>
                             </div>
                             <div class="item w200">
                                 <div class="form-label w80">
@@ -74,7 +79,7 @@
             </div>
         </div>
     </div>
-    <div class="list-result no-pagination">
+    <div class="list-result">
         <div class="block">
             <div class="block-header">
                 <div class="header-text">
@@ -88,6 +93,7 @@
                             <thead class="table-header">
                             <tr>
                                 <td class="width-min">序号</td>
+                                <td>股票代码</td>
                                 <td>6线组合</td>
                                 <td>阳性比</td>
                                 <td>最高值平均值</td>
@@ -96,11 +102,12 @@
                             </tr>
                             </thead>
                             <tbody class="table-body">
-                            <tr ng-show="!beans.length">
-                                <td colspan="6" class="text-center">没有查询到数据！</td>
+                            <tr ng-show="!pager.total">
+                                <td colspan="7" class="text-center">没有查询到数据！</td>
                             </tr>
                             <tr bindonce ng-repeat="foo in beans" ng-cloak>
-                                <td bo-text="$index+1"></td>
+                                <td bo-text="pager.start+$index+1"></td>
+                                <td bo-text="foo.code"></td>
                                 <td bo-text="foo.key1"></td>
                                 <td>
                                     <span bo-text="(foo.yang*100/foo.counts)|number:2"></span> %
@@ -116,6 +123,7 @@
             </div>
         </div>
     </div>
+    <div class="list-pagination" eccrm-page="pager"></div>
 </div>
 </body>
 <script type="text/javascript" src="<%=contextPath%>/app/stock/stock/stockDay/stockDay.js"></script>

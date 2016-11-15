@@ -90,7 +90,7 @@
                                 <td colspan="7" class="text-center">没有查询到数据！</td>
                             </tr>
                             <tr bindonce ng-repeat="foo in beans.data" ng-cloak>
-                                <td bo-text="$index+1"></td>
+                                <td bo-text="pager.start+$index+1"></td>
                                 <td bo-text="foo.code"></td>
                                 <td bo-text="foo.key1"></td>
                                 <td>

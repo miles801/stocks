@@ -5,15 +5,19 @@ import com.michael.core.hibernate.filter.DynamicDataFilter;
 import com.michael.core.hibernate.filter.FilterFieldType;
 import com.michael.core.pager.OrderNode;
 import com.michael.core.pager.Pager;
+import com.michael.utils.collection.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.*;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
+import org.hibernate.transform.Transformers;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 封装了Hibernate的getSession操作，在开启session过程中，开启了过滤器
@@ -190,6 +194,39 @@ public class HibernateDaoHelper {
         }
         return criteria;
     }
+
+    /**
+     * sql查询集合（不采用分页）
+     *
+     * @param sql    sql
+     * @param params 可选参数
+     */
+    @SuppressWarnings("unchecked")
+    public List<Map<String, Object>> sqlQueryList(String sql, List<Object> params) {
+        Query query = getSession().createSQLQuery(sql);
+        if (CollectionUtils.isNotEmpty(params)) {
+            for (int i = 0; i < params.size(); i++) {
+                query.setParameter(i, params.get(i));
+            }
+        }
+        query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+        return query.list();
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Map<String, Object>> sqlQueryList(String sql, List<Object> params, int start, int limit) {
+        Query query = getSession().createSQLQuery(sql);
+        if (CollectionUtils.isNotEmpty(params)) {
+            for (int i = 0; i < params.size(); i++) {
+                query.setParameter(i, params.get(i));
+            }
+        }
+        query.setFirstResult(start);
+        query.setMaxResults(limit);
+        query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+        return query.list();
+    }
+
 
     public void evict(Object obj) {
         sessionFactory.getCurrentSession().evict(obj);
