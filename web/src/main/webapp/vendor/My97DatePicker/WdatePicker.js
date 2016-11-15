@@ -524,6 +524,11 @@ var $dp, WdatePicker;
                             scope.$apply(function () {
                                 ctrl.$setViewValue($('#' + id).val());
                             });
+                        },
+                        oncleared:function(){
+                            scope.$apply(function () {
+                                ctrl.$setViewValue(null);
+                            });
                         }
                     }, options);
                     WdatePicker(o);
