@@ -85,6 +85,34 @@ public class DateUtils {
     }
 
     /**
+     * 获取星期
+     *
+     * @param date 如果日期为空，则默认为当天
+     * @return
+     */
+    public static int getWeek(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        if (date != null) {
+            calendar.setTime(date);
+        }
+        return calendar.get(Calendar.DAY_OF_WEEK);
+    }
+
+    /**
+     * 获取当前日期是几年的第几周
+     *
+     * @param date 如果日期为空，则默认为当天
+     * @return
+     */
+    public static int getYearWeek(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        if (date != null) {
+            calendar.setTime(date);
+        }
+        return calendar.get(Calendar.WEEK_OF_YEAR);
+    }
+
+    /**
      * 获得两个时间的时间间隔
      *
      * @param start

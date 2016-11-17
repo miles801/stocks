@@ -17,6 +17,14 @@
     <script>
         window.angular.contextPathURL = '<%=contextPath%>';
     </script>
+    <style>
+        .red{
+            color: #ff2409;
+        }
+        .green{
+            color: #0f900a;
+        }
+    </style>
 </head>
 <body>
 <div class="main condition-row-1" ng-app="stock.stock.stockWeek.list" ng-controller="Ctrl">
@@ -64,11 +72,7 @@
                     <span>周K列表</span>
                 </div>
                 <span class="header-button">
-                        <a type="button" class="btn btn-green btn-min" ng-click="exportData();"
-                           ng-disabled="!pager.total" ng-cloak> 导出数据 </a>
-                    <a type="button" class="btn btn-green btn-min" ng-click="importData();"> 导入 </a>
-                        <a type="button" class="btn btn-green btn-min" ng-click="add();"> 新建 </a>
-                    <a type="button" class="btn btn-green btn-min" ng-click="remove();" ng-disabled="!anyone" ng-cloak> 删除 </a>
+                        <a type="button" class="btn btn-green btn-min" ng-click="resetData();"> 初始化 </a>
                 </span>
             </div>
             <div class="block-content">
@@ -80,13 +84,21 @@
                                 <td class="width-min">序号</td>
                                 <td>股票编号</td>
                                 <td>股票名称</td>
-                                <td>日期</td>
-                                <td>代码</td>
+                                <td>交易日期</td>
+                                <td>交易天数</td>
+                                <td>昨日收盘价</td>
+                                <td>开盘价</td>
+                                <td>收盘价</td>
+                                <td>最高价</td>
+                                <td>最低价</td>
+                                <td>涨跌</td>
+                                <td>6日代码</td>
+                                <td>3日代码</td>
                             </tr>
                             </thead>
                             <tbody class="table-body">
-                            <tr ng-show="!beans || !beans.total">
-                                <td colspan="5" class="text-center">没有查询到数据！</td>
+                            <tr ng-show="!pager.total">
+                                <td colspan="13" class="text-center">没有查询到数据！</td>
                             </tr>
                             <tr bindonce ng-repeat="foo in beans.data" ng-cloak>
                                 <td bo-text="pager.start+$index+1"></td>
@@ -94,8 +106,20 @@
                                     <a ng-click="view(foo.id)" bo-text="foo.code" class="cp" title="点击查看详情"></a>
                                 </td>
                                 <td bo-text="foo.name"></td>
-                                <td bo-text="foo.businessDate|eccrmDate"></td>
+                                <td >
+                                    <span bo-text="foo.openDate|eccrmDate"></span>
+                                    <span style="padding: 0 8px;">--</span>
+                                    <span bo-text="foo.closeDate|eccrmDate"></span>
+                                </td>
+                                <td bo-text="foo.openTimes"></td>
+                                <td bo-text="foo.yesterdayClosePrice|number:3"></td>
+                                <td bo-text="foo.openPrice|number:3"></td>
+                                <td bo-text="foo.closePrice|number:3"></td>
+                                <td bo-text="foo.highPrice|number:3"></td>
+                                <td bo-text="foo.lowPrice|number:3"></td>
+                                <td bo-text="foo.updown>0?'阳':'阴'" ng-class="{'red':foo.updown>0,'green':foo.updown<0}"></td>
                                 <td bo-text="foo.key"></td>
+                                <td bo-text="foo.key3"></td>
                             </tr>
                             </tbody>
                         </table>
@@ -107,8 +131,6 @@
     <div class="list-pagination" eccrm-page="pager"></div>
 </div>
 </body>
-<script type="text/javascript"
-        src="<%=contextPath%>/app/stock/stock/stockWeek/stockWeek.js"></script>
-<script type="text/javascript"
-        src="<%=contextPath%>/app/stock/stock/stockWeek/stockWeek_list.js"></script>
+<script type="text/javascript" src="<%=contextPath%>/app/stock/stock/stockWeek/stockWeek.js"></script>
+<script type="text/javascript" src="<%=contextPath%>/app/stock/stock/stockWeek/stockWeek_list.js"></script>
 </html>

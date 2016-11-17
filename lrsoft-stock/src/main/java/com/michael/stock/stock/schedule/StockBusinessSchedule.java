@@ -21,6 +21,7 @@ import java.util.List;
 @Component
 public class StockBusinessSchedule {
 
+    // 同步股票交易数据
     @Scheduled(cron = "0 30 15 * * ?")
     @SuppressWarnings("unchecked")
     public void execute() {
@@ -44,5 +45,16 @@ public class StockBusinessSchedule {
         StockService stockService = SystemContainer.getInstance().getBean(StockService.class);
         stockService.syncStock();
         logger.info("****************** 同步股票交易数据:end ******************");
+    }
+
+
+    // 同步股票
+    @Scheduled(cron = "0 0 10 * * ?")
+    public void syncStock() {
+        Logger logger = Logger.getLogger(StockBusinessSchedule.class);
+        logger.info("****************** 同步股票:start ******************");
+        StockService stockService = SystemContainer.getInstance().getBean(StockService.class);
+        stockService.syncStock();
+        logger.info("****************** 同步股票:end ******************");
     }
 }

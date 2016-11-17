@@ -49,4 +49,18 @@ public interface StockWeekService {
      * @param attachmentIds 上传的附件列表
      */
     void importData(String[] attachmentIds);
+
+    /**
+     * 重置指定代码的股票周K数据
+     *
+     * @param stockCode 股票代码
+     */
+    void reset(String stockCode);
+
+    /**
+     * 添加指定代码的股票的周K数据（最近一周）
+     *
+     * @param stockCode 股票代码
+     */
+    void add(String stockCode);
 }

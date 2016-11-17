@@ -5,11 +5,13 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.michael.common.JspAccessType;
+import com.michael.core.SystemContainer;
 import com.michael.core.pager.PageVo;
 import com.michael.core.web.BaseController;
 import com.michael.poi.exp.ExportEngine;
 import com.michael.stock.stock.bo.StockWeekBo;
 import com.michael.stock.stock.domain.StockWeek;
+import com.michael.stock.stock.schedule.StockWeekSchedule;
 import com.michael.stock.stock.service.StockWeekService;
 import com.michael.stock.stock.vo.StockWeekVo;
 import com.michael.utils.gson.DateStringConverter;
@@ -177,6 +179,22 @@ public class StockWeekCtrl extends BaseController {
     @RequestMapping(value = "/import", params = {"attachmentIds"}, method = RequestMethod.POST)
     public void importData(@RequestParam String attachmentIds, HttpServletResponse response) {
         stockWeekService.importData(attachmentIds.split(","));
+        GsonUtils.printSuccess(response);
+    }
+
+    // 重置周K数据
+    @ResponseBody
+    @RequestMapping(value = "/reset", method = RequestMethod.POST)
+    public void reset(HttpServletRequest request, HttpServletResponse response) {
+        SystemContainer.getInstance().getBean(StockWeekSchedule.class).execute();
+        GsonUtils.printSuccess(response);
+    }
+
+    // 自动获取周K数据
+    @ResponseBody
+    @RequestMapping(value = "/add", method = RequestMethod.POST)
+    public void add(HttpServletRequest request, HttpServletResponse response) {
+        SystemContainer.getInstance().getBean(StockWeekSchedule.class).add();
         GsonUtils.printSuccess(response);
     }
 }

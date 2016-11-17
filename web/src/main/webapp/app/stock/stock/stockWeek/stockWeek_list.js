@@ -42,43 +42,17 @@
             }
         };
 
-        // 删除或批量删除
-        $scope.remove = function (id) {
-            if (!id) {
-                var ids = [];
-                angular.forEach($scope.items || [], function (o) {
-                    ids.push(o.id);
-                });
-                id = ids.join(',');
-            }
+        $scope.resetData = function () {
             ModalFactory.confirm({
                 scope: $scope,
-                content: '<span class="text-danger">数据一旦删除将不可恢复，请确认!</span>',
+                content: '<span class="text-danger">重置所有周K数据，请慎重操作!</span>',
                 callback: function () {
-                    var promise = StockWeekService.deleteByIds({ids: id}, function () {
-                        AlertFactory.success('删除成功!');
+                    var promise = StockWeekService.reset(function () {
+                        AlertFactory.success('操作成功!');
                         $scope.query();
                     });
                     CommonUtils.loading((promise));
                 }
-            });
-        };
-
-        // 新增
-        $scope.add = function () {
-            CommonUtils.addTab({
-                title: '新增周K',
-                url: '/stock/stock/stockWeek/add',
-                onUpdate: $scope.query
-            });
-        };
-
-        // 更新
-        $scope.modify = function (id) {
-            CommonUtils.addTab({
-                title: '更新周K',
-                url: '/stock/stock/stockWeek/modify?id=' + id,
-                onUpdate: $scope.query
             });
         };
 
@@ -90,14 +64,6 @@
             });
         };
 
-        // 导入数据
-        $scope.importData = function (id) {
-            CommonUtils.addTab({
-                title: '导入数据',
-                url: '/stock/stock/stockWeek/import',
-                onClose: $scope.query
-            });
-        };
         // 导出数据
         $scope.exportData = function () {
             if ($scope.pager.total < 1) {
