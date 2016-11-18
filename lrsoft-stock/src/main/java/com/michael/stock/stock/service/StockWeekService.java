@@ -1,11 +1,13 @@
 package com.michael.stock.stock.service;
 
 import com.michael.core.pager.PageVo;
+import com.michael.stock.stock.bo.StockDayBo;
 import com.michael.stock.stock.bo.StockWeekBo;
 import com.michael.stock.stock.domain.StockWeek;
 import com.michael.stock.stock.vo.StockWeekVo;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Michael
@@ -63,4 +65,13 @@ public interface StockWeekService {
      * @param stockCode 股票代码
      */
     void add(String stockCode);
+
+
+    List<Map<String, Object>> report3(StockWeekBo bo);
+
+    List<Map<String, Object>> report6(StockWeekBo bo);
+
+    PageVo result3(StockWeekBo bo);
+
+    PageVo result6(StockWeekBo bo);
 }

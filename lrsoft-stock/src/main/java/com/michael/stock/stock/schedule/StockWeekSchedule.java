@@ -1,9 +1,9 @@
 package com.michael.stock.stock.schedule;
 
+import com.michael.core.SystemContainer;
 import com.michael.core.hibernate.HibernateUtils;
-import com.michael.core.pool.ThreadPool;
 import com.michael.stock.stock.domain.StockDay;
-import com.michael.utils.number.IntegerUtils;
+import com.michael.stock.stock.service.StockWeekService;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.springframework.stereotype.Component;
@@ -23,17 +23,13 @@ public class StockWeekSchedule {
         // 获取所有的股票编号
         try (Session session = HibernateUtils.openSession()) {
             List<String> codes = session.createQuery("select o.code from " + StockDay.class.getName() + " o group by o.code ")
-                    .setMaxResults(5)
                     .list();
+            StockWeekService stockWeekService = SystemContainer.getInstance().getBean(StockWeekService.class);
+            int index = 0;
             int size = codes.size();
-            final int batch = 5;
-            long times = IntegerUtils.times(size, batch);
-            for (int i = 0; i < times; i++) {
-                int last = (i + 1) * batch;
-                if (last > size) {
-                    last = size;
-                }
-                ThreadPool.getInstance().execute(new StockWeekThread(codes.subList(i * batch, last).toArray(new String[]{})));
+            for (String code : codes) {
+                stockWeekService.reset(code);
+                logger.info(String.format("股票周交易数据初始化成功：%s,总进度：%d / %d", code, ++index, size));
             }
         }
         logger.info("****************** 初始化股票周交易数据:start ******************");
@@ -41,6 +37,7 @@ public class StockWeekSchedule {
 
 
     public void add() {
-
+        StockWeekService stockWeekService = SystemContainer.getInstance().getBean(StockWeekService.class);
+        stockWeekService.add("000001");
     }
 }

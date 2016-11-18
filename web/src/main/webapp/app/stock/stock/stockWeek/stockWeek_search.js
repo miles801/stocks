@@ -3,17 +3,16 @@
  * Created by Michael .
  */
 (function (window, angular, $) {
-    var app = angular.module('stock.stock.stockDay.list', [
+    var app = angular.module('stock.stock.stockWeek.list', [
         'eccrm.angular',
         'eccrm.angularstrap',
-        'stock.stock.stockDay'
+        'stock.stock.stockWeek'
     ]);
-    app.controller('Ctrl', function ($scope, CommonUtils, AlertFactory, ModalFactory, StockDayService, StockDayParam) {
-        var defaults = {// 默认查询条件
+    app.controller('Ctrl', function ($scope, CommonUtils, AlertFactory, ModalFactory, StockWeekService) {
+        var defaults = {
             orderBy: 'businessDate',
-            businessDate: moment().format('YYYY-MM-DD'),
             reverse: true
-        };
+        }; // 默认查询条件
 
         $scope.condition = angular.extend({}, defaults);
 
@@ -30,16 +29,22 @@
         };
         $scope.pager = {
             fetch: function () {
-                var param = angular.extend({}, {start: this.start, limit: this.limit}, $scope.condition);
+                var param = angular.extend({start: this.start, limit: this.limit}, $scope.condition);
                 $scope.beans = [];
+                if(param.businessDateLt) {
+                    param.businessDateLt = moment(param.businessDateLt).add(1, 'd').format('YYYY-MM-DD');
+                }
                 return CommonUtils.promise(function (defer) {
-                    var promise = StockDayService.pageQuery(param, function (data) {
+                    var promise = StockWeekService.pageQuery(param, function (data) {
                         param = null;
                         $scope.beans = data.data || {total: 0};
                         defer.resolve($scope.beans);
                     });
                     CommonUtils.loading(promise, 'Loading...');
                 });
+            },
+            finishInit: function () {
+                this.query();
             }
         };
 
@@ -56,7 +61,7 @@
                 scope: $scope,
                 content: '<span class="text-danger">数据一旦删除将不可恢复，请确认!</span>',
                 callback: function () {
-                    var promise = StockDayService.deleteByIds({ids: id}, function () {
+                    var promise = StockWeekService.deleteByIds({ids: id}, function () {
                         AlertFactory.success('删除成功!');
                         $scope.query();
                     });
@@ -65,55 +70,11 @@
             });
         };
 
-        // 新增
-        $scope.add = function () {
-            CommonUtils.addTab({
-                title: '新增日K',
-                url: '/stock/stock/stockDay/add',
-                onUpdate: $scope.query
-            });
-        };
-
-        // 同步今日交易数据
-        $scope.sync = function () {
-            var promise = StockDayService.sync(function () {
-                AlertFactory.success('同步成功!');
-                $scope.query();
-            });
-            CommonUtils.loading(promise);
-        };
-        // 重置第7日交易数据
-        $scope.reset7 = function () {
-            var promise = StockDayService.reset7(function () {
-                AlertFactory.success('同步成功!');
-                $scope.query();
-            });
-            CommonUtils.loading(promise);
-        };
-
-        // 更新
-        $scope.modify = function (id) {
-            CommonUtils.addTab({
-                title: '更新日K',
-                url: '/stock/stock/stockDay/modify?id=' + id,
-                onUpdate: $scope.query
-            });
-        };
-
         // 查看明细
         $scope.view = function (id) {
             CommonUtils.addTab({
                 title: '查看日K',
                 url: '/stock/stock/stockDay/detail?id=' + id
-            });
-        };
-
-        // 导入数据
-        $scope.importData = function (id) {
-            CommonUtils.addTab({
-                title: '导入数据',
-                url: '/stock/stock/stockDay/import',
-                onClose: $scope.query
             });
         };
 

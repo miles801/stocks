@@ -73,6 +73,7 @@
                 </div>
                 <span class="header-button">
                         <a type="button" class="btn btn-green btn-min" ng-click="resetData();"> 初始化 </a>
+                        <a type="button" class="btn btn-green btn-min" ng-click="add();"> 重置本周数据 </a>
                 </span>
             </div>
             <div class="block-content">

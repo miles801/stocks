@@ -14,7 +14,7 @@
     <script type="text/javascript" src="<%=contextPath%>/static/ycrl/javascript/angular-all.js"></script>
     <script type="text/javascript" src="<%=contextPath%>/static/ycrl/javascript/angular-strap-all.js"></script>
     <script type="text/javascript" src="<%=contextPath%>/vendor/My97DatePicker/WdatePicker.js"></script>
-    <script type="text/javascript" src="<%=contextPath%>/vendor/moment/moment.min.js"></script>
+    <script type="text/javascript" src="<%=contextPath%>/vendor/moment/moment.min.js" class="js"></script>
     <script>
         window.angular.contextPathURL = '<%=contextPath%>';
     </script>
@@ -28,7 +28,7 @@
     </style>
 </head>
 <body>
-<div class="main condition-row-1" ng-app="stock.stock.stockDay.list" ng-controller="Ctrl">
+<div class="main condition-row-1" ng-app="stock.stock.stockWeek.list" ng-controller="Ctrl">
     <div class="list-condition">
         <div class="block">
             <div class="block-header">
@@ -49,29 +49,38 @@
                         </div>
                         <div class="item w200">
                             <div class="form-label w80">
-                                <label>股票名称:</label>
-                            </div>
-                            <input type="text" class="w120" ng-model="condition.name"
-                                   maxlength="20"/>
-                        </div>
-                        <div class="item w200">
-                            <div class="form-label w80">
-                                <label>代码:</label>
+                                <label>K线组合:</label>
                             </div>
                             <input type="text" class="w120" ng-model="condition.key"
                                    maxlength="10"/>
                         </div>
                         <div class="item w200">
                             <div class="form-label w80">
-                                <label>交易日期:</label>
+                                <label>开始时间:</label>
                             </div>
-                            <div class="w120 pr">
-                                <input type="text" class="w120" ng-model="condition.businessDate" readonly
-                                       eccrm-my97="{}" ng-change="query();"/>
-                                <span class="add-on"><i class="icons icon clock"
-                                                        ng-click="condition.businessDate=null"></i></span>
+                            <div class="pr w120">
+                                <input type="text" class="w120" ng-model="condition.businessDateGe" readonly
+                                       eccrm-my97="{}"/>
+                                <span class="add-on">
+                                    <i class="icons icon clock" ng-click="condition.businessDateGe=null"
+                                       title="点击清除"></i>
+                                </span>
                             </div>
                         </div>
+                        <div class="item w200">
+                            <div class="form-label w80">
+                                <label>截止时间:</label>
+                            </div>
+                            <div class="pr w120">
+                                <input type="text" class="w120" ng-model="condition.businessDateLt" readonly
+                                       eccrm-my97="{}"/>
+                                <span class="add-on">
+                                    <i class="icons icon clock" ng-click="condition.businessDateLt=null"
+                                       title="点击清除"></i>
+                                </span>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -81,12 +90,11 @@
         <div class="block">
             <div class="block-header">
                 <div class="header-text">
-                    <span>日K列表</span>
+                    <span>周K列表</span>
                 </div>
                 <span class="header-button">
-                        <a type="button" class="btn btn-green btn-min" ng-click="importData();"> 导入 </a>
-                        <a type="button" class="btn btn-green btn-min" ng-click="sync();"> 同步今日交易数据 </a>
-                        <a type="button" class="btn btn-green btn-min" ng-click="reset7();"> 重置第7日信息 </a>
+                    <%--<a type="button" class="btn btn-green btn-min" ng-click="exportData();"
+                       ng-disabled="!pager.total" ng-cloak> 导出数据 </a>--%>
                 </span>
             </div>
             <div class="block-content">
@@ -97,37 +105,45 @@
                             <tr>
                                 <td class="width-min">序号</td>
                                 <td>股票编号</td>
-                                <td>股票名称</td>
-                                <td>交易日期</td>
-                                <td>昨日收盘价</td>
-                                <td>开盘价</td>
-                                <td>收盘价</td>
-                                <td>最高价</td>
-                                <td>最低价</td>
-                                <td>涨跌</td>
-                                <td>6日代码</td>
-                                <td>3日代码</td>
+                                <td>交易时间</td>
+                                <td>6线组合</td>
+                                <td>日期段</td>
+                                <td>第七周_h</td>
+                                <td>第七周_l</td>
+                                <td>阴阳状态</td>
+                                <td>第一周</td>
+                                <td>第二周</td>
+                                <td>第三周</td>
+                                <td>第四周</td>
+                                <td>第五周</td>
                             </tr>
                             </thead>
                             <tbody class="table-body">
-                            <tr ng-show="!pager.total">
-                                <td colspan="12" class="text-center">没有查询到数据！</td>
+                            <tr ng-show="pager.total==0">
+                                <td colspan="13" class="text-center">没有查询到数据！</td>
                             </tr>
                             <tr bindonce ng-repeat="foo in beans.data" ng-cloak>
                                 <td bo-text="pager.start+$index+1"></td>
-                                <td>
-                                    <a ng-click="view(foo.id)" bo-text="foo.code" class="cp" title="点击查看详情"></a>
+                                <td bo-text="foo.code"></td>
+                                <td >
+                                    <span>{{foo.openDate|date:'yyyyMMdd'}}</span>
+                                    <span> -- </span>
+                                    <span>{{foo.closeDate|date:'yyyyMMdd'}}</span>
                                 </td>
-                                <td bo-text="foo.name"></td>
-                                <td bo-text="foo.businessDate|eccrmDate"></td>
-                                <td bo-text="foo.yesterdayClosePrice|number:3"></td>
-                                <td bo-text="foo.openPrice|number:3"></td>
-                                <td bo-text="foo.closePrice|number:3"></td>
-                                <td bo-text="foo.highPrice|number:3"></td>
-                                <td bo-text="foo.lowPrice|number:3"></td>
-                                <td bo-text="foo.updown>0?'阳':'阴'" ng-class="{'red':foo.updown>0,'green':foo.updown<0}"></td>
                                 <td bo-text="foo.key"></td>
-                                <td bo-text="foo.key3"></td>
+                                <td >
+                                    <span>{{foo.date6|date:'yyyyMMdd'}}</span>
+                                    <span> -- </span>
+                                    <span>{{foo.closeDate|date:'yyyyMMdd'}}</span>
+                                </td>
+                                <td bo-text="foo.nextHigh|number:3"></td>
+                                <td bo-text="foo.nextLow|number:3"></td>
+                                <td bo-text="foo.isYang?'阳':'阴'" ng-class="{'red':foo.isYang,'green':!foo.isYang}"></td>
+                                <td bo-text="foo.p1|number:3"></td>
+                                <td bo-text="foo.p2|number:3"></td>
+                                <td bo-text="foo.p3|number:3"></td>
+                                <td bo-text="foo.p4|number:3"></td>
+                                <td bo-text="foo.p5|number:3"></td>
                             </tr>
                             </tbody>
                         </table>
@@ -139,6 +155,6 @@
     <div class="list-pagination" eccrm-page="pager"></div>
 </div>
 </body>
-<script type="text/javascript" src="<%=contextPath%>/app/stock/stock/stockDay/stockDay.js"></script>
-<script type="text/javascript" src="<%=contextPath%>/app/stock/stock/stockDay/stockDay_list.js"></script>
+<script type="text/javascript" src="<%=contextPath%>/app/stock/stock/stockWeek/stockWeek.js"></script>
+<script type="text/javascript" src="<%=contextPath%>/app/stock/stock/stockWeek/stockWeek_search.js"></script>
 </html>

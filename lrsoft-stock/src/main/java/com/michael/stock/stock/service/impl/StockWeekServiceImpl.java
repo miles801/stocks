@@ -5,7 +5,9 @@ import com.michael.core.beans.BeanWrapBuilder;
 import com.michael.core.beans.BeanWrapCallback;
 import com.michael.core.hibernate.HibernateUtils;
 import com.michael.core.hibernate.validator.ValidatorUtils;
+import com.michael.core.pager.Order;
 import com.michael.core.pager.PageVo;
+import com.michael.core.pager.Pager;
 import com.michael.stock.stock.bo.StockWeekBo;
 import com.michael.stock.stock.dao.StockWeekDao;
 import com.michael.stock.stock.domain.StockDay;
@@ -14,16 +16,17 @@ import com.michael.stock.stock.service.StockWeekService;
 import com.michael.stock.stock.vo.StockWeekVo;
 import com.michael.utils.collection.CollectionUtils;
 import com.michael.utils.date.DateUtils;
+import com.michael.utils.number.IntegerUtils;
 import com.michael.utils.string.StringUtils;
+import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.transform.Transformers;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.math.BigInteger;
+import java.util.*;
 
 /**
  * @author Michael
@@ -111,27 +114,7 @@ public class StockWeekServiceImpl implements StockWeekService, BeanWrapCallback<
         // 最近5周的数组
         List<StockWeek> weeks = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            StockWeek week = new StockWeek();
-            week.setOpenDate(today);
-            week.setCloseDate(today);
-            week.setOpenPrice(0d);
-            week.setClosePrice(0d);
-            week.setYesterdayClosePrice(0d);
-            week.setDate3(today);
-            week.setDate6(today);
-            week.setHighPrice(0d);
-            week.setLowPrice(0d);
-            week.setKey3("000");
-            week.setKey("000000");
-            week.setNextLow(0d);
-            week.setNextHigh(0d);
-            week.setP1(0d);
-            week.setP2(0d);
-            week.setP3(0d);
-            week.setP4(0d);
-            week.setP5(0d);
-            week.setUpdown(0d);
-            week.setYang(false);
+            StockWeek week = createStockWeek();
             weeks.add(week);
         }
 
@@ -151,83 +134,8 @@ public class StockWeekServiceImpl implements StockWeekService, BeanWrapCallback<
                 break;
             }
 
-
-            // 获取本周的基本数据
-            double highPrice = 0d;   // 最高价
-            double lowPrice = 0d;    // 最低价
-            double openPrice = 0d;     // 开盘价
-            double closePrice = 0d;     // 开盘价
-            Date openDate = null;     // 开盘日期
-            Date closeDate = null;    // 收盘日期
-            int openTimes = 0; // 这一周的开盘天数
-            int weekNo = 0;
-            for (StockDay day : stockDays) {
-                Date businessDate = day.getBusinessDate();
-                int nowWeekDay = DateUtils.getWeek(businessDate);
-                if (nowWeekDay < weekNo) {  // 如果取出的星期要小于上一个星期，则表示进入下一周了，已经取满本周数据
-                    break;
-                }
-                weekNo = nowWeekDay;
-                if (openDate == null) {
-                    openDate = day.getBusinessDate();
-                    openPrice = day.getOpenPrice();
-                    lowPrice = day.getLowPrice();
-                }
-                closeDate = day.getBusinessDate();
-                closePrice = day.getClosePrice();
-                openTimes++;
-                highPrice = day.getHighPrice() > highPrice ? day.getHighPrice() : highPrice;
-                lowPrice = day.getLowPrice() < lowPrice ? day.getLowPrice() : lowPrice;
-            }
-            StockWeek stockWeek = new StockWeek();
-            stockWeek.setOpenPrice(openPrice);
-            stockWeek.setOpenDate(openDate);
-            stockWeek.setClosePrice(closePrice);
-            stockWeek.setCloseDate(closeDate);
-            stockWeek.setOpenTimes(openTimes);
-            stockWeek.setHighPrice(highPrice);
-            stockWeek.setLowPrice(lowPrice);
-            stockWeek.setCode(stockCode);
-            stockWeek.setName(stockDays.get(0).getName());
-            stockWeek.setUpdown( closePrice-openPrice);
-
-            // 设置3周数据
-            final StockWeek lastWeek = weeks.get(4);
-            stockWeek.setKey3(lastWeek.getKey3().substring(1) + (stockWeek.getUpdown() > 0 ? "1" : "0"));
-            stockWeek.setDate3(weeks.get(3).getOpenDate());
-            // 设置6周数据
-            stockWeek.setKey(lastWeek.getKey().substring(1) + (stockWeek.getUpdown() > 0 ? "1" : "0"));
-            stockWeek.setDate6(weeks.get(0).getOpenDate());
-
-            // 7周阴阳
-            lastWeek.setYang(stockWeek.getUpdown() > 0);
-
-            // 第1周
-            stockWeek.setYesterdayClosePrice(lastWeek.getClosePrice());
-            if (lastWeek.getClosePrice() != 0d) {
-                stockWeek.setP1((stockWeek.getClosePrice() - lastWeek.getClosePrice()) / lastWeek.getClosePrice());
-                // 第2周
-                stockWeek.setP2((stockWeek.getClosePrice() - weeks.get(1).getClosePrice()) / lastWeek.getClosePrice());
-                // 第3周
-                stockWeek.setP3((stockWeek.getClosePrice() - weeks.get(2).getClosePrice()) / lastWeek.getClosePrice());
-                // 第4周
-                stockWeek.setP4((stockWeek.getClosePrice() - weeks.get(3).getClosePrice()) / lastWeek.getClosePrice());
-                // 第5周
-                stockWeek.setP5((stockWeek.getClosePrice() - weeks.get(4).getClosePrice()) / lastWeek.getClosePrice());
-
-                // 第七周高
-                lastWeek.setNextHigh(stockWeek.getHighPrice() - lastWeek.getClosePrice() / lastWeek.getClosePrice());
-                // 第七周低
-                lastWeek.setNextLow(stockWeek.getLowPrice() - lastWeek.getClosePrice() / lastWeek.getClosePrice());
-
-                if (StringUtils.isNotEmpty(lastWeek.getId())) {
-                    session.update(lastWeek);
-                }
-            }
-            weeks.remove(0);
-            String id = (String) session.save(stockWeek);
-            stockWeek.setId(id);
-            weeks.add(stockWeek);
+            // 设置周K数据并保存
+            Date closeDate = initAndSave(stockCode, session, weeks, stockDays);
 
             if (index % 10 == 0) {
                 session.flush();
@@ -238,10 +146,350 @@ public class StockWeekServiceImpl implements StockWeekService, BeanWrapCallback<
         }
     }
 
+    private Date initAndSave(String stockCode, Session session, List<StockWeek> weeks, List<StockDay> stockDays) {
+        // 获取本周的基本数据
+        double highPrice = 0d;   // 最高价
+        double lowPrice = 0d;    // 最低价
+        double openPrice = 0d;     // 开盘价
+        double closePrice = 0d;     // 开盘价
+        Date openDate = null;     // 开盘日期
+        Date closeDate = null;    // 收盘日期
+        int openTimes = 0; // 这一周的开盘天数
+        int weekNo = 0;
+        for (StockDay day : stockDays) {
+            Date businessDate = day.getBusinessDate();
+            int nowWeekDay = DateUtils.getWeek(businessDate);
+            if (nowWeekDay < weekNo) {  // 如果取出的星期要小于上一个星期，则表示进入下一周了，已经取满本周数据
+                break;
+            }
+            weekNo = nowWeekDay;
+            if (openDate == null) {
+                openDate = day.getBusinessDate();
+                openPrice = day.getOpenPrice();
+                lowPrice = day.getLowPrice();
+            }
+            closeDate = day.getBusinessDate();
+            closePrice = day.getClosePrice();
+            openTimes++;
+            highPrice = day.getHighPrice() > highPrice ? day.getHighPrice() : highPrice;
+            lowPrice = day.getLowPrice() < lowPrice ? day.getLowPrice() : lowPrice;
+        }
+        StockWeek stockWeek = new StockWeek();
+        stockWeek.setOpenPrice(openPrice);
+        stockWeek.setOpenDate(openDate);
+        stockWeek.setClosePrice(closePrice);
+        stockWeek.setCloseDate(closeDate);
+        stockWeek.setOpenTimes(openTimes);
+        stockWeek.setHighPrice(highPrice);
+        stockWeek.setLowPrice(lowPrice);
+        stockWeek.setCode(stockCode);
+        stockWeek.setName(stockDays.get(0).getName());
+        stockWeek.setUpdown(closePrice - openPrice);
+
+        // 设置3周数据
+        final StockWeek lastWeek = weeks.get(4);
+        stockWeek.setKey3(lastWeek.getKey3().substring(1) + (stockWeek.getUpdown() > 0 ? "1" : "0"));
+        stockWeek.setDate3(weeks.get(3).getOpenDate());
+        // 设置6周数据
+        stockWeek.setKey(lastWeek.getKey().substring(1) + (stockWeek.getUpdown() > 0 ? "1" : "0"));
+        stockWeek.setDate6(weeks.get(0).getOpenDate());
+
+        // 7周阴阳
+        lastWeek.setYang(stockWeek.getUpdown() > 0);
+
+        // 第1周
+        stockWeek.setYesterdayClosePrice(lastWeek.getClosePrice());
+        if (lastWeek.getClosePrice() > 0) {
+            stockWeek.setP1((stockWeek.getClosePrice() - lastWeek.getClosePrice()) / lastWeek.getClosePrice());
+            // 第七周高
+            lastWeek.setNextHigh((stockWeek.getHighPrice() - lastWeek.getClosePrice()) / lastWeek.getClosePrice());
+            // 第七周低
+            lastWeek.setNextLow((stockWeek.getLowPrice() - lastWeek.getClosePrice()) / lastWeek.getClosePrice());
+        }
+        // 第2周
+        if (weeks.get(1).getClosePrice() > 0) {
+            stockWeek.setP2((stockWeek.getClosePrice() - weeks.get(1).getClosePrice()) / weeks.get(1).getClosePrice());
+        }
+        // 第3周
+        if (weeks.get(2).getClosePrice() > 0) {
+            stockWeek.setP3((stockWeek.getClosePrice() - weeks.get(2).getClosePrice()) / weeks.get(2).getClosePrice());
+        }
+        // 第4周
+        if (weeks.get(3).getClosePrice() > 0) {
+            stockWeek.setP4((stockWeek.getClosePrice() - weeks.get(3).getClosePrice()) / weeks.get(3).getClosePrice());
+        }
+        // 第5周
+        if (weeks.get(4).getClosePrice() > 0) {
+            stockWeek.setP5((stockWeek.getClosePrice() - weeks.get(4).getClosePrice()) / weeks.get(4).getClosePrice());
+        }
+        if (StringUtils.isNotEmpty(lastWeek.getId())) {
+            session.update(lastWeek);
+        }
+        weeks.remove(0);
+        String id = (String) session.save(stockWeek);
+        stockWeek.setId(id);
+        weeks.add(stockWeek);
+        return closeDate;
+    }
+
+    /**
+     * 创建一个初始化的StockWeek对象
+     */
+    private StockWeek createStockWeek() {
+        StockWeek week = new StockWeek();
+        week.setOpenDate(null);
+        week.setCloseDate(null);
+        week.setOpenPrice(0d);
+        week.setClosePrice(0d);
+        week.setYesterdayClosePrice(0d);
+        week.setDate3(null);
+        week.setDate6(null);
+        week.setHighPrice(0d);
+        week.setLowPrice(0d);
+        week.setKey3("000");
+        week.setKey("000000");
+        week.setNextLow(0d);
+        week.setNextHigh(0d);
+        week.setP1(0d);
+        week.setP2(0d);
+        week.setP3(0d);
+        week.setP4(0d);
+        week.setP5(0d);
+        week.setUpdown(0d);
+        week.setYang(false);
+        return week;
+    }
+
     @Override
+    @SuppressWarnings("unchecked")
     public void add(String stockCode) {
         Assert.hasText(stockCode, "操作失败!股票代码不能为空!");
+        // 判断今天是不是周五/周六/周日，如果不是则直接返回
+        Date today = DateUtils.getDayBegin(new Date());
+        final int week = DateUtils.getWeek(today);
+        if (week != Calendar.FRIDAY && week != Calendar.SUNDAY && week != Calendar.SATURDAY) {
+            return;
+        }
+        // 获取周一的日期
+        int days = 4;
+        if (week == Calendar.SUNDAY) {
+            days = 6;
+        } else if (week == Calendar.SATURDAY) {
+            days = 5;
+        }
+        Date monday = org.apache.commons.lang.time.DateUtils.addDays(today, -days);
+
+        Session session = HibernateUtils.getSession(false);
+        // 删除历史数据
+        session.createQuery("delete from " + StockWeek.class.getName() + " s where s.openDate=? and s.code=?")
+                .setParameter(0, monday)
+                .setParameter(1, stockCode)
+                .executeUpdate();
+
+        // 获取周一到周五的交易数据
+        List<StockDay> stockDays = session.createQuery("from " + StockDay.class.getName() + " s where s.businessDate >=? and s.code=? ORDER BY s.businessDate asc")
+                .setParameter(0, monday)
+                .setParameter(1, stockCode)
+                .setMaxResults(5)
+                .list();
+        if (CollectionUtils.isEmpty(stockDays)) {
+            return;
+        }
+
+        // 获取当前股票前5周的数据
+        List<StockWeek> weeks = session.createQuery("from " + StockWeek.class.getName() + " s where s.code=? order by s.closeDate desc")
+                .setParameter(0, stockCode)
+                .setMaxResults(5)
+                .list();
+
+        // 补齐5周
+        int size = weeks.size();
+        for (int i = size; i < 5; i++) {
+            StockWeek stockWeek = createStockWeek();
+            weeks.add(0, stockWeek);
+        }
+
+        // 设置并保存
+        initAndSave(stockCode, session, weeks, stockDays);
     }
+
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<Map<String, Object>> report3(StockWeekBo bo) {
+        Session session = HibernateUtils.getSession(false);
+        String sql = "select s_key3 as key1,code," +
+                "sum(case isYang when 1 then 1 else 0 end) as yang," +
+                "sum(nextHigh) as nextHigh,sum(nextLow) as nextLow,count(id) as counts " +
+                "from stock_week where nextHigh is not null ";
+        List<Object> params = new ArrayList<>();
+        if (StringUtils.isNotEmpty(bo.getCode())) {
+            sql += " and code=? ";
+            params.add(bo.getCode());
+        }
+        if (StringUtils.isNotEmpty(bo.getKey3())) {
+            sql += " and s_key3=? ";
+            params.add(bo.getKey3());
+        }
+        sql += " group by s_key,code ";
+        sql = "select t.*,t.nextHigh/t.counts as avgHigh,t.nextLow/t.counts as avgLow from (" + sql + ") t ";
+        if (Pager.getOrder() != null && Pager.getOrder().hasNext()) {
+            Order o = Pager.getOrder().next();
+            sql += " order by " + o.getName() + (o.isReverse() ? " desc " : " asc ");
+        } else {
+            sql += " order by t.key1 asc ";
+        }
+        Query query = session.createSQLQuery(sql);
+        int index = 0;
+        for (Object o : params) {
+            query.setParameter(index++, o);
+        }
+        return query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
+                .setFirstResult(IntegerUtils.add(Pager.getStart()))
+                .setMaxResults(IntegerUtils.add(Pager.getLimit()))
+                .list();
+    }
+
+    public PageVo result3(StockWeekBo bo) {
+        PageVo vo = new PageVo();
+        int start = IntegerUtils.add(Pager.getStart());
+        int limit = IntegerUtils.add(Pager.getLimit());
+        Session session = HibernateUtils.getSession(false);
+        String coreSql = "from stock_week d join (select max(closeDate) closeDate from stock_week) t on t.closeDate=d.closeDate where 1=1 ";
+        List<Object> params = new ArrayList<>();
+        if (bo != null) {
+            if (StringUtils.isNotEmpty(bo.getCode())) {
+                coreSql += " and d.code=? ";
+                params.add(bo.getCode());
+            }
+            if (StringUtils.isNotEmpty(bo.getKey3())) {
+                coreSql += " and d.s_key3=? ";
+                params.add(bo.getKey3());
+            }
+        }
+        Query totalQuery = session.createSQLQuery("select count(d.id) " + coreSql);
+        Query query = session.createSQLQuery("select d.code,d.s_key3 " + coreSql);
+        if (CollectionUtils.isNotEmpty(params)) {
+            for (int i = 0; i < params.size(); i++) {
+                totalQuery.setParameter(i, params.get(i));
+                query.setParameter(i, params.get(i));
+            }
+        }
+        BigInteger bigInteger = (BigInteger) totalQuery.uniqueResult();
+        if (bigInteger == null || bigInteger.intValue() == 0) {
+            vo.setTotal(0L);
+            return vo;
+        }
+        vo.setTotal(bigInteger.longValue());
+        query.setFirstResult(start);
+        query.setMaxResults(limit);
+        List<Object[]> codeAndKey = query.list();
+        List<Map<String, Object>> data = new ArrayList<>();
+        String sql = "select code,s_key3 as key1," +
+                "sum(case isYang when 1 then 1 else 0 end) as yang," +
+                "sum(nextHigh) nextHigh,sum(nextLow) nextLow,count(id) counts " +
+                "from stock_week where  nextHigh is not null and s_key3 =? and code=? ";
+        Query dataQuery = session.createSQLQuery(sql);
+        dataQuery.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+        for (Object[] o : codeAndKey) {
+            dataQuery.setParameter(0, o[1]);
+            dataQuery.setParameter(1, o[0]);
+            Map<String, Object> map = (Map<String, Object>) dataQuery.uniqueResult();
+            data.add(map);
+        }
+        vo.setData(data);
+        return vo;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public PageVo result6(StockWeekBo bo) {
+        PageVo vo = new PageVo();
+        int start = IntegerUtils.add(Pager.getStart());
+        int limit = IntegerUtils.add(Pager.getLimit());
+        Session session = HibernateUtils.getSession(false);
+        String coreSql = "from stock_week d join (select max(closeDate) closeDate from stock_week) t on t.closeDate=d.closeDate where 1=1 ";
+        List<Object> params = new ArrayList<>();
+        if (bo != null) {
+            if (StringUtils.isNotEmpty(bo.getCode())) {
+                coreSql += " and d.code=? ";
+                params.add(bo.getCode());
+            }
+            if (StringUtils.isNotEmpty(bo.getKey())) {
+                coreSql += " and d.s_key=? ";
+                params.add(bo.getKey());
+            }
+        }
+        Query totalQuery = session.createSQLQuery("select count(d.id) " + coreSql);
+        Query query = session.createSQLQuery("select d.code,d.s_key " + coreSql);
+        if (CollectionUtils.isNotEmpty(params)) {
+            for (int i = 0; i < params.size(); i++) {
+                totalQuery.setParameter(i, params.get(i));
+                query.setParameter(i, params.get(i));
+            }
+        }
+        BigInteger bigInteger = (BigInteger) totalQuery.uniqueResult();
+        if (bigInteger == null || bigInteger.intValue() == 0) {
+            vo.setTotal(0L);
+            return vo;
+        }
+        vo.setTotal(bigInteger.longValue());
+        query.setFirstResult(start);
+        query.setMaxResults(limit);
+        List<Object[]> codeAndKey = query.list();
+        List<Map<String, Object>> data = new ArrayList<>();
+        String sql = "select code,s_key as key1," +
+                "sum(case isYang when 1 then 1 else 0 end) as yang," +
+                "sum(nextHigh) nextHigh,sum(nextLow) nextLow,count(id) counts " +
+                "from stock_week where  nextHigh is not null and s_key =? and code=? ";
+        Query dataQuery = session.createSQLQuery(sql);
+        dataQuery.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+        for (Object[] o : codeAndKey) {
+            dataQuery.setParameter(0, o[1]);
+            dataQuery.setParameter(1, o[0]);
+            Map<String, Object> map = (Map<String, Object>) dataQuery.uniqueResult();
+            data.add(map);
+        }
+        vo.setData(data);
+        return vo;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<Map<String, Object>> report6(StockWeekBo bo) {
+        Session session = HibernateUtils.getSession(false);
+        String sql = "select s_key as key1,code," +
+                "sum(case isYang when 1 then 1 else 0 end) as yang," +
+                "sum(nextHigh) as nextHigh,sum(nextLow) as nextLow,count(id) as counts " +
+                "from stock_week where  nextHigh is not null ";
+        List<Object> params = new ArrayList<>();
+        if (StringUtils.isNotEmpty(bo.getCode())) {
+            sql += " and code=? ";
+            params.add(bo.getCode());
+        }
+        if (StringUtils.isNotEmpty(bo.getKey())) {
+            sql += " and s_key=? ";
+            params.add(bo.getKey());
+        }
+        sql += " group by s_key,code ";
+        sql = "select t.*,t.nextHigh/t.counts as avgHigh,t.nextLow/t.counts as avgLow from (" + sql + ") t ";
+        if (Pager.getOrder() != null && Pager.getOrder().hasNext()) {
+            Order o = Pager.getOrder().next();
+            sql += " order by " + o.getName() + (o.isReverse() ? " desc " : " asc ");
+        } else {
+            sql += " order by t.key1 asc ";
+        }
+        Query query = session.createSQLQuery(sql);
+        int index = 0;
+        for (Object o : params) {
+            query.setParameter(index++, o);
+        }
+        return query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
+                .setFirstResult(IntegerUtils.add(Pager.getStart()))
+                .setMaxResults(IntegerUtils.add(Pager.getLimit()))
+                .list();
+    }
+
 
     @Override
     public void doCallback(StockWeek stockWeek, StockWeekVo vo) {

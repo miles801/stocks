@@ -325,4 +325,13 @@ public class StockDayCtrl extends BaseController {
         schedule.execute();
         GsonUtils.printSuccess(response);
     }
+
+    // 重置第7日数据
+    @ResponseBody
+    @RequestMapping(value = "/reset7", method = RequestMethod.POST)
+    public void reset7(HttpServletRequest request, HttpServletResponse response) {
+        StockBusinessSchedule schedule = SystemContainer.getInstance().getBean(StockBusinessSchedule.class);
+        schedule.reset7DayInfo();
+        GsonUtils.printSuccess(response);
+    }
 }

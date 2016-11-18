@@ -17,6 +17,7 @@ import com.michael.stock.stock.domain.StockDay;
 import com.michael.stock.stock.domain.StockWeek;
 import com.michael.stock.stock.service.StockDayService;
 import com.michael.stock.stock.service.StockRequestInstance;
+import com.michael.stock.stock.service.StockWeekService;
 import com.michael.stock.stock.vo.StockDayVo;
 import com.michael.utils.collection.CollectionUtils;
 import com.michael.utils.date.DateUtils;
@@ -50,6 +51,9 @@ import static com.michael.core.hibernate.HibernateUtils.getSession;
 public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<StockDay, StockDayVo> {
     @Resource
     private StockDayDao stockDayDao;
+
+    @Resource
+    private StockWeekService stockWeekService;
 
     @Override
     public String save(StockDay stockDay) {
@@ -109,6 +113,7 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void reset7DayInfo(String... stocks) {
         Session session = HibernateUtils.getSession(false);
         Logger logger = Logger.getLogger(StockDayService.class);
@@ -128,8 +133,10 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
                     final StockDay stockDay = data.get(index);
                     final StockDay stockDay1 = data.get(index + 1);
                     stockDay.setYang(stockDay1.getUpdown() > 0);
-                    stockDay.setNextHigh(stockDay1.getHighPrice());
-                    stockDay.setNextLow(stockDay1.getLowPrice());
+                    if (stockDay.getClosePrice() > 0) {
+                        stockDay.setNextHigh((stockDay1.getHighPrice() - stockDay.getClosePrice()) / stockDay.getClosePrice());
+                        stockDay.setNextLow((stockDay1.getLowPrice() - stockDay.getClosePrice()) / stockDay.getClosePrice());
+                    }
                     i++;
                 }
                 if (size > 0) {
@@ -223,30 +230,47 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
 
                 // 第1日
                 stockDay.setYesterdayClosePrice(yesterday.getClosePrice());
-                if (yesterday.getClosePrice() != 0d) {
+                if (yesterday.getClosePrice() > 0) {
                     stockDay.setP1((stockDay.getClosePrice() - yesterday.getClosePrice()) / yesterday.getClosePrice());
-                    // 第2日
-                    stockDay.setP2((stockDay.getClosePrice() - history.get(1).getClosePrice()) / yesterday.getClosePrice());
-                    // 第3日
-                    stockDay.setP3((stockDay.getClosePrice() - history.get(2).getClosePrice()) / yesterday.getClosePrice());
-                    // 第4日
-                    stockDay.setP4((stockDay.getClosePrice() - history.get(3).getClosePrice()) / yesterday.getClosePrice());
-                    // 第5日
-                    stockDay.setP5((stockDay.getClosePrice() - history.get(4).getClosePrice()) / yesterday.getClosePrice());
-
                     // 第七日高
-                    yesterday.setNextHigh(stockDay.getHighPrice() - yesterday.getClosePrice() / yesterday.getClosePrice());
+                    yesterday.setNextHigh((stockDay.getHighPrice() - yesterday.getClosePrice()) / yesterday.getClosePrice());
                     // 第七日低
-                    yesterday.setNextLow(stockDay.getLowPrice() - yesterday.getClosePrice() / yesterday.getClosePrice());
+                    yesterday.setNextLow((stockDay.getLowPrice() - yesterday.getClosePrice()) / yesterday.getClosePrice());
+                }
+                // 第2日
+                if (history.get(1).getClosePrice() > 0) {
+                    stockDay.setP2((stockDay.getClosePrice() - history.get(1).getClosePrice()) / history.get(1).getClosePrice());
+                }
+                // 第3日
+                if (history.get(2).getClosePrice() > 0) {
+                    stockDay.setP3((stockDay.getClosePrice() - history.get(2).getClosePrice()) / history.get(2).getClosePrice());
+                }
+                // 第4日
+                if (history.get(3).getClosePrice() > 0) {
+                    stockDay.setP4((stockDay.getClosePrice() - history.get(3).getClosePrice()) / history.get(3).getClosePrice());
+                }
+                // 第5日
+                if (history.get(4).getClosePrice() > 0) {
+                    stockDay.setP5((stockDay.getClosePrice() - history.get(4).getClosePrice()) / history.get(4).getClosePrice());
+                }
 
+                if (StringUtils.isNotEmpty(yesterday.getId())) {
                     session.update(yesterday);
                 }
                 history.remove(4);
                 history.add(0, stockDay);
 
                 stockDayDao.save(stockDay);
+
+                // 触发周K数据的同步
+                stockWeekService.add(code);
+
+                session.flush();
+                session.clear();
             }
         }
+
+
         return null;
     }
 
@@ -257,7 +281,7 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
         String sql = "select s_key3 as key1,code," +
                 "sum(case isYang when 1 then 1 else 0 end) as yang," +
                 "sum(nextHigh) as nextHigh,sum(nextLow) as nextLow,count(id) as counts " +
-                "from stock_day where 1=1 ";
+                "from stock_day where nextHigh is not null ";
         List<Object> params = new ArrayList<>();
         if (bo.getBusinessDateGe() != null) {
             sql += " and businessDate>= ? ";
@@ -332,7 +356,7 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
         String sql = "select code,s_key3 as key1," +
                 "sum(case isYang when 1 then 1 else 0 end) as yang," +
                 "sum(nextHigh) nextHigh,sum(nextLow) nextLow,count(id) counts " +
-                "from stock_day where s_key3 =? and code=? ";
+                "from stock_day where  nextHigh is not null and s_key3 =? and code=? ";
         Query dataQuery = session.createSQLQuery(sql);
         dataQuery.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
         for (Object[] o : codeAndKey) {
@@ -385,7 +409,7 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
         String sql = "select code,s_key as key1," +
                 "sum(case isYang when 1 then 1 else 0 end) as yang," +
                 "sum(nextHigh) nextHigh,sum(nextLow) nextLow,count(id) counts " +
-                "from stock_day where s_key =? and code=? ";
+                "from stock_day where  nextHigh is not null and s_key =? and code=? ";
         Query dataQuery = session.createSQLQuery(sql);
         dataQuery.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
         for (Object[] o : codeAndKey) {
@@ -405,7 +429,7 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
         String sql = "select s_key as key1,code," +
                 "sum(case isYang when 1 then 1 else 0 end) as yang," +
                 "sum(nextHigh) as nextHigh,sum(nextLow) as nextLow,count(id) as counts " +
-                "from stock_day where 1=1 ";
+                "from stock_day where  nextHigh is not null ";
         List<Object> params = new ArrayList<>();
         if (bo.getBusinessDateGe() != null) {
             sql += " and businessDate>= ? ";
@@ -525,22 +549,32 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
 
                     // 第1日
                     stockDay.setYesterdayClosePrice(last.getClosePrice());
-                    if (last.getClosePrice() != 0d) {
+                    if (last.getClosePrice() > 0) {
                         stockDay.setP1((stockDay.getClosePrice() - last.getClosePrice()) / last.getClosePrice());
-                        // 第2日
-                        stockDay.setP2((stockDay.getClosePrice() - stocks.get(3).getClosePrice()) / last.getClosePrice());
-                        // 第3日
-                        stockDay.setP3((stockDay.getClosePrice() - stocks.get(2).getClosePrice()) / last.getClosePrice());
-                        // 第4日
-                        stockDay.setP4((stockDay.getClosePrice() - stocks.get(1).getClosePrice()) / last.getClosePrice());
-                        // 第5日
-                        stockDay.setP5((stockDay.getClosePrice() - stocks.get(0).getClosePrice()) / last.getClosePrice());
 
                         // 第七日高
-                        last.setNextHigh(stockDay.getHighPrice() - last.getClosePrice() / last.getClosePrice());
+                        last.setNextHigh((stockDay.getHighPrice() - last.getClosePrice()) / last.getClosePrice());
                         // 第七日低
-                        last.setNextLow(stockDay.getLowPrice() - last.getClosePrice() / last.getClosePrice());
+                        last.setNextLow((stockDay.getLowPrice() - last.getClosePrice()) / last.getClosePrice());
 
+                    }
+                    // 第2日
+                    if (stocks.get(3).getClosePrice() > 0) {
+                        stockDay.setP2((stockDay.getClosePrice() - stocks.get(3).getClosePrice()) / stocks.get(3).getClosePrice());
+                    }
+                    // 第3日
+                    if (stocks.get(2).getClosePrice() > 0) {
+                        stockDay.setP3((stockDay.getClosePrice() - stocks.get(2).getClosePrice()) / stocks.get(2).getClosePrice());
+                    }
+                    // 第4日
+                    if (stocks.get(1).getClosePrice() > 0) {
+                        stockDay.setP4((stockDay.getClosePrice() - stocks.get(1).getClosePrice()) / stocks.get(1).getClosePrice());
+                    }
+                    // 第5日
+                    if (stocks.get(0).getClosePrice() > 0) {
+                        stockDay.setP5((stockDay.getClosePrice() - stocks.get(0).getClosePrice()) / stocks.get(0).getClosePrice());
+                    }
+                    if (StringUtils.isNotEmpty(last.getId())) {
                         session.update(last);
                     }
                     stocks.remove(0);

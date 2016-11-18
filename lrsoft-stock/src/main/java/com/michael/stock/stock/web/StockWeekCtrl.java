@@ -34,6 +34,7 @@ import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Michael
@@ -196,5 +197,43 @@ public class StockWeekCtrl extends BaseController {
     public void add(HttpServletRequest request, HttpServletResponse response) {
         SystemContainer.getInstance().getBean(StockWeekSchedule.class).add();
         GsonUtils.printSuccess(response);
+    }
+
+
+
+    // 3线分析报告
+    @ResponseBody
+    @RequestMapping(value = "/report3", method = RequestMethod.POST)
+    public void report3(HttpServletRequest request, HttpServletResponse response) {
+        StockWeekBo bo = GsonUtils.wrapDataToEntity(request, StockWeekBo.class);
+        List<Map<String, Object>> data = stockWeekService.report3(bo);
+        GsonUtils.printData(response, data);
+    }
+
+    // 6线分析报告
+    @ResponseBody
+    @RequestMapping(value = "/report6", method = RequestMethod.POST)
+    public void report6(HttpServletRequest request, HttpServletResponse response) {
+        StockWeekBo bo = GsonUtils.wrapDataToEntity(request, StockWeekBo.class);
+        List<Map<String, Object>> data = stockWeekService.report6(bo);
+        GsonUtils.printData(response, data);
+    }
+
+    // 3线估值结果
+    @ResponseBody
+    @RequestMapping(value = "/result3", method = RequestMethod.POST)
+    public void result3(HttpServletRequest request, HttpServletResponse response) {
+        StockWeekBo bo = GsonUtils.wrapDataToEntity(request, StockWeekBo.class);
+        PageVo data = stockWeekService.result3(bo);
+        GsonUtils.printData(response, data);
+    }
+
+    // 6线估值结果
+    @ResponseBody
+    @RequestMapping(value = "/result6", method = RequestMethod.POST)
+    public void result6(HttpServletRequest request, HttpServletResponse response) {
+        StockWeekBo bo = GsonUtils.wrapDataToEntity(request, StockWeekBo.class);
+        PageVo data = stockWeekService.result6(bo);
+        GsonUtils.printData(response, data);
     }
 }

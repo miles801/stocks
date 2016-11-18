@@ -55,6 +55,19 @@
                 }
             });
         };
+        $scope.add = function () {
+            ModalFactory.confirm({
+                scope: $scope,
+                content: '<span class="text-danger">重置本周所有周K数据，请慎重操作!</span>',
+                callback: function () {
+                    var promise = StockWeekService.add(function () {
+                        AlertFactory.success('操作成功!');
+                        $scope.query();
+                    });
+                    CommonUtils.loading((promise));
+                }
+            });
+        };
 
         // 查看明细
         $scope.view = function (id) {
