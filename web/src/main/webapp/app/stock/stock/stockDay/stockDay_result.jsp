@@ -94,7 +94,7 @@
                                 <td bo-text="foo.code"></td>
                                 <td bo-text="foo.key1"></td>
                                 <td>
-                                    <span bo-text="(foo.yang*100/foo.counts)|number:2"></span> %
+                                    <span bo-text="foo.per*100|number:2"></span> %
                                 </td>
                                 <td bo-text="(foo.nextHigh/foo.counts)|number:3"></td>
                                 <td bo-text="(foo.nextLow/foo.counts)|number:3"></td>

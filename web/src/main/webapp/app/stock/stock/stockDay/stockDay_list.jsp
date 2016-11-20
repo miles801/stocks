@@ -84,9 +84,15 @@
                     <span>日K列表</span>
                 </div>
                 <span class="header-button">
+                    <c:if test="${sessionScope.get('STOCKDAY_IMPORT') eq true}">
                         <a type="button" class="btn btn-green btn-min" ng-click="importData();"> 导入 </a>
+                    </c:if>
+                    <c:if test="${sessionScope.get('STOCKDAY_SYNC') eq true}">
                         <a type="button" class="btn btn-green btn-min" ng-click="sync();"> 同步今日交易数据 </a>
+                    </c:if>
+                    <c:if test="${sessionScope.get('STOCKDAY_RESET') eq true}">
                         <a type="button" class="btn btn-green btn-min" ng-click="reset7();"> 重置第7日信息 </a>
+                    </c:if>
                 </span>
             </div>
             <div class="block-content">

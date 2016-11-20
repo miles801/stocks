@@ -122,6 +122,14 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
         Session session = HibernateUtils.getSession(false);
         Logger logger = Logger.getLogger(StockDayService.class);
         for (String code : stocks) {
+            // 逻辑：
+            // 1. 每只股票，取出最开始的7只，如果不足，则直接返回
+            // 2. 取出最后一只（第七只）作为要被改变的起始数据，称作游标
+            // 3. 利用前6只股票的数据为第七只股票设置相关信息
+            // 4. 游标往下移动，如果游标池中没有数据，则从最后一个游标的ID开始再抓取20条记录到游标池中
+            // 5. 将上一个游标加入到数据池中，并将数据池的第一个元素移除
+            // 关键点：数据池的大小始终为6个，按照时间顺序排序，即最晚的交易数据在最后面
+            // 利用游标遍历所有的数据
             String id = "0";
             List<StockDay> history = session.createQuery("from " + StockDay.class.getName() + " o where o.id>=? and  o.code=? order by o.id asc")
                     .setParameter(0, id)
@@ -132,6 +140,14 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
             if (history.size() < 7) {
                 continue;
             }
+            // 设置前几个日期的“前一日收盘价” （这里实际上是修复错误数据的）
+            history.get(1).setYesterdayClosePrice(history.get(0).getClosePrice());
+            history.get(2).setYesterdayClosePrice(history.get(1).getClosePrice());
+            history.get(3).setYesterdayClosePrice(history.get(2).getClosePrice());
+            history.get(4).setYesterdayClosePrice(history.get(3).getClosePrice());
+            history.get(5).setYesterdayClosePrice(history.get(4).getClosePrice());
+            history.get(6).setYesterdayClosePrice(history.get(5).getClosePrice());
+
             List<StockDay> business = new ArrayList<>();
             business.add(history.get(6));
             history.remove(6);  // 移除最后一个
@@ -149,6 +165,7 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
                     Double d1 = (sd1.getClosePrice() - sd1.getYesterdayClosePrice()) / sd1.getYesterdayClosePrice();
                     stockDay.setP1(d1);
                 }
+                stockDay.setDate6(sd1.getBusinessDate());
                 // 第2日
                 StockDay sd2 = history.get(2);
                 if (DoubleUtils.add(sd2.getYesterdayClosePrice()) > 0) {
@@ -167,34 +184,33 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
                     Double d4 = (sd4.getClosePrice() - sd4.getYesterdayClosePrice()) / sd4.getYesterdayClosePrice();
                     stockDay.setP4(d4);
                 }
-                // 第5日
-                StockDay sd5 = history.get(5);
-                if (DoubleUtils.add(sd5.getYesterdayClosePrice()) > 0) {
-                    Double d5 = (sd5.getClosePrice() - sd5.getYesterdayClosePrice()) / sd5.getYesterdayClosePrice();
+                stockDay.setDate3(sd4.getBusinessDate());
+                // 第5日,即昨天
+                StockDay yesterday = history.get(5);
+                if (DoubleUtils.add(yesterday.getYesterdayClosePrice()) > 0) {
+                    Double d5 = (yesterday.getClosePrice() - yesterday.getYesterdayClosePrice()) / yesterday.getYesterdayClosePrice();
                     stockDay.setP5(d5);
                 }
-                stockDay.setYesterdayClosePrice(sd5.getClosePrice());
-                // 第6日
-                if (DoubleUtils.add(stockDay.getYesterdayClosePrice()) > 0) {
-                    Double d6 = (stockDay.getClosePrice() - stockDay.getYesterdayClosePrice()) / stockDay.getYesterdayClosePrice();
-                    stockDay.setP6(d6);
-                }
-
-                StockDay yesterday = history.get(4);
+                stockDay.setYesterdayClosePrice(yesterday.getClosePrice());
                 if (yesterday.getClosePrice() > 0) {
-                    // 第七日高
+                    // 第七日高（其实就是利用今天设置昨天的第七日高）
                     yesterday.setNextHigh((stockDay.getHighPrice() - yesterday.getClosePrice()) / yesterday.getClosePrice());
-                    // 第七日低
+                    // 第七日低（其实就是利用今天设置昨天的第七日低）
                     yesterday.setNextLow((stockDay.getLowPrice() - yesterday.getClosePrice()) / yesterday.getClosePrice());
                 }
-
-
                 // 七日阴阳
                 if (stockDay.getClosePrice() - stockDay.getOpenPrice() == 0) {
                     yesterday.setYang(stockDay.getClosePrice() > DoubleUtils.add(stockDay.getYesterdayClosePrice()));
                 } else {
                     yesterday.setYang(stockDay.getClosePrice() > stockDay.getOpenPrice());
                 }
+
+                // 第6日
+                if (DoubleUtils.add(stockDay.getYesterdayClosePrice()) > 0) {
+                    Double d6 = (stockDay.getClosePrice() - stockDay.getYesterdayClosePrice()) / stockDay.getYesterdayClosePrice();
+                    stockDay.setP6(d6);
+                }
+
                 session.update(yesterday);
                 session.update(stockDay);
                 // 调整集合顺序
@@ -395,7 +411,7 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
         int start = IntegerUtils.add(Pager.getStart());
         int limit = IntegerUtils.add(Pager.getLimit());
         Session session = HibernateUtils.getSession(false);
-        String coreSql = "from stock_day d join (select max(businessDate) businessDate from stock_day) t on t.businessDate=d.businessDate where 1=1 ";
+        String coreSql = "from stock_day d join (select max(businessDate) businessDate from stock_day) t on t.businessDate=d.businessDate where d.nextHigh is null  ";
         List<Object> params = new ArrayList<>();
         if (bo != null) {
             if (StringUtils.isNotEmpty(bo.getCode())) {
@@ -423,18 +439,22 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
         vo.setTotal(bigInteger.longValue());
         query.setFirstResult(start);
         query.setMaxResults(limit);
+        // 获取到所有股票最近的一次编号
         List<Object[]> codeAndKey = query.list();
         List<Map<String, Object>> data = new ArrayList<>();
-        String sql = "select code,s_key as key1," +
+        String sql = "select t.*,t.yang/t.counts as per from (select code,s_key as key1," +
                 "sum(case isYang when 1 then 1 else 0 end) as yang," +
                 "sum(nextHigh) nextHigh,sum(nextLow) nextLow,count(id) counts " +
-                "from stock_day where seq>5 and  nextHigh is not null and s_key =? and code=? ";
+                "from stock_day where s_key =? and code=? ) t ";
         Query dataQuery = session.createSQLQuery(sql);
         dataQuery.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
         for (Object[] o : codeAndKey) {
             dataQuery.setParameter(0, o[1]);
             dataQuery.setParameter(1, o[0]);
             Map<String, Object> map = (Map<String, Object>) dataQuery.uniqueResult();
+            if (map.get("counts") == null || ((BigInteger) map.get("counts")).intValue() == 0) {
+                continue;
+            }
             data.add(map);
         }
         vo.setData(data);
@@ -566,6 +586,7 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
                         .setParameter(0, code)
                         .executeUpdate();
                 String key = "000000";
+                Double closePrice = null;
                 for (int i = 1; i < size; i++) {
                     String[] arr = content.get(i).split(";");
                     if (arr.length != 7) {
@@ -583,6 +604,10 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
                     key = key.substring(1) + (stockDay.getUpdown() > 0 ? "1" : "0");
                     stockDay.setKey(key);
                     stockDay.setKey3(key.substring(3));
+                    if (i > 1) {
+                        stockDay.setYesterdayClosePrice(closePrice);
+                        closePrice = stockDay.getClosePrice();
+                    }
                     session.save(stockDay);
                     index++;
                     if (index % 20 == 0) {

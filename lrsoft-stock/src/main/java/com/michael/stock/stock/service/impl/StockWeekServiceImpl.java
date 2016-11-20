@@ -399,6 +399,8 @@ public class StockWeekServiceImpl implements StockWeekService, BeanWrapCallback<
                 "from stock_week where  nextHigh is not null and s_key3 =? and code=? ";
         Query dataQuery = session.createSQLQuery(sql);
         dataQuery.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+        int max = IntegerUtils.add(Pager.getLimit());
+        int index = 0;
         for (Object[] o : codeAndKey) {
             dataQuery.setParameter(0, o[1]);
             dataQuery.setParameter(1, o[0]);
@@ -406,7 +408,11 @@ public class StockWeekServiceImpl implements StockWeekService, BeanWrapCallback<
             if (map.get("key1") == null) {
                 continue;
             }
+            index++;
             data.add(map);
+            if (index == max) {
+                break;
+            }
         }
         vo.setData(data);
         return vo;
@@ -446,7 +452,6 @@ public class StockWeekServiceImpl implements StockWeekService, BeanWrapCallback<
         }
         vo.setTotal(bigInteger.longValue());
         query.setFirstResult(start);
-        query.setMaxResults(limit);
         List<Object[]> codeAndKey = query.list();
         List<Map<String, Object>> data = new ArrayList<>();
         String sql = "select code,s_key as key1," +
@@ -455,6 +460,8 @@ public class StockWeekServiceImpl implements StockWeekService, BeanWrapCallback<
                 "from stock_week where  nextHigh is not null and s_key =? and code=? ";
         Query dataQuery = session.createSQLQuery(sql);
         dataQuery.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+        int max = IntegerUtils.add(Pager.getLimit());
+        int index = 0;
         for (Object[] o : codeAndKey) {
             dataQuery.setParameter(0, o[1]);
             dataQuery.setParameter(1, o[0]);
@@ -462,7 +469,11 @@ public class StockWeekServiceImpl implements StockWeekService, BeanWrapCallback<
             if (map.get("key1") == null) {
                 continue;
             }
+            index++;
             data.add(map);
+            if (index == max) {
+                break;
+            }
         }
         vo.setData(data);
         return vo;

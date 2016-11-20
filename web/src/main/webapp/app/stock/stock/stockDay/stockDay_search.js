@@ -11,7 +11,7 @@
     app.controller('Ctrl', function ($scope, CommonUtils, AlertFactory, ModalFactory, StockDayService, StockDayParam) {
         var defaults = {
             orderBy: 'businessDate',
-            reverse: true
+            reverse: false
         }; // 默认查询条件
 
         $scope.condition = angular.extend({}, defaults);
