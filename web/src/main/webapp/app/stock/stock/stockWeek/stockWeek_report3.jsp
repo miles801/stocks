@@ -108,9 +108,9 @@
                                         </span>
                                     </span>
                                 </td>
-                                <td class="cp" ng-click="order('yang')">阳性比
+                                <td class="cp" ng-click="order('per')">阳性比
                                     <span>
-                                        <span ng-show="orderBy=='yang'">
+                                        <span ng-show="orderBy=='per'">
                                             <span ng-show="reverse">▼</span>
                                             <span ng-show="!reverse">▲</span>
                                         </span>
@@ -151,7 +151,7 @@
                                 <td bo-text="foo.code"></td>
                                 <td bo-text="foo.key1"></td>
                                 <td>
-                                    <span bo-text="(foo.yang*100/foo.counts)|number:2"></span> %
+                                    <span bo-text="foo.per*100|number:2"></span> %
                                 </td>
                                 <td bo-text="foo.avgHigh|number:3"></td>
                                 <td bo-text="foo.avgLow|number:3"></td>

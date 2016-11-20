@@ -339,8 +339,8 @@ public class StockWeekServiceImpl implements StockWeekService, BeanWrapCallback<
             sql += " and s_key3=? ";
             params.add(bo.getKey3());
         }
-        sql += " group by s_key,code ";
-        sql = "select t.*,t.nextHigh/t.counts as avgHigh,t.nextLow/t.counts as avgLow from (" + sql + ") t ";
+        sql += " group by s_key3,code ";
+        sql = "select t.*,t.nextHigh/t.counts as avgHigh,t.nextLow/t.counts as avgLow ,t.yang/t.counts as per from (" + sql + ") t ";
         if (Pager.getOrder() != null && Pager.getOrder().hasNext()) {
             Order o = Pager.getOrder().next();
             sql += " order by " + o.getName() + (o.isReverse() ? " desc " : " asc ");
@@ -486,7 +486,7 @@ public class StockWeekServiceImpl implements StockWeekService, BeanWrapCallback<
             params.add(bo.getKey());
         }
         sql += " group by s_key,code ";
-        sql = "select t.*,t.nextHigh/t.counts as avgHigh,t.nextLow/t.counts as avgLow from (" + sql + ") t ";
+        sql = "select t.*,t.nextHigh/t.counts as avgHigh,t.nextLow/t.counts as avgLow,t.yang/t.counts as per from (" + sql + ") t ";
         if (Pager.getOrder() != null && Pager.getOrder().hasNext()) {
             Order o = Pager.getOrder().next();
             sql += " order by " + o.getName() + (o.isReverse() ? " desc " : " asc ");

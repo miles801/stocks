@@ -337,50 +337,6 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
         return null;
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public List<Map<String, Object>> report3(StockDayBo bo) {
-        Session session = HibernateUtils.getSession(false);
-        String sql = "select s_key3 as key1,code," +
-                "sum(case isYang when 1 then 1 else 0 end) as yang," +
-                "sum(nextHigh) as nextHigh,sum(nextLow) as nextLow,count(id) as counts " +
-                "from stock_day where nextHigh is not null ";
-        List<Object> params = new ArrayList<>();
-        if (bo.getBusinessDateGe() != null) {
-            sql += " and businessDate>= ? ";
-            params.add(bo.getBusinessDateGe());
-        }
-        if (bo.getBusinessDateLt() != null) {
-            sql += " and businessDate<? ";
-            params.add(bo.getBusinessDateLt());
-        }
-        if (StringUtils.isNotEmpty(bo.getCode())) {
-            sql += " and code=? ";
-            params.add(bo.getCode());
-        }
-        if (StringUtils.isNotEmpty(bo.getKey3())) {
-            sql += " and s_key3=? ";
-            params.add(bo.getKey3());
-        }
-        sql += " group by s_key,code ";
-        sql = "select t.*,t.nextHigh/t.counts as avgHigh,t.nextLow/t.counts as avgLow from (" + sql + ") t ";
-        if (Pager.getOrder() != null && Pager.getOrder().hasNext()) {
-            Order o = Pager.getOrder().next();
-            sql += " order by " + o.getName() + (o.isReverse() ? " desc " : " asc ");
-        } else {
-            sql += " order by t.key1 asc ";
-        }
-        Query query = session.createSQLQuery(sql);
-        int index = 0;
-        for (Object o : params) {
-            query.setParameter(index++, o);
-        }
-        return query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
-                .setFirstResult(IntegerUtils.add(Pager.getStart()))
-                .setMaxResults(IntegerUtils.add(Pager.getLimit()))
-                .list();
-    }
-
     public PageVo result3(StockDayBo bo) {
         PageVo vo = new PageVo();
         int start = IntegerUtils.add(Pager.getStart());
@@ -487,6 +443,50 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
 
     @Override
     @SuppressWarnings("unchecked")
+    public List<Map<String, Object>> report3(StockDayBo bo) {
+        Session session = HibernateUtils.getSession(false);
+        String sql = "select s_key3 as key1,code," +
+                "sum(case isYang when 1 then 1 else 0 end) as yang," +
+                "sum(nextHigh) as nextHigh,sum(nextLow) as nextLow,count(id) as counts " +
+                "from stock_day where nextHigh is not null ";
+        List<Object> params = new ArrayList<>();
+        if (bo.getBusinessDateGe() != null) {
+            sql += " and businessDate>= ? ";
+            params.add(bo.getBusinessDateGe());
+        }
+        if (bo.getBusinessDateLt() != null) {
+            sql += " and businessDate<? ";
+            params.add(bo.getBusinessDateLt());
+        }
+        if (StringUtils.isNotEmpty(bo.getCode())) {
+            sql += " and code=? ";
+            params.add(bo.getCode());
+        }
+        if (StringUtils.isNotEmpty(bo.getKey3())) {
+            sql += " and s_key3=? ";
+            params.add(bo.getKey3());
+        }
+        sql += " group by s_key3,code ";
+        sql = "select t.*,t.nextHigh/t.counts as avgHigh,t.nextLow/t.counts as avgLow,t.yang/t.counts as per from (" + sql + ") t ";
+        if (Pager.getOrder() != null && Pager.getOrder().hasNext()) {
+            Order o = Pager.getOrder().next();
+            sql += " order by " + o.getName() + (o.isReverse() ? " desc " : " asc ");
+        } else {
+            sql += " order by t.key1 asc ";
+        }
+        Query query = session.createSQLQuery(sql);
+        int index = 0;
+        for (Object o : params) {
+            query.setParameter(index++, o);
+        }
+        return query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
+                .setFirstResult(IntegerUtils.add(Pager.getStart()))
+                .setMaxResults(IntegerUtils.add(Pager.getLimit()))
+                .list();
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
     public List<Map<String, Object>> report6(StockDayBo bo) {
         Session session = HibernateUtils.getSession(false);
         String sql = "select s_key as key1,code," +
@@ -511,7 +511,7 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
             params.add(bo.getKey());
         }
         sql += " group by s_key,code ";
-        sql = "select t.*,t.nextHigh/t.counts as avgHigh,t.nextLow/t.counts as avgLow from (" + sql + ") t ";
+        sql = "select t.*,t.nextHigh/t.counts as avgHigh,t.nextLow/t.counts as avgLow,t.yang/t.counts as per from (" + sql + ") t ";
         if (Pager.getOrder() != null && Pager.getOrder().hasNext()) {
             Order o = Pager.getOrder().next();
             sql += " order by " + o.getName() + (o.isReverse() ? " desc " : " asc ");
