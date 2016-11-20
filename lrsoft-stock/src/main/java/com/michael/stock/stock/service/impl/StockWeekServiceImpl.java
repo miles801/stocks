@@ -108,20 +108,16 @@ public class StockWeekServiceImpl implements StockWeekService, BeanWrapCallback<
                 .setParameter(0, stockCode)
                 .executeUpdate();
 
-        Date date = DateUtils.getDate(1970, 1, 1);  // 相当于从最开始开始
+        Date startDate = DateUtils.getDate(1970, 1, 1);  // 相当于从最开始开始
         Date today = DateUtils.getDayBegin(new Date());
         int index = 0;
         // 最近5周的数组
         List<StockWeek> weeks = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
-            StockWeek week = createStockWeek();
-            weeks.add(week);
-        }
 
         while (true) {
             // 取出最早的5只股票
             List<StockDay> stockDays = session.createQuery("from " + StockDay.class.getName() + " s where s.businessDate>? and  s.code=? order by s.businessDate asc")
-                    .setParameter(0, date)
+                    .setParameter(0, startDate)
                     .setParameter(1, stockCode)
                     .setMaxResults(5)
                     .list();
@@ -130,23 +126,24 @@ public class StockWeekServiceImpl implements StockWeekService, BeanWrapCallback<
             }
 
             // 如果最后一个日期的周数和今天的年周数一致,且今天不是周五，则表明读取到了最后
-            if (DateUtils.getYearWeek(date) == DateUtils.getWeek(today) && today.getYear() == date.getYear() && DateUtils.getWeek(today) != Calendar.FRIDAY) {
+            if (DateUtils.getYearWeek(startDate) == DateUtils.getWeek(today) && today.getYear() == startDate.getYear() && DateUtils.getWeek(today) != Calendar.FRIDAY) {
                 break;
             }
 
             // 设置周K数据并保存
-            Date closeDate = initAndSave(stockCode, session, weeks, stockDays);
-
+            Date closeDate = initAndSave(session, weeks, stockDays);
+            index++;
             if (index % 10 == 0) {
                 session.flush();
                 session.clear();
             }
 
-            date = closeDate;   // 重置
+            startDate = closeDate;   // 重置
         }
     }
 
-    private Date initAndSave(String stockCode, Session session, List<StockWeek> weeks, List<StockDay> stockDays) {
+    private Date initAndSave(Session session, List<StockWeek> weeks, List<StockDay> stockDays) {
+        String stockCode = stockDays.get(0).getCode();
         // 获取本周的基本数据
         double highPrice = 0d;   // 最高价
         double lowPrice = 0d;    // 最低价
@@ -156,6 +153,7 @@ public class StockWeekServiceImpl implements StockWeekService, BeanWrapCallback<
         Date closeDate = null;    // 收盘日期
         int openTimes = 0; // 这一周的开盘天数
         int weekNo = 0;
+        final int size = weeks.size();
         for (StockDay day : stockDays) {
             Date businessDate = day.getBusinessDate();
             int nowWeekDay = DateUtils.getWeek(businessDate);
@@ -174,6 +172,7 @@ public class StockWeekServiceImpl implements StockWeekService, BeanWrapCallback<
             highPrice = day.getHighPrice() > highPrice ? day.getHighPrice() : highPrice;
             lowPrice = day.getLowPrice() < lowPrice ? day.getLowPrice() : lowPrice;
         }
+
         StockWeek stockWeek = new StockWeek();
         stockWeek.setOpenPrice(openPrice);
         stockWeek.setOpenDate(openDate);
@@ -185,47 +184,63 @@ public class StockWeekServiceImpl implements StockWeekService, BeanWrapCallback<
         stockWeek.setCode(stockCode);
         stockWeek.setName(stockDays.get(0).getName());
         stockWeek.setUpdown(closePrice - openPrice);
+        stockWeek.setKey((stockWeek.getUpdown() > 0 ? "000001" : "000000"));
+        stockWeek.setKey3((stockWeek.getUpdown() > 0 ? "001" : "000"));
+        if (size > 0) {
+            final StockWeek lastWeek = weeks.get(size - 1);
+            stockWeek.setSeq(IntegerUtils.add(lastWeek.getSeq(), 1));
+            stockWeek.setYesterdayClosePrice(lastWeek.getClosePrice());
+            stockWeek.setKey3(lastWeek.getKey3().substring(1) + (stockWeek.getUpdown() > 0 ? "1" : "0"));
+            stockWeek.setKey(lastWeek.getKey().substring(1) + (stockWeek.getUpdown() > 0 ? "1" : "0"));
+            if (stockWeek.getSeq() > 2) {
+                // 设置3周数据
+                stockWeek.setDate3(weeks.get(1).getOpenDate());
+            }
+            if (stockWeek.getSeq() > 5) {
+                // 1周数据
+                StockWeek sw1 = weeks.get(1);
+                stockWeek.setDate6(sw1.getOpenDate());
 
-        // 设置3周数据
-        final StockWeek lastWeek = weeks.get(4);
-        stockWeek.setKey3(lastWeek.getKey3().substring(1) + (stockWeek.getUpdown() > 0 ? "1" : "0"));
-        stockWeek.setDate3(weeks.get(3).getOpenDate());
-        // 设置6周数据
-        stockWeek.setKey(lastWeek.getKey().substring(1) + (stockWeek.getUpdown() > 0 ? "1" : "0"));
-        stockWeek.setDate6(weeks.get(0).getOpenDate());
+                Double d1 = (sw1.getClosePrice() - sw1.getYesterdayClosePrice()) / sw1.getYesterdayClosePrice();
+                stockWeek.setP1(d1);
+                // 第2周
+                StockWeek sd2 = weeks.get(2);
+                Double d2 = (sd2.getClosePrice() - sd2.getYesterdayClosePrice()) / sd2.getYesterdayClosePrice();
+                stockWeek.setP2(d2);
+                // 第3周
+                StockWeek sd3 = weeks.get(3);
+                Double d3 = (sd3.getClosePrice() - sd3.getYesterdayClosePrice()) / sd3.getYesterdayClosePrice();
+                stockWeek.setP3(d3);
+                // 第4周
+                StockWeek sd4 = weeks.get(4);
+                Double d4 = (sd4.getClosePrice() - sd4.getYesterdayClosePrice()) / sd4.getYesterdayClosePrice();
+                stockWeek.setP4(d4);
+                // 第5周
+                StockWeek sd5 = weeks.get(5);
+                Double d5 = (sd5.getClosePrice() - sd5.getYesterdayClosePrice()) / sd5.getYesterdayClosePrice();
+                stockWeek.setP5(d5);
+                // 第6周
+                Double d6 = (stockWeek.getClosePrice() - stockWeek.getYesterdayClosePrice()) / stockWeek.getYesterdayClosePrice();
+                stockWeek.setP6(d6);
 
-        // 7周阴阳
-        lastWeek.setYang(stockWeek.getUpdown() > 0);
+                // 第七周高
+                lastWeek.setNextHigh((stockWeek.getHighPrice() - lastWeek.getClosePrice()) / lastWeek.getClosePrice());
+                // 第七周低
+                lastWeek.setNextLow((stockWeek.getLowPrice() - lastWeek.getClosePrice()) / lastWeek.getClosePrice());
 
-        // 第1周
-        stockWeek.setYesterdayClosePrice(lastWeek.getClosePrice());
-        if (lastWeek.getClosePrice() > 0) {
-            stockWeek.setP1((stockWeek.getClosePrice() - lastWeek.getClosePrice()) / lastWeek.getClosePrice());
-            // 第七周高
-            lastWeek.setNextHigh((stockWeek.getHighPrice() - lastWeek.getClosePrice()) / lastWeek.getClosePrice());
-            // 第七周低
-            lastWeek.setNextLow((stockWeek.getLowPrice() - lastWeek.getClosePrice()) / lastWeek.getClosePrice());
+
+                // 七周阴阳
+                if (stockWeek.getClosePrice() - stockWeek.getOpenPrice() == 0) {
+                    lastWeek.setYang(stockWeek.getClosePrice() > stockWeek.getYesterdayClosePrice());
+                } else {
+                    lastWeek.setYang(stockWeek.getClosePrice() > stockWeek.getOpenPrice());
+                }
+
+                session.update(lastWeek);
+                weeks.remove(0);
+            }
         }
-        // 第2周
-        if (weeks.get(1).getClosePrice() > 0) {
-            stockWeek.setP2((stockWeek.getClosePrice() - weeks.get(1).getClosePrice()) / weeks.get(1).getClosePrice());
-        }
-        // 第3周
-        if (weeks.get(2).getClosePrice() > 0) {
-            stockWeek.setP3((stockWeek.getClosePrice() - weeks.get(2).getClosePrice()) / weeks.get(2).getClosePrice());
-        }
-        // 第4周
-        if (weeks.get(3).getClosePrice() > 0) {
-            stockWeek.setP4((stockWeek.getClosePrice() - weeks.get(3).getClosePrice()) / weeks.get(3).getClosePrice());
-        }
-        // 第5周
-        if (weeks.get(4).getClosePrice() > 0) {
-            stockWeek.setP5((stockWeek.getClosePrice() - weeks.get(4).getClosePrice()) / weeks.get(4).getClosePrice());
-        }
-        if (StringUtils.isNotEmpty(lastWeek.getId())) {
-            session.update(lastWeek);
-        }
-        weeks.remove(0);
+
         String id = (String) session.save(stockWeek);
         stockWeek.setId(id);
         weeks.add(stockWeek);
@@ -302,15 +317,8 @@ public class StockWeekServiceImpl implements StockWeekService, BeanWrapCallback<
                 .setMaxResults(5)
                 .list();
 
-        // 补齐5周
-        int size = weeks.size();
-        for (int i = size; i < 5; i++) {
-            StockWeek stockWeek = createStockWeek();
-            weeks.add(0, stockWeek);
-        }
-
         // 设置并保存
-        initAndSave(stockCode, session, weeks, stockDays);
+        initAndSave(session, weeks, stockDays);
     }
 
 
@@ -355,7 +363,7 @@ public class StockWeekServiceImpl implements StockWeekService, BeanWrapCallback<
         int start = IntegerUtils.add(Pager.getStart());
         int limit = IntegerUtils.add(Pager.getLimit());
         Session session = HibernateUtils.getSession(false);
-        String coreSql = "from stock_week d join (select max(closeDate) closeDate from stock_week) t on t.closeDate=d.closeDate where 1=1 ";
+        String coreSql = "from stock_week d join (select max(closeDate) closeDate from stock_week) t on t.closeDate=d.closeDate where d.seq>5 ";
         List<Object> params = new ArrayList<>();
         if (bo != null) {
             if (StringUtils.isNotEmpty(bo.getCode())) {
@@ -395,6 +403,9 @@ public class StockWeekServiceImpl implements StockWeekService, BeanWrapCallback<
             dataQuery.setParameter(0, o[1]);
             dataQuery.setParameter(1, o[0]);
             Map<String, Object> map = (Map<String, Object>) dataQuery.uniqueResult();
+            if (map.get("key1") == null) {
+                continue;
+            }
             data.add(map);
         }
         vo.setData(data);
@@ -448,6 +459,9 @@ public class StockWeekServiceImpl implements StockWeekService, BeanWrapCallback<
             dataQuery.setParameter(0, o[1]);
             dataQuery.setParameter(1, o[0]);
             Map<String, Object> map = (Map<String, Object>) dataQuery.uniqueResult();
+            if (map.get("key1") == null) {
+                continue;
+            }
             data.add(map);
         }
         vo.setData(data);

@@ -7,6 +7,7 @@ import com.michael.stock.stock.dao.StockDayDao;
 import com.michael.stock.stock.domain.StockDay;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
 
@@ -77,6 +78,7 @@ public class StockDayDaoImpl extends HibernateDaoHelper implements StockDayDao {
     private void initCriteria(Criteria criteria, StockDayBo bo) {
         Assert.notNull(criteria, "criteria must not be null!");
         CriteriaUtils.addCondition(criteria, bo);
+        criteria.add(Restrictions.ge("seq", 6));
     }
 
 }

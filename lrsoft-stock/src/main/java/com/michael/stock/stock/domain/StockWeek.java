@@ -1,11 +1,9 @@
 package com.michael.stock.stock.domain;
 
-import com.michael.common.CommonDomain;
 import com.michael.docs.annotations.ApiField;
+import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
@@ -16,8 +14,15 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "stock_week")
-public class StockWeek extends CommonDomain {
-    @ApiField(value = "股票编号")
+public class StockWeek {
+
+    @ApiField(value = "ID")
+    @Id
+    @GenericGenerator(name = "idGenerator", strategy = "com.michael.utils.SnowflakeIDStrategy")
+    @GeneratedValue(generator = "idGenerator")
+    @Column(name = "id", unique = true, nullable = false, length = 40)
+    private String id;
+    @ApiField(value = "股票代码")
     @NotNull
     @Column(name = "code", nullable = false, length = 10)
     private String code;
@@ -85,6 +90,21 @@ public class StockWeek extends CommonDomain {
     @ApiField("第5日")
     @Column
     private Double p5;
+    @ApiField("第6日")
+    @Column
+    private Double p6;
+    @ApiField("3线第1日")
+    @Column
+    private Double d1;
+    @ApiField("3线第2日")
+    @Column
+    private Double d2;
+    @ApiField("3线第3日")
+    @Column
+    private Double d3;
+    @ApiField("3线第4日")
+    @Column
+    private Double d4;
 
     @ApiField(value = "今日涨跌")
     @Column(name = "s_updown")
@@ -99,6 +119,65 @@ public class StockWeek extends CommonDomain {
     // 开盘次数
     @Column
     private Integer openTimes;
+    // 序号
+    @Column
+    private Integer seq;
+
+    public Double getP6() {
+        return p6;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setP6(Double p6) {
+        this.p6 = p6;
+    }
+
+    public Double getD1() {
+        return d1;
+    }
+
+    public void setD1(Double d1) {
+        this.d1 = d1;
+    }
+
+    public Double getD2() {
+        return d2;
+    }
+
+    public void setD2(Double d2) {
+        this.d2 = d2;
+    }
+
+    public Double getD3() {
+        return d3;
+    }
+
+    public void setD3(Double d3) {
+        this.d3 = d3;
+    }
+
+    public Double getD4() {
+        return d4;
+    }
+
+    public void setD4(Double d4) {
+        this.d4 = d4;
+    }
+
+    public Integer getSeq() {
+        return seq;
+    }
+
+    public void setSeq(Integer seq) {
+        this.seq = seq;
+    }
 
     public Integer getOpenTimes() {
         return openTimes;

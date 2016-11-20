@@ -49,7 +49,7 @@ public interface StockDayService {
     * 导入数据
     * @param attachmentIds 上传的附件列表
     */
-    void importData(String []attachmentIds);
+    void importData(List<String> ids);
 
     List<Map<String, Object>> report3(StockDayBo bo);
 

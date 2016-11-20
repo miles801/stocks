@@ -67,7 +67,7 @@ public interface StockDao {
 
 
     /**
-     * 加载指定类型的股票编号
+     * 加载指定类型的股票代码
      *
      * @return 所有的股票代码
      */

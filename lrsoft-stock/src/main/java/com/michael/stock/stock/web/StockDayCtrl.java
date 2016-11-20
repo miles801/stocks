@@ -1,9 +1,6 @@
 package com.michael.stock.stock.web;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 import com.michael.common.JspAccessType;
 import com.michael.core.SystemContainer;
 import com.michael.core.pager.PageVo;
@@ -18,7 +15,9 @@ import com.michael.stock.stock.vo.StockDayVo;
 import com.michael.utils.gson.DateStringConverter;
 import com.michael.utils.gson.DoubleConverter;
 import com.michael.utils.gson.GsonUtils;
+import com.michael.utils.number.IntegerUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,9 +36,7 @@ import java.math.BigInteger;
 import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Michael
@@ -182,9 +179,30 @@ public class StockDayCtrl extends BaseController {
 
     // 执行导入
     @ResponseBody
-    @RequestMapping(value = "/import", params = {"attachmentIds"}, method = RequestMethod.POST)
-    public void importData(@RequestParam String attachmentIds, HttpServletResponse response) {
-        stockDayService.importData(attachmentIds.split(","));
+    @RequestMapping(value = "/import", method = RequestMethod.POST)
+    public void importData(HttpServletRequest request, HttpServletResponse response) {
+        Logger logger = Logger.getLogger(StockDayCtrl.class);
+        JsonObject o = GsonUtils.wrapDataToEntity(request, JsonObject.class);
+        List<String> ids = new ArrayList<>();
+        JsonArray array = o.get("attachmentIds").getAsJsonArray();
+        final Iterator<JsonElement> iterator = array.iterator();
+        while (iterator.hasNext()) {
+            ids.add(iterator.next().getAsString());
+        }
+        int size = ids.size();
+        final int batch = 20;
+        long times = IntegerUtils.times(size, batch);
+        for (int i = 0; i < times; i++) {
+            logger.info(String.format("========================  导入交易数据 start ：%d/%d ========================", i + 1, times));
+            int end = (i + 1) * batch;
+            if (end > size) {
+                end = size;
+            }
+            final List<String> subList = ids.subList(i * batch, end);
+            SystemContainer.getInstance().getBean(StockDayService.class).importData(subList);
+            logger.info(String.format("========================  导入交易数据 end ：%d/%d ========================", i + 1, times));
+        }
+//        stockDayService.importData(ids);
         GsonUtils.printSuccess(response);
     }
 

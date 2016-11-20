@@ -37,7 +37,7 @@ public class StockBusinessSchedule {
                     .setParameter(0, DateUtils.getDayBegin(new Date()))
                     .executeUpdate();
 
-            // 获取所有股票编号
+            // 获取所有股票代码
             List<String> codes = session.createQuery("select o.code from " + Stock.class.getName() + " o ")
                     .list();
             int size = codes.size();
@@ -50,9 +50,9 @@ public class StockBusinessSchedule {
                     last = size;
                 }
                 String[] cs = codes.subList(i * batch, last).toArray(new String[]{});
-                logger.info("同步股票交易历史 - start ：" + StringUtils.join(cs, " ; "));
+                logger.info(String.format("同步股票交易历史 - start （%d / %d）：%s", i + 1, times, StringUtils.join(cs, " ; ")));
                 stockDayService.syncStockBusiness(cs);
-                logger.info("同步股票交易历史 - end ：" + StringUtils.join(cs, " ; "));
+                logger.info(String.format("同步股票交易历史 - end （%d / %d）：%s", i + 1, times, StringUtils.join(cs, " ; ")));
             }
         }
         logger.info("****************** 同步股票交易数据:end ******************");
@@ -68,13 +68,16 @@ public class StockBusinessSchedule {
         logger.info("****************** 重置第7日信息:start ******************");
         try (Session session = HibernateUtils.openSession()) {
 
-            // 获取所有股票编号
-            List<String> codes = session.createQuery("select o.code from " + Stock.class.getName() + " o ")
+            // 获取所有股票代码
+            List<String> codes = session.createQuery("select distinct o.code from " + StockDay.class.getName() + " o group by o.code order by o.code asc")
                     .list();
             StockDayService stockDayService = SystemContainer.getInstance().getBean(StockDayService.class);
             // 循环重置
+            int size = codes.size();
+            int index = 0;
             for (String code : codes) {
                 stockDayService.reset7DayInfo(code);
+                logger.info(String.format("重置交易数据计算结果--进度(%s): %d / %d", code, ++index, size));
             }
         }
         logger.info("****************** 重置第7日信息:end ******************");

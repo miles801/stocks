@@ -6,6 +6,7 @@ import com.michael.stock.stock.bo.StockWeekBo;
 import com.michael.stock.stock.dao.StockWeekDao;
 import com.michael.stock.stock.domain.StockWeek;
 import org.hibernate.Criteria;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
 
@@ -75,6 +76,7 @@ public class StockWeekDaoImpl extends HibernateDaoHelper implements StockWeekDao
     private void initCriteria(Criteria criteria, StockWeekBo bo) {
         Assert.notNull(criteria, "criteria must not be null!");
         CriteriaUtils.addCondition(criteria, bo);
+        criteria.add(Restrictions.ge("seq", 6));
     }
 
 }

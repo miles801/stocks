@@ -16,7 +16,7 @@
                 AlertFactory.error(null, '请上传数据文件!');
                 return false;
             }
-            var promise = StockDayService.importData({attachmentIds: ids.join(',')}, function () {
+            var promise = StockDayService.importData({attachmentIds: ids}, function () {
                 AlertFactory.success('导入成功!页面即将刷新!');
                 CommonUtils.delay(function () {
                     window.location.reload();

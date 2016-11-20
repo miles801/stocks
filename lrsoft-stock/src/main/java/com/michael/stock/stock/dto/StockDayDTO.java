@@ -1,16 +1,16 @@
 package com.michael.stock.stock.dto;
 
-import com.michael.docs.annotations.ApiField;
 import com.michael.poi.annotation.Col;
 import com.michael.poi.annotation.ImportConfig;
 import com.michael.poi.core.DTO;
+
 import java.util.Date;
 /**
  * @author Michael
  */
 @ImportConfig(file = "", startRow = 1)
 public class StockDayDTO implements DTO {
-    // 股票编号
+    // 股票代码
     @Col(index=0)
     private String code;
     // 股票名称

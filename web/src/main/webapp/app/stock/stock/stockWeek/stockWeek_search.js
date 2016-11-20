@@ -10,7 +10,7 @@
     ]);
     app.controller('Ctrl', function ($scope, CommonUtils, AlertFactory, ModalFactory, StockWeekService) {
         var defaults = {
-            orderBy: 'businessDate',
+            orderBy: 'code',
             reverse: true
         }; // 默认查询条件
 
@@ -91,5 +91,16 @@
             window.open(CommonUtils.contextPathURL('/stock/stock/stockDay/export?' + encodeURI(encodeURI($.param(o)))));
         };
 
+        $scope.order = function (key) {
+            $scope.condition.orderBy = key;
+            $scope.condition.reverse = !$scope.condition.reverse;
+            $scope.orderBy = key;
+            $scope.reverse = $scope.condition.reverse;
+            if ($scope.pager.query) {
+                $scope.query();
+            }
+        };
+
+        $scope.order('code');
     });
 })(window, angular, jQuery);

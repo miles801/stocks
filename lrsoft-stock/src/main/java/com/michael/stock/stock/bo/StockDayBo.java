@@ -10,7 +10,7 @@ import java.util.Date;
  * @author Michael
  */
 public class StockDayBo implements BO {
-    // 股票编号
+    // 股票代码
     @Condition
     private String code;
 

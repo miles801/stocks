@@ -11,7 +11,7 @@ import java.util.Date;
  */
 @ImportConfig(file = "", startRow = 1)
 public class StockWeekDTO implements DTO {
-    // 股票编号
+    // 股票代码
     @Col(index = 0)
     private String code;
     // 股票名称

@@ -41,7 +41,7 @@
                     <div class="row float">
                         <div class="item w300">
                             <div class="form-label w100">
-                                <label>股票编号:</label>
+                                <label>股票代码:</label>
                             </div>
                             <input type="text" class="w200" ng-model="condition.code"
                                    maxlength="10"/>
@@ -83,7 +83,7 @@
                             <thead class="table-header">
                             <tr>
                                 <td class="width-min">序号</td>
-                                <td>股票编号</td>
+                                <td>股票代码</td>
                                 <td>股票名称</td>
                                 <td>交易日期</td>
                                 <td>交易天数</td>

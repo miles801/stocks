@@ -31,7 +31,7 @@
             fetch: function () {
                 var param = angular.extend({start: this.start, limit: this.limit}, $scope.condition);
                 $scope.beans = [];
-                if(param.businessDateLt) {
+                if (param.businessDateLt) {
                     param.businessDateLt = moment(param.businessDateLt).add(1, 'd').format('YYYY-MM-DD');
                 }
                 return CommonUtils.promise(function (defer) {
@@ -42,58 +42,7 @@
                     });
                     CommonUtils.loading(promise, 'Loading...');
                 });
-            },
-            finishInit: function () {
-                this.query();
             }
-        };
-
-        // 删除或批量删除
-        $scope.remove = function (id) {
-            if (!id) {
-                var ids = [];
-                angular.forEach($scope.items || [], function (o) {
-                    ids.push(o.id);
-                });
-                id = ids.join(',');
-            }
-            ModalFactory.confirm({
-                scope: $scope,
-                content: '<span class="text-danger">数据一旦删除将不可恢复，请确认!</span>',
-                callback: function () {
-                    var promise = StockDayService.deleteByIds({ids: id}, function () {
-                        AlertFactory.success('删除成功!');
-                        $scope.query();
-                    });
-                    CommonUtils.loading((promise));
-                }
-            });
-        };
-
-        // 新增
-        $scope.add = function () {
-            CommonUtils.addTab({
-                title: '新增日K',
-                url: '/stock/stock/stockDay/add',
-                onUpdate: $scope.query
-            });
-        };
-
-        // 更新
-        $scope.modify = function (id) {
-            CommonUtils.addTab({
-                title: '更新日K',
-                url: '/stock/stock/stockDay/modify?id=' + id,
-                onUpdate: $scope.query
-            });
-        };
-
-        // 查看明细
-        $scope.view = function (id) {
-            CommonUtils.addTab({
-                title: '查看日K',
-                url: '/stock/stock/stockDay/detail?id=' + id
-            });
         };
 
         // 导入数据
@@ -118,5 +67,17 @@
             window.open(CommonUtils.contextPathURL('/stock/stock/stockDay/export?' + encodeURI(encodeURI($.param(o)))));
         };
 
+
+        $scope.order = function (key) {
+            $scope.condition.orderBy = key;
+            $scope.condition.reverse = !$scope.condition.reverse;
+            $scope.orderBy = key;
+            $scope.reverse = $scope.condition.reverse;
+            if ($scope.pager.query) {
+                $scope.query();
+            }
+        };
+
+        $scope.order('businessDate');
     });
 })(window, angular, jQuery);

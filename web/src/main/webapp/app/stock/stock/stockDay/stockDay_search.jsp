@@ -42,7 +42,7 @@
                     <div class="row float">
                         <div class="item w200">
                             <div class="form-label w80">
-                                <label>股票编号:</label>
+                                <label>股票代码:</label>
                             </div>
                             <input type="text" class="w120" ng-model="condition.code"
                                    maxlength="10"/>
@@ -60,7 +60,7 @@
                             </div>
                             <div class="pr w120">
                                 <input type="text" class="w120" ng-model="condition.businessDateGe" readonly
-                                       eccrm-my97="{}"/>
+                                       eccrm-my97="{}" ng-change="query();"/>
                                 <span class="add-on">
                                     <i class="icons icon clock" ng-click="condition.businessDateGe=null"
                                        title="点击清除"></i>
@@ -73,7 +73,7 @@
                             </div>
                             <div class="pr w120">
                                 <input type="text" class="w120" ng-model="condition.businessDateLt" readonly
-                                       eccrm-my97="{}"/>
+                                       eccrm-my97="{}" ng-change="query();"/>
                                 <span class="add-on">
                                     <i class="icons icon clock" ng-click="condition.businessDateLt=null"
                                        title="点击清除"></i>
@@ -104,23 +104,101 @@
                             <thead class="table-header">
                             <tr>
                                 <td class="width-min">序号</td>
-                                <td>股票编号</td>
-                                <td>交易时间</td>
-                                <td>6线组合</td>
+                                <td class="cp" ng-click="order('code')">股票代码
+                                    <span ng-cloak>
+                                        <span ng-show="orderBy=='code'">
+                                            <span ng-show="reverse">▼</span>
+                                            <span ng-show="!reverse">▲</span>
+                                        </span>
+                                    </span>
+                                </td>
+                                <td class="cp" ng-click="order('businessDate')">交易时间
+                                    <span ng-cloak>
+                                        <span ng-show="orderBy=='businessDate'">
+                                            <span ng-show="reverse">▼</span>
+                                            <span ng-show="!reverse">▲</span>
+                                        </span>
+                                    </span>
+                                </td>
+                                <td class="cp" ng-click="order('key')">6线组合
+                                    <span ng-cloak>
+                                        <span ng-show="orderBy=='key'">
+                                            <span ng-show="reverse">▼</span>
+                                            <span ng-show="!reverse">▲</span>
+                                        </span>
+                                    </span>
+                                </td>
                                 <td>日期段</td>
-                                <td>第七日_h</td>
-                                <td>第七日_l</td>
+                                <td class="cp" ng-click="order('nextHigh')">第七日_h
+                                    <span ng-cloak>
+                                        <span ng-show="orderBy=='nextHigh'">
+                                            <span ng-show="reverse">▼</span>
+                                            <span ng-show="!reverse">▲</span>
+                                        </span>
+                                    </span>
+                                </td>
+                                <td class="cp" ng-click="order('nextLow')">第七日_l
+                                    <span ng-cloak>
+                                        <span ng-show="orderBy=='nextLow'">
+                                            <span ng-show="reverse">▼</span>
+                                            <span ng-show="!reverse">▲</span>
+                                        </span>
+                                    </span>
+                                </td>
                                 <td>阴阳状态</td>
-                                <td>第一日</td>
-                                <td>第二日</td>
-                                <td>第三日</td>
-                                <td>第四日</td>
-                                <td>第五日</td>
+                                <td class="cp" ng-click="order('p1')">第一日
+                                    <span ng-cloak>
+                                        <span ng-show="orderBy=='p1'">
+                                            <span ng-show="reverse">▼</span>
+                                            <span ng-show="!reverse">▲</span>
+                                        </span>
+                                    </span>
+                                </td>
+                                <td class="cp" ng-click="order('p2')">第二日
+                                    <span ng-cloak>
+                                        <span ng-show="orderBy=='p2'">
+                                            <span ng-show="reverse">▼</span>
+                                            <span ng-show="!reverse">▲</span>
+                                        </span>
+                                    </span>
+                                </td>
+                                <td class="cp" ng-click="order('p3')">第三日
+                                    <span ng-cloak>
+                                        <span ng-show="orderBy=='p3'">
+                                            <span ng-show="reverse">▼</span>
+                                            <span ng-show="!reverse">▲</span>
+                                        </span>
+                                    </span>
+                                </td>
+                                <td class="cp" ng-click="order('p4')">第四日
+                                    <span ng-cloak>
+                                        <span ng-show="orderBy=='p4'">
+                                            <span ng-show="reverse">▼</span>
+                                            <span ng-show="!reverse">▲</span>
+                                        </span>
+                                    </span>
+                                </td>
+                                <td class="cp" ng-click="order('p5')">第五日
+                                    <span ng-cloak>
+                                        <span ng-show="orderBy=='p5'">
+                                            <span ng-show="reverse">▼</span>
+                                            <span ng-show="!reverse">▲</span>
+                                        </span>
+                                    </span>
+                                </td>
+                                <td class="cp" ng-click="order('p6')">第六日
+                                    <span ng-cloak>
+                                        <span ng-show="orderBy=='p6'">
+                                            <span ng-show="reverse">▼</span>
+                                            <span ng-show="!reverse">▲</span>
+                                        </span>
+                                    </span>
+                                </td>
                             </tr>
                             </thead>
                             <tbody class="table-body">
                             <tr ng-show="pager.total==0">
-                                <td colspan="13" class="text-center">没有查询到数据！</td>
+                                <td colspan="14" class="text-center">没有查询到数据！</td>
                             </tr>
                             <tr bindonce ng-repeat="foo in beans.data" ng-cloak>
                                 <td bo-text="pager.start+$index+1"></td>
@@ -140,6 +218,7 @@
                                 <td bo-text="foo.p3|number:3"></td>
                                 <td bo-text="foo.p4|number:3"></td>
                                 <td bo-text="foo.p5|number:3"></td>
+                                <td bo-text="foo.p6|number:3"></td>
                             </tr>
                             </tbody>
                         </table>

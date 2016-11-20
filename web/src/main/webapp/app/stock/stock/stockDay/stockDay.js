@@ -22,7 +22,7 @@
             query: {method: 'POST', params: {method: 'query'}, isArray: false},
 
             // 导入数据
-            importData: {method: 'POST', params: {method: 'import', attachmentIds: '@attachmentIds'}, isArray: false},
+            importData: {method: 'POST', params: {method: 'import'}, isArray: false},
 
             // 根据id查询信息
             get: {method: 'GET', params: {method: 'get', id: '@id'}, isArray: false},

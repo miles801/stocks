@@ -20,9 +20,9 @@ public class StockWeekSchedule {
     public void execute() {
         Logger logger = Logger.getLogger(StockWeekSchedule.class);
         logger.info("****************** 初始化股票周交易数据:start ******************");
-        // 获取所有的股票编号
+        // 获取所有的股票代码
         try (Session session = HibernateUtils.openSession()) {
-            List<String> codes = session.createQuery("select o.code from " + StockDay.class.getName() + " o group by o.code ")
+            List<String> codes = session.createQuery("select distinct o.code from " + StockDay.class.getName() + " o group by o.code ")
                     .list();
             StockWeekService stockWeekService = SystemContainer.getInstance().getBean(StockWeekService.class);
             int index = 0;

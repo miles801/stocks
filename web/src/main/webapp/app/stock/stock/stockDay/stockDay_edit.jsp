@@ -43,7 +43,7 @@
                     <div class="row float">
                             <div class="item w300">
                                 <div class="form-label w100">
-                                    <label>股票编号:</label>
+                                    <label>股票代码:</label>
                                 </div>
                                 <input type="text" class="w200"  ng-model="beans.code" validate validate-required maxlength="10"/>
                             </div>
