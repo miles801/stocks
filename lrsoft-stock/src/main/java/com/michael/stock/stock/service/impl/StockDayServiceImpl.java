@@ -257,18 +257,10 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
         }
         Date date = DateUtils.parse(stockList.get(0).getDate());
         Session session = HibernateUtils.getSession(false);
+        Logger logger = Logger.getLogger(StockDayServiceImpl.class);
         for (com.miles.stock.domain.Stock s : stockList) {
             // 如果该条数据已经有交易数据，则跳过
             final String code = s.getCode();
-            String id = (String) session.createQuery("select sd.id from " + StockDay.class.getName() + " sd where sd.businessDate=? and sd.code=?")
-                    .setParameter(0, date)
-                    .setParameter(1, code)
-                    .setFirstResult(0)
-                    .setMaxResults(1)
-                    .uniqueResult();
-            if (StringUtils.isNotEmpty(id)) {
-                continue;
-            }
             // 获取今天之前6天的交易数据
             List<StockDay> history = session.createQuery("from " + StockDay.class.getName() + " sd where sd.businessDate<? and sd.code=? order by sd.businessDate desc")
                     .setParameter(0, date)
@@ -288,11 +280,14 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
             stockDay.setUpdown(stockDay.getClosePrice() - stockDay.getOpenPrice());
             stockDay.setKey((stockDay.getUpdown() > 0 ? "000001" : "000000"));
             stockDay.setKey3((stockDay.getUpdown() > 0 ? "001" : "000"));
+            stockDay.setSeq(history.size());
             // 第N日计算公式：(第N日收盘价 - 第N-1日收盘价)/第N-1日收盘价
             int size = history.size();
             if (size == 6) {
                 // 6日时间&组合
                 final StockDay yesterday = history.get(0);
+                stockDay.setSeq(IntegerUtils.add(yesterday.getSeq(), 1));
+                stockDay.setYesterdayClosePrice(yesterday.getClosePrice());
                 stockDay.setDate6(history.get(4).getBusinessDate());
                 stockDay.setKey(yesterday.getKey().substring(1) + (stockDay.getUpdown() > 0 ? "1" : "0"));
 
