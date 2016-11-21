@@ -31,8 +31,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -258,17 +256,10 @@ public class StockDayCtrl extends BaseController {
         Pager.setStart(0);
         Pager.setLimit(Integer.MAX_VALUE);
         final PageVo data = stockDayService.result3(bo);
-        final DecimalFormat decimalFormat = new DecimalFormat("##.## %");
-        final DecimalFormat decimalFormat2 = new DecimalFormat("##0.###");
         List<Map<String, Object>> list = data.getData();
+        DecimalFormat format = new DecimalFormat("00.00 %");
         for (Map<String, Object> map : list) {
-            BigDecimal yang = (BigDecimal) map.get("yang");
-            int counts = ((BigInteger) map.get("counts")).intValue();
-            Double nextHigh = (Double) map.get("nextHigh");
-            Double nextLow = (Double) map.get("nextLow");
-            map.put("percent", decimalFormat.format(yang.intValue() * 1.0 / counts));
-            map.put("avgHigh", decimalFormat2.format(nextHigh / counts));
-            map.put("avgLow", decimalFormat2.format(nextLow / counts));
+            map.put("per", format.format(map.get("per")));
         }
         String json = gson.toJson(list);
         JsonElement element = gson.fromJson(json, JsonElement.class);
@@ -300,17 +291,10 @@ public class StockDayCtrl extends BaseController {
         Pager.setStart(0);
         Pager.setLimit(Integer.MAX_VALUE);
         final PageVo data = stockDayService.result6(bo);
-        final DecimalFormat decimalFormat = new DecimalFormat("##.## %");
-        final DecimalFormat decimalFormat2 = new DecimalFormat("##0.###");
         List<Map<String, Object>> list = data.getData();
+        DecimalFormat format = new DecimalFormat("00.00 %");
         for (Map<String, Object> map : list) {
-            BigDecimal yang = (BigDecimal) map.get("yang");
-            int counts = ((BigInteger) map.get("counts")).intValue();
-            Double nextHigh = (Double) map.get("nextHigh");
-            Double nextLow = (Double) map.get("nextLow");
-            map.put("percent", decimalFormat.format(yang.intValue() * 1.0 / counts));
-            map.put("avgHigh", decimalFormat2.format(nextHigh / counts));
-            map.put("avgLow", decimalFormat2.format(nextLow / counts));
+            map.put("per", format.format(map.get("per")));
         }
         String json = gson.toJson(list);
         JsonElement element = gson.fromJson(json, JsonElement.class);
@@ -350,6 +334,16 @@ public class StockDayCtrl extends BaseController {
     public void reset7(HttpServletRequest request, HttpServletResponse response) {
         StockBusinessSchedule schedule = SystemContainer.getInstance().getBean(StockBusinessSchedule.class);
         schedule.reset7DayInfo();
+        GsonUtils.printSuccess(response);
+    }
+
+
+    // 重新产生结果表
+    @ResponseBody
+    @RequestMapping(value = "/resetDayResult", method = RequestMethod.POST)
+    public void resetDayResult(HttpServletRequest request, HttpServletResponse response) {
+        StockBusinessSchedule schedule = SystemContainer.getInstance().getBean(StockBusinessSchedule.class);
+        schedule.createTableDay();
         GsonUtils.printSuccess(response);
     }
 }

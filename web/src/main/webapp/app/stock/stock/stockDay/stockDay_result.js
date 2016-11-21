@@ -91,6 +91,20 @@
             }
         };
 
+        $scope.resetData = function () {
+            ModalFactory.confirm({
+                scope: $scope,
+                content: '<span class="text-danger">是否重新产生计算结果（默认每天凌晨2点产生新的结果），请确认!</span>',
+                callback: function () {
+                    var promise = StockDayService.resetDayResult(function () {
+                        AlertFactory.success('操作成功!');
+                        $scope.query();
+                    });
+                    CommonUtils.loading(promise);
+                }
+            });
+        };
+
         $scope.order('code');
 
 

@@ -74,7 +74,10 @@
             reset7: {method: 'POST', params: {method: 'reset7'}, isArray: false},
 
             // 同步股票交易历史
-            sync: {method: 'POST', params: {method: 'sync'}, isArray: false}
+            sync: {method: 'POST', params: {method: 'sync'}, isArray: false},
+
+            // 重新计算所有股票的风险估值分析结果
+            resetDayResult: {method: 'POST', params: {method: 'resetDayResult'}, isArray: false}
         })
     });
 

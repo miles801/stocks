@@ -43,16 +43,16 @@
                     <div class="row float">
                         <div class="item w200">
                             <div class="form-label w80">
-                                <label>6线组合:</label>
+                                <label>股票代码:</label>
                             </div>
-                            <input type="text" class="w120" ng-model="condition.key"
+                            <input type="text" class="w120" ng-model="condition.code"
                                    maxlength="10"/>
                         </div>
                         <div class="item w200">
                             <div class="form-label w80">
-                                <label>股票代码:</label>
+                                <label>6线组合:</label>
                             </div>
-                            <input type="text" class="w120" ng-model="condition.code"
+                            <input type="text" class="w120" ng-model="condition.key"
                                    maxlength="10"/>
                         </div>
                     </div>
@@ -68,6 +68,7 @@
                 </div>
                 <div class="header-button">
                     <a type="button" class="btn btn-green btn-min" ng-click="exportData();"> 导出 </a>
+                    <a type="button" class="btn btn-green btn-min" ng-click="resetData();"> 重置数据 </a>
                 </div>
             </div>
             <div class="block-content">
@@ -77,12 +78,54 @@
                             <thead class="table-header">
                             <tr>
                                 <td class="width-min">序号</td>
-                                <td>股票代码</td>
-                                <td>特征值</td>
-                                <td>七阳比</td>
-                                <td>7H均值</td>
-                                <td>7L均值</td>
-                                <td style="width: inherit" class="cp">总线</td>
+                                <td class="cp" ng-click="order('code')">股票代码
+                                    <span>
+                                        <span ng-show="orderBy=='code'">
+                                            <span ng-show="reverse">▼</span>
+                                            <span ng-show="!reverse">▲</span>
+                                        </span>
+                                    </span>
+                                </td>
+                                <td class="cp" ng-click="order('key1')">特征值
+                                    <span>
+                                        <span ng-show="orderBy=='key1'">
+                                            <span ng-show="reverse">▼</span>
+                                            <span ng-show="!reverse">▲</span>
+                                        </span>
+                                    </span>
+                                </td>
+                                <td class="cp" ng-click="order('per')">七阳比
+                                    <span>
+                                        <span ng-show="orderBy=='per'">
+                                            <span ng-show="reverse">▼</span>
+                                            <span ng-show="!reverse">▲</span>
+                                        </span>
+                                    </span>
+                                </td>
+                                <td class="cp" ng-click="order('avgHigh')">7H均值
+                                    <span>
+                                        <span ng-show="orderBy=='avgHigh'">
+                                            <span ng-show="reverse">▼</span>
+                                            <span ng-show="!reverse">▲</span>
+                                        </span>
+                                    </span>
+                                </td>
+                                <td class="cp" ng-click="order('avgLow')">7L均值
+                                    <span>
+                                        <span ng-show="orderBy=='avgLow'">
+                                            <span ng-show="reverse">▼</span>
+                                            <span ng-show="!reverse">▲</span>
+                                        </span>
+                                    </span>
+                                </td>
+                                <td class="cp" ng-click="order('yang')" style="width: inherit">总线
+                                    <span>
+                                        <span ng-show="orderBy=='yang'">
+                                            <span ng-show="reverse">▼</span>
+                                            <span ng-show="!reverse">▲</span>
+                                        </span>
+                                    </span>
+                                </td>
                             </tr>
                             </thead>
                             <tbody class="table-body">
@@ -94,10 +137,10 @@
                                 <td bo-text="foo.code"></td>
                                 <td bo-text="foo.key1"></td>
                                 <td>
-                                    <span bo-text="(foo.yang*100/foo.counts)|number:2"></span> %
+                                    <span bo-text="foo.per*100|number:2"></span> %
                                 </td>
-                                <td bo-text="(foo.nextHigh/foo.counts)|number:3"></td>
-                                <td bo-text="(foo.nextLow/foo.counts)|number:3"></td>
+                                <td bo-text="foo.avgHigh|number:3"></td>
+                                <td bo-text="foo.avgLow|number:3"></td>
                                 <td bo-text="foo.yang"></td>
                             </tr>
                             </tbody>

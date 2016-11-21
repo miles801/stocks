@@ -80,5 +80,15 @@
             o.limit = null;
             window.open(CommonUtils.contextPathURL('/stock/stock/stockDay/export-result3?' + encodeURI(encodeURI($.param(o)))));
         };
+
+        $scope.order = function (key) {
+            $scope.condition.orderBy = key;
+            $scope.condition.reverse = !$scope.condition.reverse;
+            $scope.orderBy = key;
+            $scope.reverse = $scope.condition.reverse;
+            if ($scope.pager.query) {
+                $scope.query();
+            }
+        };
     });
 })(window, angular, jQuery);

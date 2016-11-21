@@ -73,7 +73,10 @@
                 method: 'POST',
                 params: {method: 'result6', start: '@start', limit: '@limit', orderBy: '@orderBy', reverse: '@reverse'},
                 isArray: false
-            }
+            },
+
+            // 重置周K的估值结果
+            resetWeekResult: {method: 'POST', params: {method: 'resetWeekResult'}, isArray: false}
 
 
         })

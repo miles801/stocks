@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import com.michael.common.JspAccessType;
 import com.michael.core.SystemContainer;
 import com.michael.core.pager.PageVo;
+import com.michael.core.pager.Pager;
 import com.michael.core.web.BaseController;
 import com.michael.poi.exp.ExportEngine;
 import com.michael.stock.stock.bo.StockWeekBo;
@@ -15,6 +16,7 @@ import com.michael.stock.stock.schedule.StockWeekSchedule;
 import com.michael.stock.stock.service.StockWeekService;
 import com.michael.stock.stock.vo.StockWeekVo;
 import com.michael.utils.gson.DateStringConverter;
+import com.michael.utils.gson.DoubleConverter;
 import com.michael.utils.gson.GsonUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Controller;
@@ -31,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -235,5 +238,86 @@ public class StockWeekCtrl extends BaseController {
         StockWeekBo bo = GsonUtils.wrapDataToEntity(request, StockWeekBo.class);
         PageVo data = stockWeekService.result6(bo);
         GsonUtils.printData(response, data);
+    }
+
+
+    // 导出数据
+    @RequestMapping(value = "/export-result3", method = RequestMethod.GET)
+    public String exportResult3(HttpServletRequest request, HttpServletResponse response) {
+        final Gson gson = new GsonBuilder().registerTypeAdapter(Double.class, new DoubleConverter()).create();
+        final StockWeekBo bo = GsonUtils.wrapDataToEntity(request, StockWeekBo.class);
+        Pager.setStart(0);
+        Pager.setLimit(Integer.MAX_VALUE);
+        final PageVo data = stockWeekService.result3(bo);
+        List<Map<String, Object>> list = data.getData();
+        DecimalFormat format = new DecimalFormat("00.00 %");
+        for (Map<String, Object> map : list) {
+            map.put("per", format.format(map.get("per")));
+        }
+        String json = gson.toJson(list);
+        JsonElement element = gson.fromJson(json, JsonElement.class);
+        JsonObject o = new JsonObject();
+        o.add("c", element);
+        String disposition = null;//
+        try {
+            disposition = "attachment;filename=" + URLEncoder.encode("3周风险估值结果" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + ".xlsx", "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        response.setContentType("application/vnd.ms-excel");
+        response.setHeader("Content-disposition", disposition);
+        try {
+            InputStream inputStream = StockDayCtrl.class.getClassLoader().getResourceAsStream("export_stockDayResult.xlsx");
+            Assert.notNull(inputStream, "数据导出失败!模板文件不存在，请与管理员联系!");
+            new ExportEngine().export(response.getOutputStream(), inputStream, o);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    // 导出数据
+    @RequestMapping(value = "/export-result6", method = RequestMethod.GET)
+    public String exportResult6(HttpServletRequest request, HttpServletResponse response) {
+        final Gson gson = new GsonBuilder().registerTypeAdapter(Double.class, new DoubleConverter()).create();
+        final StockWeekBo bo = GsonUtils.wrapDataToEntity(request, StockWeekBo.class);
+        Pager.setStart(0);
+        Pager.setLimit(Integer.MAX_VALUE);
+        final PageVo data = stockWeekService.result6(bo);
+        List<Map<String, Object>> list = data.getData();
+        DecimalFormat format = new DecimalFormat("00.00 %");
+        for (Map<String, Object> map : list) {
+            map.put("per", format.format(map.get("per")));
+        }
+        String json = gson.toJson(list);
+        JsonElement element = gson.fromJson(json, JsonElement.class);
+        JsonObject o = new JsonObject();
+        o.add("c", element);
+        String disposition = null;//
+        try {
+            disposition = "attachment;filename=" + URLEncoder.encode("6周风险估值结果" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + ".xlsx", "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        response.setContentType("application/vnd.ms-excel");
+        response.setHeader("Content-disposition", disposition);
+        try {
+            InputStream inputStream = StockDayCtrl.class.getClassLoader().getResourceAsStream("export_stockDayResult.xlsx");
+            Assert.notNull(inputStream, "数据导出失败!模板文件不存在，请与管理员联系!");
+            new ExportEngine().export(response.getOutputStream(), inputStream, o);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    // 重新产生结果表
+    @ResponseBody
+    @RequestMapping(value = "/resetWeekResult", method = RequestMethod.POST)
+    public void resetDayResult(HttpServletRequest request, HttpServletResponse response) {
+        StockWeekSchedule schedule = SystemContainer.getInstance().getBean(StockWeekSchedule.class);
+        schedule.createTableWeek();
+        GsonUtils.printSuccess(response);
     }
 }

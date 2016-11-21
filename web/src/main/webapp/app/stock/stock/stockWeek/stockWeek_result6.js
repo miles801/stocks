@@ -66,5 +66,31 @@
             o.limit = null;
             window.open(CommonUtils.contextPathURL('/stock/stock/stockWeek/export-result6?' + encodeURI(encodeURI($.param(o)))));
         };
+
+        $scope.order = function (key) {
+            $scope.condition.orderBy = key;
+            $scope.condition.reverse = !$scope.condition.reverse;
+            $scope.orderBy = key;
+            $scope.reverse = $scope.condition.reverse;
+            if ($scope.pager.query) {
+                $scope.query();
+            }
+        };
+
+        $scope.resetData = function () {
+            ModalFactory.confirm({
+                scope: $scope,
+                content: '<span class="text-danger">是否重新产生计算结果（默认每周六凌晨2点产生新的结果），请确认!</span>',
+                callback: function () {
+                    var promise = StockWeekService.resetWeekResult(function () {
+                        AlertFactory.success('操作成功!');
+                        $scope.query();
+                    });
+                    CommonUtils.loading(promise);
+                }
+            });
+        };
+
+        $scope.order('code');
     });
 })(window, angular, jQuery);

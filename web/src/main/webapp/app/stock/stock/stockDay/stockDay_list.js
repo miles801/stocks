@@ -76,19 +76,31 @@
 
         // 同步今日交易数据
         $scope.sync = function () {
-            var promise = StockDayService.sync(function () {
-                AlertFactory.success('同步成功!');
-                $scope.query();
+            ModalFactory.confirm({
+                scope: $scope,
+                content: '是否覆盖今日的交易数据，请确认!',
+                callback: function () {
+                    var promise = StockDayService.sync(function () {
+                        AlertFactory.success('同步成功!');
+                        $scope.query();
+                    });
+                    CommonUtils.loading(promise);
+                }
             });
-            CommonUtils.loading(promise);
         };
         // 重置第7日交易数据
         $scope.reset7 = function () {
-            var promise = StockDayService.reset7(function () {
-                AlertFactory.success('同步成功!');
-                $scope.query();
+            ModalFactory.confirm({
+                scope: $scope,
+                content: '<span class="text-danger">是否重置所有的交易数据的计算结果，请确认!</span>',
+                callback: function () {
+                    var promise = StockDayService.reset7(function () {
+                        AlertFactory.success('同步成功!');
+                        $scope.query();
+                    });
+                    CommonUtils.loading(promise);
+                }
             });
-            CommonUtils.loading(promise);
         };
 
         // 更新

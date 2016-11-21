@@ -93,4 +93,35 @@ public class StockBusinessSchedule {
         stockService.syncStock();
         logger.info("****************** 同步股票:end ******************");
     }
+
+
+    // 产生风险结果分析
+    @Scheduled(cron = "0 0 2 * * ?")
+    public void createTableDay() {
+        Logger logger = Logger.getLogger(StockBusinessSchedule.class);
+        try (Session session = HibernateUtils.openSession()) {
+            logger.info("****************** 产生风险估值结果表 6日:start ******************");
+            session.createSQLQuery("drop table if EXISTS result_day6").executeUpdate();
+            session.createSQLQuery("create table result_day6 " +
+                    "select t.*,t.nextHigh/t.counts as avgHigh,t.nextLow/t.counts as avgLow, t.yang/t.counts as per from " +
+                    "(select code,s_key as key1,concat(code,':',s_key) as name,sum(case isYang when 1 then 1 else 0 end) as yang,sum(nextHigh) nextHigh,sum(nextLow) nextLow,count(id) counts from stock_day where nextHigh is not null group by code,s_key) t ")
+                    .executeUpdate();
+            session.createSQLQuery("alter table result_day6 add INDEX index_name(name)").executeUpdate();
+            session.createSQLQuery("alter table result_day6 add INDEX index_code(code)").executeUpdate();
+            session.createSQLQuery("alter table result_day6 add INDEX index_key(key1)").executeUpdate();
+            logger.info("****************** 产生风险估值结果表 6日:end ******************");
+
+            logger.info("****************** 产生风险估值结果表 3日:start ******************");
+            session.createSQLQuery("drop table if EXISTS result_day3").executeUpdate();
+            session.createSQLQuery("create table result_day3 " +
+                    "select t.*,t.nextHigh/t.counts as avgHigh,t.nextLow/t.counts as avgLow, t.yang/t.counts as per from " +
+                    "(select code,s_key3 as key1,concat(code,':',s_key3) as name,sum(case isYang when 1 then 1 else 0 end) as yang,sum(nextHigh) nextHigh,sum(nextLow) nextLow,count(id) counts from stock_day where nextHigh is not null  group by code,s_key3) t ")
+                    .executeUpdate();
+            session.createSQLQuery("alter table result_day3 add INDEX index_name(name)").executeUpdate();
+            session.createSQLQuery("alter table result_day3 add INDEX index_code(code)").executeUpdate();
+            session.createSQLQuery("alter table result_day3 add INDEX index_key(key1)").executeUpdate();
+            logger.info("****************** 产生风险估值结果表 3日:end ******************");
+        }
+    }
+
 }

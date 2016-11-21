@@ -353,26 +353,35 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
         int start = IntegerUtils.add(Pager.getStart());
         int limit = IntegerUtils.add(Pager.getLimit());
         Session session = HibernateUtils.getSession(false);
-        String coreSql = "from stock_day d left join (select max(businessDate) businessDate from stock_day) t on t.businessDate=d.businessDate where d.seq>5 and d.nextHigh is not null ";
+        String coreSql = " from result_day3 rd " +
+                " JOIN (select concat(d.code,':',d.s_key3) as name from stock_day d join (select max(businessDate) businessDate from stock_day) t on t.businessDate=d.businessDate where d.nextHigh is null ) t " +
+                " on rd.name=t.name ";
         List<Object> params = new ArrayList<>();
         if (bo != null) {
             if (StringUtils.isNotEmpty(bo.getCode())) {
-                coreSql += " and d.code=? ";
+                coreSql += " and code=? ";
                 params.add(bo.getCode());
             }
             if (StringUtils.isNotEmpty(bo.getKey3())) {
-                coreSql += " and d.s_key3=? ";
+                coreSql += " and key1=? ";
                 params.add(bo.getKey3());
             }
         }
-        Query totalQuery = session.createSQLQuery("select count(d.id) " + coreSql);
-        Query query = session.createSQLQuery("select d.code,d.s_key3 " + coreSql);
+        Query totalQuery = session.createSQLQuery("select count(rd.name) " + coreSql);
+        if (Pager.getOrder() != null && Pager.getOrder().hasNext()) {
+            Order o = Pager.getOrder().next();
+            coreSql += " order by rd." + o.getName() + (o.isReverse() ? " desc " : " asc ");
+        } else {
+            coreSql += " order by rd.key1 asc ";
+        }
+        Query query = session.createSQLQuery("select rd.* " + coreSql);
         if (CollectionUtils.isNotEmpty(params)) {
             for (int i = 0; i < params.size(); i++) {
                 totalQuery.setParameter(i, params.get(i));
                 query.setParameter(i, params.get(i));
             }
         }
+        query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
         BigInteger bigInteger = (BigInteger) totalQuery.uniqueResult();
         if (bigInteger == null || bigInteger.intValue() == 0) {
             vo.setTotal(0L);
@@ -381,20 +390,7 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
         vo.setTotal(bigInteger.longValue());
         query.setFirstResult(start);
         query.setMaxResults(limit);
-        List<Object[]> codeAndKey = query.list();
-        List<Map<String, Object>> data = new ArrayList<>();
-        String sql = "select code,s_key3 as key1," +
-                "sum(case isYang when 1 then 1 else 0 end) as yang," +
-                "sum(nextHigh) nextHigh,sum(nextLow) nextLow,count(id) counts " +
-                "from stock_day where seq>5 and nextHigh is not null and s_key3 =? and code=? ";
-        Query dataQuery = session.createSQLQuery(sql);
-        dataQuery.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
-        for (Object[] o : codeAndKey) {
-            dataQuery.setParameter(0, o[1]);
-            dataQuery.setParameter(1, o[0]);
-            Map<String, Object> map = (Map<String, Object>) dataQuery.uniqueResult();
-            data.add(map);
-        }
+        List<Map<String, Object>> data = query.list();
         vo.setData(data);
         return vo;
     }
@@ -406,26 +402,35 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
         int start = IntegerUtils.add(Pager.getStart());
         int limit = IntegerUtils.add(Pager.getLimit());
         Session session = HibernateUtils.getSession(false);
-        String coreSql = "from stock_day d join (select max(businessDate) businessDate from stock_day) t on t.businessDate=d.businessDate where d.nextHigh is null  ";
+        String coreSql = " from result_day6 rd" +
+                " JOIN (select concat(d.code,':',d.s_key) as name from stock_day d join (select max(businessDate) businessDate from stock_day) t on t.businessDate=d.businessDate where d.nextHigh is null ) t\n" +
+                " on rd.name=t.name ";
         List<Object> params = new ArrayList<>();
         if (bo != null) {
             if (StringUtils.isNotEmpty(bo.getCode())) {
-                coreSql += " and d.code=? ";
+                coreSql += " and code=? ";
                 params.add(bo.getCode());
             }
             if (StringUtils.isNotEmpty(bo.getKey())) {
-                coreSql += " and d.s_key=? ";
+                coreSql += " and key1=? ";
                 params.add(bo.getKey());
             }
         }
-        Query totalQuery = session.createSQLQuery("select count(d.id) " + coreSql);
-        Query query = session.createSQLQuery("select d.code,d.s_key " + coreSql);
+        Query totalQuery = session.createSQLQuery("select count(rd.name) " + coreSql);
+        if (Pager.getOrder() != null && Pager.getOrder().hasNext()) {
+            Order o = Pager.getOrder().next();
+            coreSql += " order by rd." + o.getName() + (o.isReverse() ? " desc " : " asc ");
+        } else {
+            coreSql += " order by rd.key1 asc ";
+        }
+        Query query = session.createSQLQuery("select rd.* " + coreSql);
         if (CollectionUtils.isNotEmpty(params)) {
             for (int i = 0; i < params.size(); i++) {
                 totalQuery.setParameter(i, params.get(i));
                 query.setParameter(i, params.get(i));
             }
         }
+        query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
         BigInteger bigInteger = (BigInteger) totalQuery.uniqueResult();
         if (bigInteger == null || bigInteger.intValue() == 0) {
             vo.setTotal(0L);
@@ -434,24 +439,7 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
         vo.setTotal(bigInteger.longValue());
         query.setFirstResult(start);
         query.setMaxResults(limit);
-        // 获取到所有股票最近的一次编号
-        List<Object[]> codeAndKey = query.list();
-        List<Map<String, Object>> data = new ArrayList<>();
-        String sql = "select t.*,t.yang/t.counts as per from (select code,s_key as key1," +
-                "sum(case isYang when 1 then 1 else 0 end) as yang," +
-                "sum(nextHigh) nextHigh,sum(nextLow) nextLow,count(id) counts " +
-                "from stock_day where s_key =? and code=? ) t ";
-        Query dataQuery = session.createSQLQuery(sql);
-        dataQuery.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
-        for (Object[] o : codeAndKey) {
-            dataQuery.setParameter(0, o[1]);
-            dataQuery.setParameter(1, o[0]);
-            Map<String, Object> map = (Map<String, Object>) dataQuery.uniqueResult();
-            if (map.get("counts") == null || ((BigInteger) map.get("counts")).intValue() == 0) {
-                continue;
-            }
-            data.add(map);
-        }
+        List<Map<String, Object>> data = query.list();
         vo.setData(data);
         return vo;
     }
