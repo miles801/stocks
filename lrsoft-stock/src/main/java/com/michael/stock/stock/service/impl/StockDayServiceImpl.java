@@ -258,9 +258,17 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
         Date date = DateUtils.parse(stockList.get(0).getDate());
         Session session = HibernateUtils.getSession(false);
         Logger logger = Logger.getLogger(StockDayServiceImpl.class);
+        int i = 0;
         for (com.miles.stock.domain.Stock s : stockList) {
             // 如果该条数据已经有交易数据，则跳过
             final String code = s.getCode();
+            logger.info(String.format("处理今日股票%s交易数据:%s", code, stockResult[i++]));
+
+            // 如果股票停盘，则跳过
+            if (s.getClosePrice() == 0 || s.getOpenPrice() == 0) {
+                logger.info(String.format("股票%s(%s)停盘，不做记录!", s.getCode(), s.getName()));
+                continue;
+            }
             // 获取今天之前6天的交易数据
             List<StockDay> history = session.createQuery("from " + StockDay.class.getName() + " sd where sd.businessDate<? and sd.code=? order by sd.businessDate desc")
                     .setParameter(0, date)
