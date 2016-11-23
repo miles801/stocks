@@ -131,9 +131,6 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
             // 关键点：数据池的大小始终为6个，按照时间顺序排序，即最晚的交易数据在最后面
             // 利用游标遍历所有的数据
             String id = "0";
-            if (StringUtils.notEquals(code, "300030")) {
-                return;
-            }
             List<StockDay> history = session.createQuery("from " + StockDay.class.getName() + " o where o.id>=? and  o.code=? order by o.id asc")
                     .setParameter(0, id)
                     .setParameter(1, code)
@@ -604,6 +601,9 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
                     stockDay.setLowPrice(Double.parseDouble(arr[3]));
                     stockDay.setClosePrice(Double.parseDouble(arr[4]));
                     stockDay.setUpdown(stockDay.getClosePrice() - stockDay.getOpenPrice());
+                    if (stockDay.getUpdown() == 0 && stockDay.getYesterdayClosePrice() != null) {
+                        stockDay.setUpdown(stockDay.getClosePrice() - stockDay.getYesterdayClosePrice());
+                    }
                     key = key.substring(1) + (stockDay.getUpdown() > 0 ? "1" : "0");
                     stockDay.setKey(key);
                     stockDay.setKey3(key.substring(3));
