@@ -25,12 +25,16 @@
             get: {method: 'GET', params: {method: 'get', id: '@id'}, isArray: false},
 
             // 计算
-            calculate: {method: 'GET', params: {method: 'calculate', type: '@type'}, isArray: false},
+            calculate: {
+                method: 'GET',
+                params: {method: 'calculate', type: '@type', value: '@value', db: '@db'},
+                isArray: false
+            },
 
             // 分页查询
             pageQuery: {
-                method : 'POST',
-                params : {method: 'pageQuery', limit: '@limit', start: '@start'},
+                method: 'POST',
+                params: {method: 'pageQuery', limit: '@limit', start: '@start'},
                 isArray: false
             },
 
@@ -53,7 +57,7 @@
     app.service('DBModal', function ($modal, ModalFactory, AlertFactory, CommonUtils, DBService) {
         var common = function (options, callback) {
             var defaults = {
-                id      : null,//id
+                id: null,//id
                 pageType: null,     // 必填项,页面类型add/modify/view
                 callback: null     // 点击确定后要执行的函数
             };
@@ -104,7 +108,7 @@
             }
         };
         return {
-            add   : function (options, callback) {
+            add: function (options, callback) {
                 var o = angular.extend({}, options, {pageType: 'add'});
                 common(o, callback);
             },
@@ -116,7 +120,7 @@
                 var o = angular.extend({}, options, {pageType: 'modify'});
                 common(o, callback);
             },
-            view  : function (options, callback) {
+            view: function (options, callback) {
                 if (!options.id) {
                     alert('明细页面加载失败!没有获得ID');
                     return;

@@ -13,6 +13,8 @@ import com.michael.stock.db.domain.DB;
 import com.michael.stock.db.service.DBService;
 import com.michael.stock.db.service.FnDBService;
 import com.michael.stock.db.vo.DBVo;
+import com.michael.utils.string.StringUtils;
+import org.hibernate.Query;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -96,16 +98,25 @@ public class DBServiceImpl implements DBService, BeanWrapCallback<DB, DBVo> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<Map<String, Object>> calculate(int type) {
+    public List<Map<String, Object>> calculate(int type, String db, int value) {
         // 加载所有的日期
-        List<Date> dates = HibernateUtils.getSession(false)
-                .createQuery("select distinct o.dbDate from " + DB.class.getName() + " o order by o.dbDate asc")
-                .list();
+        String hql = "select distinct o.dbDate from " + DB.class.getName() + " o where 1=1 ";
+        if (StringUtils.isNotEmpty(db) && StringUtils.notEquals("0", db)) {
+            hql += " and o.type=?";
+        }
+        hql += " order by o.dbDate asc ";
+        Query query = HibernateUtils.getSession(false)
+                .createQuery(hql);
+        if (StringUtils.isNotEmpty(db) && StringUtils.notEquals("0", db)) {
+            query.setParameter(0, db);
+        }
+        List<Date> dates = query.list();
         List<Map<String, Object>> data = new ArrayList<>();
         final int size = dates.size();
         if (size < type + 1) {
             return data;
         }
+        long days = value * 1000 * 60 * 60 * 24;
         if (type == 3) {
             int f1 = 0, f2 = 1, f3 = 2, f4 = 3;
             for (; f1 < size - 3; f1++) {   // 第一层游标
@@ -116,7 +127,7 @@ public class DBServiceImpl implements DBService, BeanWrapCallback<DB, DBVo> {
                         long d3 = dates.get(f3).getTime();
                         for (f4 = f3 + 1; f4 < size; f4++) {
                             long d4 = dates.get(f4).getTime();
-                            if (d1 == d2 + d3 - d4) {
+                            if ((d2 + d3 - d4 - days <= d1) && d2 + d3 - d4 + days >= d1) {
                                 Map<String, Object> map = new HashMap<>();
                                 map.put("bk", d1);
                                 map.put("a1", d2);
@@ -144,7 +155,7 @@ public class DBServiceImpl implements DBService, BeanWrapCallback<DB, DBVo> {
                             long d4 = dates.get(f4).getTime();
                             for (f5 = f4 + 1; f5 < size; f5++) {
                                 long d5 = dates.get(f5).getTime();
-                                if (d1 == d2 + d3 + d4 - f5) {
+                                if ((d2 + d3 + d4 - f5 - days <= d1) && d2 + d3 + d4 - f5 + days >= d1) {
                                     Map<String, Object> map = new HashMap<>();
                                     map.put("bk", d1);
                                     map.put("a1", d2);

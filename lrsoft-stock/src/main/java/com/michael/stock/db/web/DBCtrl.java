@@ -103,9 +103,9 @@ public class DBCtrl extends BaseController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/calculate", params = {"type"}, method = RequestMethod.GET)
-    public void calculate(int type, HttpServletResponse response) {
-        List<Map<String, Object>> data = dBService.calculate(type);
+    @RequestMapping(value = "/calculate", params = {"type", "db", "value"}, method = RequestMethod.GET)
+    public void calculate(int type, String db, int value, HttpServletResponse response) {
+        List<Map<String, Object>> data = dBService.calculate(type, db, value);
         GsonUtils.printData(response, data);
     }
 

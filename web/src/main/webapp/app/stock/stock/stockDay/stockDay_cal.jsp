@@ -27,16 +27,19 @@
                     <div class="item w600">
                         <div class="w100">
                             <label>
-                                <input type="radio" name="type" ng-model="type" value="3"
-                                       ng-change="query();"/> 三元运算
+                                <input type="radio" name="type" ng-model="condition.type" value="3"/> 三元运算
                             </label>
                         </div>
                         <div class="w100">
                             <label>
-                                <input type="radio" name="type" ng-model="type" value="4"
-                                       ng-change="query();"/> 四元运算
+                                <input type="radio" name="type" ng-model="condition.type" value="4"/> 四元运算
                             </label>
                         </div>
+                        <select class="w180" ng-model="condition.db" style="width: 150px;"
+                                ng-options="foo.value as foo.name for foo in types"> </select>
+                        <input type="number" name="type" ng-model="condition.value" value="4" placeholder="误差范围"
+                               style="margin-left: 15px;"/>
+                        <a type="button" class="btn btn-blue" ng-click="query();" style="margin-left: 5px;"> 计算 </a>
                     </div>
                 </div>
             </div>

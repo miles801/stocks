@@ -54,7 +54,9 @@ public interface DBService {
     /**
      * 计算
      *
-     * @param type 运算方式
+     * @param type  运算方式
+     * @param db    数据库
+     * @param value 误差
      */
-    List<Map<String, Object>> calculate(int type);
+    List<Map<String, Object>> calculate(int type, String db, int value);
 }
