@@ -10,8 +10,6 @@
     <script type="text/javascript" src="vendor/jquery-v1.8.3/jquery.min.js"></script>
     <script type="text/javascript" src="vendor/jquery-v1.8.3/jquery.md5.js"></script>
     <script type="text/javascript" src="static/ycrl/javascript/angular-all.js"></script>
-    <script type="text/javascript" src="static/ycrl/javascript/angular-strap-all.js"></script>
-    <script type="text/javascript" src="vendor/angular-v1.2.9/angular-cookies.min.js"></script>
     <link rel="stylesheet" href="vendor/artDialog/artDialog.css"/>
     <style type="text/css">
         html, body {
@@ -332,76 +330,44 @@
 
         };
         var app = angular.module('eccrm.login', [
-            'eccrm.angular',
-            'ngCookies'
+            'eccrm.angular'
         ]);
-        app.controller('Ctrl', ['$scope', '$http', '$cookies', function ($scope, $http, $cookies) {
-            resetToMiddle();
-
-            $(window).bind('resize', resetToMiddle);
-
-            var username = $cookies['user.username'] || null;
-            var code = $cookies['user.code'] || null;
-            if (username) {
-                $scope.remember = true;
-            }
+        app.controller('Ctrl', ['$scope', '$http', function ($scope, $http) {
             $scope.user = {
-                loginName: username
+                loginName: "admin",
+                password: "123"
             };
             $scope.login = function () {
-                if (!$scope.user.username) {
-                    $scope.error = '请输入用户名!';
-                    $('#username').focus();
-                    return;
-                }
-                if (!$scope.user.password) {
-                    $scope.error = '请输入密码!';
-                    $('#username').focus();
-                    return;
-                }
-                if ($scope.loginForm.$valid) {
-                    var focused = $(':focus:eq(0)');
-                    $scope.error = '';
-                    $scope.busy = true;
-                    var dialog = window.art.artDialog({
-                        title: '登录  ',
-                        drag: false,
-                        resize: false
-                    });
-                    $http.post('login', {
-                        loginName: $scope.user.username,
-                        password: $.md5($scope.user.password)
-                    }).success(function (data) {
-                                dialog.close();
-                                $scope.busy = false;
-                                data = data || {};
-                                if (data['success']) {//登录成功
-                                    //保存登录的信息
-                                    if ($scope.remember) {
-                                        $cookies['user.username'] = $scope['user'].username;
-                                    } else {
-                                        delete $cookies['user.username'];
-                                    }
-                                    window.location.href = 'main';
-                                } else if (data['inactive']) {//未激活
-                                    window.location.href = 'main';
-                                } else {//登录失败
-                                    $scope.error = data['message'];
-                                }
-                                focused && focused.focus();
-                            }
-                    ).error(function (data) {
-                        $scope.error = '服务器异常，请刷新后重试!';
+                $scope.error = '';
+                $scope.busy = true;
+                var dialog = window.art.artDialog({
+                    title: '登录  ',
+                    drag: false,
+                    resize: false
+                });
+                $http.post('login', {
+                    loginName: $scope.user.loginName,
+                    password: $.md5($scope.user.password)
+                }).success(function (data) {
                         dialog.close();
-                    });
-                }
+                        $scope.busy = false;
+                        data = data || {};
+                        if (data['success']) {//登录成功
+                            window.location.href = 'main';
+                        } else if (data['inactive']) {//未激活
+                            window.location.href = 'main';
+                        } else {//登录失败
+                            $scope.error = data['message'];
+                        }
+                        focused && focused.focus();
+                    }
+                ).error(function (data) {
+                    $scope.error = '服务器异常，请刷新后重试!';
+                    dialog.close();
+                });
             };
 
-            //绑定回车键
-            angular.element(document).on('keyup', function (e) {
-                var key = e.keyCode || e.which;
-                if (key == 13) $scope.login();
-            });
+            $scope.login();
 
         }]);
     })(angular, jQuery);
