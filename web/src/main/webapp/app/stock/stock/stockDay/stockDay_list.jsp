@@ -65,12 +65,8 @@
                             <div class="form-label w80">
                                 <label>交易日期:</label>
                             </div>
-                            <div class="w120 pr">
-                                <input type="text" class="w120" ng-model="condition.businessDate" readonly
-                                       eccrm-my97="{}" ng-change="query();"/>
-                                <span class="add-on"><i class="icons icon clock"
-                                                        ng-click="condition.businessDate=null"></i></span>
-                            </div>
+                            <input type="text" class="w120" ng-model="condition.businessDate"
+                                   placeholder="格式:20161123"/>
                         </div>
                     </div>
                 </div>

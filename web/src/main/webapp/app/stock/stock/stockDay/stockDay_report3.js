@@ -11,8 +11,8 @@
     app.controller('Ctrl', function ($scope, CommonUtils, AlertFactory, ModalFactory, StockDayService, StockDayParam) {
         $scope.orderBy = 'key1';
         var defaults = {// 默认查询条件
-            businessDateGe: moment('1990-12-19').format('YYYY-MM-DD'),
-            businessDateLt: moment().format('YYYY-MM-DD'),
+            businessDateGe: moment('19901219').format('YYYYMMDD'),
+            businessDateLt: moment().format('YYYYMMDD'),
             orderBy: 'key1'
         };
 
@@ -36,7 +36,7 @@
                     }
                     var param = angular.extend({start: $scope.pager.start, limit: $scope.pager.limit}, $scope.condition);
                     if (param.businessDateLt) {
-                        param.businessDateLt = moment(param.businessDateLt).add(1, 'd').format('YYYY-MM-DD');
+                        param.businessDateLt = moment(param.businessDateLt).add(1, 'd').format('YYYYMMDD');
                     }
                     var promise = StockDayService.report3(param, function (data) {
                         $scope.beans = data.data || [];

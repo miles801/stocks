@@ -4,10 +4,9 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
+import com.michael.utils.date.DateUtils;
 
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -51,19 +50,10 @@ public class DateConverter extends TypeAdapter<Date> {
             return null;
         }
         String json = in.nextString();
-        if (json.matches("\\d+")) {
+        if (json.matches("\\d{13}")) {
             return new Date(Long.parseLong(json));
-        } else if (json.matches("\\d{4}-\\d{1,2}-\\d{1,2}")) {
-            pattern = "yyyy-MM-dd";
-        } else if (json.matches("\\d{2}:\\d{2}:\\d{2}")) {
-            pattern = "HH:mm:ss";
+        } else {
+            return DateUtils.parse(json);
         }
-        Date date = null;
-        try {
-            date = new SimpleDateFormat(pattern).parse(json);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return date;
     }
 }

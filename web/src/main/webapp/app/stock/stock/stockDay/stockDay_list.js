@@ -11,11 +11,15 @@
     app.controller('Ctrl', function ($scope, CommonUtils, AlertFactory, ModalFactory, StockDayService, StockDayParam) {
         var defaults = {// 默认查询条件
             orderBy: 'businessDate',
-            businessDate: moment().format('YYYY-MM-DD'),
             reverse: true
         };
 
         $scope.condition = angular.extend({}, defaults);
+
+        StockDayService.lastDay(function (o) {
+            defaults.businessDate = moment(o.data).format('YYYYMMDD');
+            $scope.condition.businessDate = defaults.businessDate;
+        });
 
         // 重置查询条件并查询
         $scope.reset = function () {

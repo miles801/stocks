@@ -59,8 +59,8 @@
                                     <label>开始时间:</label>
                                 </div>
                                 <div class="pr w120">
-                                    <input type="text" class="w120" ng-model="condition.businessDateGe" readonly
-                                           eccrm-my97="{}" validate validate-required/>
+                                    <input type="text" class="w120" ng-model="condition.businessDateGe"
+                                           placeholder="格式:20161123"/>
                                 </div>
                             </div>
                             <div class="item w200">
@@ -68,8 +68,8 @@
                                     <label>截止时间:</label>
                                 </div>
                                 <div class="pr w120">
-                                    <input type="text" class="w120" ng-model="condition.businessDateLt" readonly
-                                           eccrm-my97="{}" validate validate-required/>
+                                    <input type="text" class="w120" ng-model="condition.businessDateLt"
+                                           placeholder="格式:20161123"/>
                                 </div>
                             </div>
                         </div>

@@ -27,9 +27,9 @@ public class StockWeekBo implements BO {
 
     @Condition
     private Date businessDate;
-    @Condition(matchMode = MatchModel.GE, target = "businessDate")
+    @Condition(matchMode = MatchModel.GE, target = "closeDate")
     private Date businessDateGe;
-    @Condition(matchMode = MatchModel.LT, target = "businessDate")
+    @Condition(matchMode = MatchModel.LT, target = "closeDate")
     private Date businessDateLt;
 
     public Date getBusinessDate() {

@@ -32,7 +32,7 @@
                 var param = angular.extend({start: this.start, limit: this.limit}, $scope.condition);
                 $scope.beans = [];
                 if(param.businessDateLt) {
-                    param.businessDateLt = moment(param.businessDateLt).add(1, 'd').format('YYYY-MM-DD');
+                    param.businessDateLt = moment(param.businessDateLt).add(1, 'd').format('YYYYMMDD');
                 }
                 return CommonUtils.promise(function (defer) {
                     var promise = StockWeekService.pageQuery(param, function (data) {
