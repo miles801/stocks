@@ -28,6 +28,19 @@
                 trigger: 'axis',
                 axisPointer: {            // 坐标轴指示器，坐标轴触发有效
                     type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                },
+                formatter: function (params, ticket, callback) {
+                    var o = params[0];
+                    var str = o.name;
+                    var count = o.data.value;
+                    str += '<br /> 集团数：' + count;
+                    if (count > 0) {
+                        str += '<br/>日期对：';
+                        for (var i = 0; i < o.data.dates.length; i++) {
+                            str += '<br /> ' + o.data.dates[i];
+                        }
+                    }
+                    return str;
                 }
             },
             xAxis: {
@@ -84,7 +97,7 @@
                         var date = min;
                         var range = $scope.condition.days;
                         for (; date <= max;) {
-                            xAxis.push(moment(date).format('YYYY-MM-DD'));  // x坐标
+                            xAxis.push(moment(date).format('YYYYMMDD'));  // x坐标
                             var minDate = date.valueOf() - 86400000 * range;
                             var maxDate = date.valueOf() + 86400000 * range;
                             var count = 0;
@@ -93,10 +106,13 @@
                                 var t = tmp.fnDate;
                                 if (minDate <= t && t <= maxDate) {
                                     count++;
-                                    dates.push(moment(t).format('YYYY-MM-DD'));
+                                    dates.push(moment(t).format('YYYYMMDD'));
                                 }
                             });
-                            series.push(count);
+                            series.push({
+                                value: count,
+                                dates: dates
+                            });
                             date += aDay;
                         }
                         // 这里已经获取到所有的

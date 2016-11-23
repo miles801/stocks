@@ -35,7 +35,8 @@
                     <label>最小日期:</label>
                 </div>
                 <div class="w120 pr">
-                    <input type="text" class="w120" ng-model="condition.fnDateGe" eccrm-my97="{}" readonly placeholder="点击选择日期" validate validate-required/>
+                    <input type="text" class="w120" ng-model="condition.fnDateGe" placeholder="格式：20161123" validate
+                           validate-required/>
                 </div>
             </div>
             <div class="item w200">
@@ -43,7 +44,8 @@
                     <label>最大日期:</label>
                 </div>
                 <div class="w120 pr">
-                    <input type="text" class="w120" ng-model="condition.fnDateLt" eccrm-my97="{}" readonly placeholder="点击选择日期" validate validate-required/>
+                    <input type="text" class="w120" ng-model="condition.fnDateLt" placeholder="格式：20161123" validate
+                           validate-required/>
                 </div>
             </div>
             <div class="item w200">
@@ -89,7 +91,7 @@
                 </table>
             </div>
         </div>
-        <div style="width: 600px;float: left;" ng-style="{height:height+'px'}">
+        <div style="width: 100%;position:absolute;z-index: 999;padding-left: 550px;" ng-style="{height:height+'px'}">
             <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
             <div id="char1" style="width: 80%;height:400px;margin:0 auto;"></div>
         </div>
