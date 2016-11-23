@@ -26,6 +26,9 @@
 
         // 保存
         $scope.save = function (createNew) {
+            if ($scope.form.$invalid) {
+                return;
+            }
             var promise = DBService.save($scope.beans, function (data) {
                 AlertFactory.success('保存成功!');
                 CommonUtils.addTab('update');
@@ -61,6 +64,13 @@
             CommonUtils.loading(promise, 'Loading...');
         };
 
+        $('body').bind('keydown', function (e) {
+            var keyCode = e.which || e.keyCode;
+            if (keyCode == 13) {
+                $scope.save(true);
+                e.preventDefault();
+            }
+        });
 
         if (pageType == 'add') {
             $scope.beans = {};

@@ -93,7 +93,7 @@
                                         </span>
                                     </span>
                                 </td>
-                                <td class="cp" ng-click="order('per')">七阳比
+                                <td class="cp" ng-click="order('per')">四阳比
                                     <span>
                                         <span ng-show="orderBy=='per'">
                                             <span ng-show="reverse">▼</span>
@@ -101,7 +101,7 @@
                                         </span>
                                     </span>
                                 </td>
-                                <td class="cp" ng-click="order('avgHigh')">7H均值
+                                <td class="cp" ng-click="order('avgHigh')">4H均值
                                     <span>
                                         <span ng-show="orderBy=='avgHigh'">
                                             <span ng-show="reverse">▼</span>
@@ -109,7 +109,7 @@
                                         </span>
                                     </span>
                                 </td>
-                                <td class="cp" ng-click="order('avgLow')">7L均值
+                                <td class="cp" ng-click="order('avgLow')">4L均值
                                     <span>
                                         <span ng-show="orderBy=='avgLow'">
                                             <span ng-show="reverse">▼</span>

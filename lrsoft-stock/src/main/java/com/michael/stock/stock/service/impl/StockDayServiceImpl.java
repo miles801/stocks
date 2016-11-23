@@ -131,6 +131,9 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
             // 关键点：数据池的大小始终为6个，按照时间顺序排序，即最晚的交易数据在最后面
             // 利用游标遍历所有的数据
             String id = "0";
+            if (StringUtils.notEquals(code, "300030")) {
+                return;
+            }
             List<StockDay> history = session.createQuery("from " + StockDay.class.getName() + " o where o.id>=? and  o.code=? order by o.id asc")
                     .setParameter(0, id)
                     .setParameter(1, code)
@@ -159,6 +162,10 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
                 stockDay.setNextHigh(null);
                 stockDay.setNextLow(null);
                 stockDay.setYang(null);
+                stockDay.setUpdown(stockDay.getClosePrice() - stockDay.getOpenPrice());
+                if (stockDay.getUpdown() == 0 && stockDay.getYesterdayClosePrice() != null) {
+                    stockDay.setUpdown(stockDay.getClosePrice() - stockDay.getYesterdayClosePrice());
+                }
                 // 第1日
                 StockDay sd1 = history.get(1);
                 if (DoubleUtils.add(sd1.getYesterdayClosePrice()) > 0) {
@@ -191,6 +198,8 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
                     Double d5 = (yesterday.getClosePrice() - yesterday.getYesterdayClosePrice()) / yesterday.getYesterdayClosePrice();
                     stockDay.setP5(d5);
                 }
+                stockDay.setKey(yesterday.getKey().substring(1) + (stockDay.getUpdown() > 0 ? "1" : "0"));
+                stockDay.setKey3(yesterday.getKey3().substring(1) + (stockDay.getUpdown() > 0 ? "1" : "0"));
                 stockDay.setYesterdayClosePrice(yesterday.getClosePrice());
                 if (yesterday.getClosePrice() > 0) {
                     // 第七日高（其实就是利用今天设置昨天的第七日高）
@@ -286,6 +295,9 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
             stockDay.setClosePrice(Double.parseDouble(s.getClosePrice().toString()));
             stockDay.setYesterdayClosePrice(Double.parseDouble(s.getYesterdayClosePrice().toString()));
             stockDay.setUpdown(stockDay.getClosePrice() - stockDay.getOpenPrice());
+            if (stockDay.getUpdown() == 0 && stockDay.getYesterdayClosePrice() != null) {
+                stockDay.setUpdown(stockDay.getClosePrice() - stockDay.getYesterdayClosePrice());
+            }
             stockDay.setKey((stockDay.getUpdown() > 0 ? "000001" : "000000"));
             stockDay.setKey3((stockDay.getUpdown() > 0 ? "001" : "000"));
             stockDay.setSeq(history.size());
