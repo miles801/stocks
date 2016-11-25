@@ -142,7 +142,7 @@ public class DBServiceImpl implements DBService, BeanWrapCallback<DB, DBVo> {
                                 data.add(map);
                                 break;
                             }
-                            if (d1 > d2 + d3 - d4) {
+                            if (d1 > d2 + d3 - d4 + days) {
                                 break;
                             }
                         }
@@ -161,7 +161,7 @@ public class DBServiceImpl implements DBService, BeanWrapCallback<DB, DBVo> {
                             long d4 = dates.get(f4).getTime();
                             for (f5 = f4 + 1; f5 < size; f5++) {
                                 long d5 = dates.get(f5).getTime();
-                                if ((d2 + d3 + d4 - f5 - days <= d1) && d2 + d3 + d4 - f5 + days >= d1) {
+                                if ((d2 + d3 + d4 - d5 - days <= d1) && d2 + d3 + d4 - d5 + days >= d1) {
                                     Map<String, Object> map = new HashMap<>();
                                     map.put("bk", d1);
                                     map.put("a1", d2);
@@ -171,7 +171,7 @@ public class DBServiceImpl implements DBService, BeanWrapCallback<DB, DBVo> {
                                     data.add(map);
                                     break;
                                 }
-                                if (d1 > d2 + d3 + d4 - d5) {
+                                if (d1 > d2 + d3 + d4 - d5 + days) {
                                     break;
                                 }
                             }

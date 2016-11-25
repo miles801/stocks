@@ -31,13 +31,13 @@
                 },
                 formatter: function (params, ticket, callback) {
                     var o = params[0];
-                    var str = o.name;
+                    var str = '日&nbsp;&nbsp;&nbsp;&nbsp;期：' + o.name;
                     var count = o.data.value;
                     str += '<br /> 集团数：' + count;
                     if (count > 0) {
                         str += '<br/>日期对：';
                         for (var i = 0; i < o.data.dates.length; i++) {
-                            str += '<br /> ' + o.data.dates[i];
+                            str += '<br /> ' + o.data.dates[i] + ' : ' + o.data.fn[i];
                         }
                     }
                     return str;
@@ -102,15 +102,18 @@
                             var maxDate = date.valueOf() + 86400000 * range;
                             var count = 0;
                             var dates = [];
+                            var fn = [];
                             angular.forEach($scope.beans1 || [], function (tmp) {
                                 var t = tmp.fnDate;
                                 if (minDate <= t && t <= maxDate) {
                                     count++;
+                                    fn.push(tmp.fn);
                                     dates.push(moment(t).format('YYYYMMDD'));
                                 }
                             });
                             series.push({
                                 value: count,
+                                fn: fn,
                                 dates: dates
                             });
                             date += aDay;
