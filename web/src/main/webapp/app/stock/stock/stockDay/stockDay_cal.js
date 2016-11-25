@@ -18,16 +18,47 @@
             value: 10
         };
 
+        var beans = [];
+
         // 参数：类型
         $scope.types = [{name: '全部', value: '0'}];
         DBParam.type(function (o) {
             $scope.types.push.apply($scope.types, o);
         });
 
+        $scope.dateChange = function () {
+            var data = [];  // 第一步过滤
+            // 过滤起始BK
+            if (/^\d{8}$/g.test($scope.startDate)) {
+                var startDate = moment($scope.startDate).valueOf();
+                angular.forEach(beans, function (o) {
+                    if (o.bk > startDate) {
+                        data.push(o);
+                    }
+                });
+            } else {
+                data = beans;
+            }
+            var data2 = []; // 第二步过滤
+            // 过滤结束BK
+            if (/^\d{8}$/g.test($scope.endDate)) {
+                var endDate = moment($scope.endDate).valueOf();
+                angular.forEach(data, function (o) {
+                    if (o.bk < endDate) {
+                        data2.push(o);
+                    }
+                });
+            } else {
+                data2 = data;
+            }
+            $scope.beans = data2;
+        };
+
         // 查询数据
         $scope.query = function () {
             var promise = DBService.calculate($scope.condition, function (data) {
-                $scope.beans = data.data || [];
+                beans = data.data || [];
+                $scope.dateChange();
             });
             CommonUtils.loading(promise, 'Loading...');
         };

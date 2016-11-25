@@ -116,7 +116,7 @@ public class DBServiceImpl implements DBService, BeanWrapCallback<DB, DBVo> {
         if (size < type + 1) {
             return data;
         }
-        long days = value * 1000 * 60 * 60 * 24;
+        long days = value * 1000L * 60 * 60 * 24;
         if (type == 3) {
             int f1 = 0, f2 = 1, f3 = 2, f4 = 3;
             for (; f1 < size - 3; f1++) {   // 第一层游标
