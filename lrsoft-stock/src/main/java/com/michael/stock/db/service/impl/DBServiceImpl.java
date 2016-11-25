@@ -14,7 +14,10 @@ import com.michael.stock.db.service.DBService;
 import com.michael.stock.db.service.FnDBService;
 import com.michael.stock.db.vo.DBVo;
 import com.michael.utils.string.StringUtils;
-import org.hibernate.Query;
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -100,17 +103,20 @@ public class DBServiceImpl implements DBService, BeanWrapCallback<DB, DBVo> {
     @SuppressWarnings("unchecked")
     public List<Map<String, Object>> calculate(int type, String db, int value) {
         // 加载所有的日期
-        String hql = "select distinct o.dbDate from " + DB.class.getName() + " o where 1=1 ";
-        if (StringUtils.isNotEmpty(db) && StringUtils.notEquals("0", db)) {
-            hql += " and o.type=?";
+        Criteria criteria = HibernateUtils.getSession(false)
+                .createCriteria(DB.class)
+                .setProjection(Projections.distinct(Projections.property("dbDate")));
+        if (StringUtils.include(db, "1", "2", "3", "4")) {
+            criteria.add(Restrictions.eq("type", db));
         }
-        hql += " order by o.dbDate asc ";
-        Query query = HibernateUtils.getSession(false)
-                .createQuery(hql);
-        if (StringUtils.isNotEmpty(db) && StringUtils.notEquals("0", db)) {
-            query.setParameter(0, db);
+        if (StringUtils.equals(db, "5")) {
+            criteria.add(Restrictions.in("type", new String[]{"1", "2"}));
         }
-        List<Date> dates = query.list();
+        if (StringUtils.equals(db, "6")) {
+            criteria.add(Restrictions.in("type", new String[]{"3", "4"}));
+        }
+        criteria.addOrder(Order.asc("dbDate"));
+        List<Date> dates = criteria.list();
         List<Map<String, Object>> data = new ArrayList<>();
         final int size = dates.size();
         if (size < type + 1) {

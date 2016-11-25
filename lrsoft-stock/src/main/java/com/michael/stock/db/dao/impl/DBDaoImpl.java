@@ -5,8 +5,10 @@ import com.michael.core.hibernate.criteria.CriteriaUtils;
 import com.michael.stock.db.bo.DBBo;
 import com.michael.stock.db.dao.DBDao;
 import com.michael.stock.db.domain.DB;
+import com.michael.utils.string.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
 
@@ -74,6 +76,18 @@ public class DBDaoImpl extends HibernateDaoHelper implements DBDao {
 
     private void initCriteria(Criteria criteria, DBBo bo) {
         Assert.notNull(criteria, "criteria must not be null!");
+        if (bo == null) {
+            return;
+        }
+        String type = bo.getType();
+        if (StringUtils.equals(type, "5")) {
+            bo.setType(null);
+            criteria.add(Restrictions.in("type", new String[]{"1", "2"}));
+        }
+        if (StringUtils.equals(type, "6")) {
+            bo.setType(null);
+            criteria.add(Restrictions.in("type", new String[]{"3", "4"}));
+        }
         CriteriaUtils.addCondition(criteria, bo);
     }
 
