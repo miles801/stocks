@@ -16,6 +16,7 @@ import com.michael.stock.stock.service.StockWeekService;
 import com.michael.stock.stock.vo.StockWeekVo;
 import com.michael.utils.collection.CollectionUtils;
 import com.michael.utils.date.DateUtils;
+import com.michael.utils.number.DoubleUtils;
 import com.michael.utils.number.IntegerUtils;
 import com.michael.utils.string.StringUtils;
 import org.hibernate.Query;
@@ -173,6 +174,7 @@ public class StockWeekServiceImpl implements StockWeekService, BeanWrapCallback<
             lowPrice = day.getLowPrice() < lowPrice ? day.getLowPrice() : lowPrice;
         }
 
+        // 创建周数据
         StockWeek stockWeek = new StockWeek();
         stockWeek.setOpenPrice(openPrice);
         stockWeek.setOpenDate(openDate);
@@ -192,58 +194,46 @@ public class StockWeekServiceImpl implements StockWeekService, BeanWrapCallback<
             stockWeek.setYesterdayClosePrice(lastWeek.getClosePrice());
             stockWeek.setKey3(lastWeek.getKey3().substring(1) + (stockWeek.getUpdown() > 0 ? "1" : "0"));
             stockWeek.setKey(lastWeek.getKey().substring(1) + (stockWeek.getUpdown() > 0 ? "1" : "0"));
-            if (stockWeek.getSeq() > 2) {
-                // 设置3周数据
-                stockWeek.setDate3(weeks.get(1).getOpenDate());
-            }
-            if (stockWeek.getSeq() > 5) {
-                // 1周数据
-                StockWeek sw1 = weeks.get(1);
-                stockWeek.setDate6(sw1.getOpenDate());
 
-                Double d1 = (sw1.getClosePrice() - sw1.getYesterdayClosePrice()) / sw1.getYesterdayClosePrice();
-                stockWeek.setP1(d1);
-                // 第2周
-                StockWeek sd2 = weeks.get(2);
-                Double d2 = (sd2.getClosePrice() - sd2.getYesterdayClosePrice()) / sd2.getYesterdayClosePrice();
-                stockWeek.setP2(d2);
-                // 第3周
-                StockWeek sd3 = weeks.get(3);
-                Double d3 = (sd3.getClosePrice() - sd3.getYesterdayClosePrice()) / sd3.getYesterdayClosePrice();
-                stockWeek.setP3(d3);
-                // 第4周
-                StockWeek sd4 = weeks.get(4);
-                Double d4 = (sd4.getClosePrice() - sd4.getYesterdayClosePrice()) / sd4.getYesterdayClosePrice();
-                stockWeek.setP4(d4);
-                // 第5周
-                StockWeek sd5 = weeks.get(5);
-                Double d5 = (sd5.getClosePrice() - sd5.getYesterdayClosePrice()) / sd5.getYesterdayClosePrice();
-                stockWeek.setP5(d5);
-                // 第6周
-                Double d6 = (stockWeek.getClosePrice() - stockWeek.getYesterdayClosePrice()) / stockWeek.getYesterdayClosePrice();
-                stockWeek.setP6(d6);
-
-                // 第七周高
+            // 设置3线数据
+            int index = size - 4;
+            if (size > 4) {
+                stockWeek.setDate3(weeks.get(index + 1).getOpenDate());
+                stockWeek.setD1((weeks.get(index).getClosePrice() - weeks.get(index).getYesterdayClosePrice()) / weeks.get(index).getYesterdayClosePrice());
+                stockWeek.setD2((weeks.get(index + 1).getClosePrice() - weeks.get(index + 1).getYesterdayClosePrice()) / weeks.get(index + 1).getYesterdayClosePrice());
+                stockWeek.setD3((weeks.get(index + 2).getClosePrice() - weeks.get(index + 2).getYesterdayClosePrice()) / weeks.get(index + 2).getYesterdayClosePrice());
+                // 四日、七日的高低
                 lastWeek.setNextHigh((stockWeek.getHighPrice() - lastWeek.getClosePrice()) / lastWeek.getClosePrice());
-                // 第七周低
                 lastWeek.setNextLow((stockWeek.getLowPrice() - lastWeek.getClosePrice()) / lastWeek.getClosePrice());
-
-
-                // 七周阴阳
+                // 四七日阴阳
                 if (stockWeek.getClosePrice() - stockWeek.getOpenPrice() == 0) {
-                    lastWeek.setYang(stockWeek.getClosePrice() > stockWeek.getYesterdayClosePrice());
+                    lastWeek.setYang(stockWeek.getClosePrice() > DoubleUtils.add(stockWeek.getYesterdayClosePrice()));
                 } else {
                     lastWeek.setYang(stockWeek.getClosePrice() > stockWeek.getOpenPrice());
                 }
-
-                session.update(lastWeek);
-                weeks.remove(0);
             }
+
+            // 设置6线数据
+            if (size == 8) {
+                stockWeek.setDate6(weeks.get(1).getOpenDate());
+                stockWeek.setP1((weeks.get(1).getClosePrice() - weeks.get(1).getYesterdayClosePrice()) / weeks.get(1).getYesterdayClosePrice());
+                stockWeek.setP2((weeks.get(2).getClosePrice() - weeks.get(2).getYesterdayClosePrice()) / weeks.get(2).getYesterdayClosePrice());
+                stockWeek.setP3((weeks.get(3).getClosePrice() - weeks.get(3).getYesterdayClosePrice()) / weeks.get(3).getYesterdayClosePrice());
+                stockWeek.setP4((weeks.get(4).getClosePrice() - weeks.get(4).getYesterdayClosePrice()) / weeks.get(4).getYesterdayClosePrice());
+                stockWeek.setP5((weeks.get(5).getClosePrice() - weeks.get(5).getYesterdayClosePrice()) / weeks.get(5).getYesterdayClosePrice());
+                stockWeek.setP6((weeks.get(6).getClosePrice() - weeks.get(6).getYesterdayClosePrice()) / weeks.get(6).getYesterdayClosePrice());
+            }
+
+            session.update(lastWeek);
         }
+
 
         String id = (String) session.save(stockWeek);
         stockWeek.setId(id);
         weeks.add(stockWeek);
+        if (weeks.size() > 8) {
+            weeks.remove(0);
+        }
         return closeDate;
     }
 

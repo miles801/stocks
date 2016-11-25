@@ -6,7 +6,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>6周K列表</title>
+    <title>4周K列表</title>
     <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8"/>
     <link rel="stylesheet" type="text/css" href="<%=contextPath%>/vendor/bootstrap-v3.0/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="<%=contextPath%>/style/standard/css/eccrm-common-new.css">
@@ -19,10 +19,11 @@
         window.angular.contextPathURL = '<%=contextPath%>';
     </script>
     <style>
-        .red{
+        .red {
             color: #ff2409;
         }
-        .green{
+
+        .green {
             color: #0f900a;
         }
     </style>
@@ -44,15 +45,13 @@
                             <div class="form-label w80">
                                 <label>股票代码:</label>
                             </div>
-                            <input type="text" class="w120" ng-model="condition.code"
-                                   maxlength="10"/>
+                            <input type="text" class="w120" ng-model="condition.code" maxlength="6"/>
                         </div>
                         <div class="item w200">
                             <div class="form-label w80">
                                 <label>K线组合:</label>
                             </div>
-                            <input type="text" class="w120" ng-model="condition.key"
-                                   maxlength="10"/>
+                            <input type="text" class="w120" ng-model="condition.key" maxlength="3"/>
                         </div>
                         <div class="item w200">
                             <div class="form-label w80">
@@ -105,16 +104,16 @@
                                     </span>
                                 </td>
                                 <td>交易时间</td>
-                                <td class="cp" ng-click="order('key')">6线组合
+                                <td class="cp" ng-click="order('key3')">3线组合
                                     <span ng-cloak>
-                                        <span ng-show="orderBy=='key'">
+                                        <span ng-show="orderBy=='key3'">
                                             <span ng-show="reverse">▼</span>
                                             <span ng-show="!reverse">▲</span>
                                         </span>
                                     </span>
                                 </td>
                                 <td>日期段</td>
-                                <td class="cp" ng-click="order('nextHigh')">第七周_h
+                                <td class="cp" ng-click="order('nextHigh')">第四周_h
                                     <span ng-cloak>
                                         <span ng-show="orderBy=='nextHigh'">
                                             <span ng-show="reverse">▼</span>
@@ -122,7 +121,7 @@
                                         </span>
                                     </span>
                                 </td>
-                                <td class="cp" ng-click="order('nextLow')">第七周_l
+                                <td class="cp" ng-click="order('nextLow')">第四周_l
                                     <span ng-cloak>
                                         <span ng-show="orderBy=='nextLow'">
                                             <span ng-show="reverse">▼</span>
@@ -155,59 +154,32 @@
                                         </span>
                                     </span>
                                 </td>
-                                <td class="cp" ng-click="order('p4')">第四周
-                                    <span ng-cloak>
-                                        <span ng-show="orderBy=='p4'">
-                                            <span ng-show="reverse">▼</span>
-                                            <span ng-show="!reverse">▲</span>
-                                        </span>
-                                    </span>
-                                </td>
-                                <td class="cp" ng-click="order('p5')">第五周
-                                    <span ng-cloak>
-                                        <span ng-show="orderBy=='p5'">
-                                            <span ng-show="reverse">▼</span>
-                                            <span ng-show="!reverse">▲</span>
-                                        </span>
-                                    </span>
-                                </td>
-                                <td class="cp" ng-click="order('p6')">第六周
-                                    <span ng-cloak>
-                                        <span ng-show="orderBy=='p6'">
-                                            <span ng-show="reverse">▼</span>
-                                            <span ng-show="!reverse">▲</span>
-                                        </span>
-                                    </span>
-                                </td>
                             </tr>
                             </thead>
                             <tbody class="table-body">
                             <tr ng-show="pager.total==0">
-                                <td colspan="14" class="text-center">没有查询到数据！</td>
+                                <td colspan="11" class="text-center">没有查询到数据！</td>
                             </tr>
                             <tr bindonce ng-repeat="foo in beans.data" ng-cloak>
                                 <td bo-text="pager.start+$index+1"></td>
                                 <td bo-text="foo.code"></td>
-                                <td >
+                                <td>
                                     <span>{{foo.openDate|date:'yyyyMMdd'}}</span>
                                     <span> -- </span>
                                     <span>{{foo.closeDate|date:'yyyyMMdd'}}</span>
                                 </td>
-                                <td bo-text="foo.key"></td>
-                                <td >
-                                    <span>{{foo.date6|date:'yyyyMMdd'}}</span>
+                                <td bo-text="foo.key3"></td>
+                                <td>
+                                    <span>{{foo.date3|date:'yyyyMMdd'}}</span>
                                     <span> -- </span>
                                     <span>{{foo.closeDate|date:'yyyyMMdd'}}</span>
                                 </td>
                                 <td bo-text="foo.nextHigh|number:3"></td>
                                 <td bo-text="foo.nextLow|number:3"></td>
                                 <td bo-text="foo.isYang?'阳':'阴'" ng-class="{'red':foo.isYang,'green':!foo.isYang}"></td>
-                                <td bo-text="foo.p1|number:3"></td>
-                                <td bo-text="foo.p2|number:3"></td>
-                                <td bo-text="foo.p3|number:3"></td>
-                                <td bo-text="foo.p4|number:3"></td>
-                                <td bo-text="foo.p5|number:3"></td>
-                                <td bo-text="foo.p6|number:3"></td>
+                                <td bo-text="foo.d1|number:3"></td>
+                                <td bo-text="foo.d2|number:3"></td>
+                                <td bo-text="foo.d3|number:3"></td>
                             </tr>
                             </tbody>
                         </table>

@@ -123,21 +123,23 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
         Logger logger = Logger.getLogger(StockDayService.class);
         for (String code : stocks) {
             // 逻辑：
-            // 1. 每只股票，取出最开始的7只，如果不足，则直接返回
-            // 2. 取出最后一只（第七只）作为要被改变的起始数据，称作游标
-            // 3. 利用前6只股票的数据为第七只股票设置相关信息
+            // 1. 每只股票，取出最开始的4只，如果不足，则直接返回
+            // 2. 取出最后一只（第4只）作为要被改变的起始数据，称作游标
+            // 3.1 利用前3只股票的数据为第4只股票设置相关信息
+            // 3.2 利用前6只股票的数据为第7只股票设置相关信息
             // 4. 游标往下移动，如果游标池中没有数据，则从最后一个游标的ID开始再抓取20条记录到游标池中
             // 5. 将上一个游标加入到数据池中，并将数据池的第一个元素移除
-            // 关键点：数据池的大小始终为6个，按照时间顺序排序，即最晚的交易数据在最后面
+            // 关键点：数据池的大小从4到6，最后一直保持为6个，按照时间顺序排序，即最晚的交易数据在最后面
             // 利用游标遍历所有的数据
             String id = "0";
             List<StockDay> history = session.createQuery("from " + StockDay.class.getName() + " o where o.id>=? and  o.code=? order by o.id asc")
                     .setParameter(0, id)
                     .setParameter(1, code)
                     .setFirstResult(0)
-                    .setMaxResults(7)
+                    .setMaxResults(5)
                     .list();
-            if (history.size() < 7) {
+            final int size = history.size();
+            if (size < 5) {
                 continue;
             }
             // 设置前几个日期的“前一日收盘价” （这里实际上是修复错误数据的）
@@ -145,13 +147,11 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
             history.get(2).setYesterdayClosePrice(history.get(1).getClosePrice());
             history.get(3).setYesterdayClosePrice(history.get(2).getClosePrice());
             history.get(4).setYesterdayClosePrice(history.get(3).getClosePrice());
-            history.get(5).setYesterdayClosePrice(history.get(4).getClosePrice());
-            history.get(6).setYesterdayClosePrice(history.get(5).getClosePrice());
-
             List<StockDay> business = new ArrayList<>();
-            business.add(history.get(6));
-            history.remove(6);  // 移除最后一个
-            int i = 6;
+            business.add(history.get(4));
+            history.remove(4);  // 移除最后一个
+            int i = 4;
+            int index = 1;
             while (true) {
                 StockDay stockDay = business.get(0);    // 最后一日
                 stockDay.setSeq(i++);
@@ -163,60 +163,57 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
                 if (stockDay.getUpdown() == 0 && stockDay.getYesterdayClosePrice() != null) {
                     stockDay.setUpdown(stockDay.getClosePrice() - stockDay.getYesterdayClosePrice());
                 }
-                // 第1日
-                StockDay sd1 = history.get(1);
-                if (DoubleUtils.add(sd1.getYesterdayClosePrice()) > 0) {
-                    Double d1 = (sd1.getClosePrice() - sd1.getYesterdayClosePrice()) / sd1.getYesterdayClosePrice();
-                    stockDay.setP1(d1);
-                }
-                stockDay.setDate6(sd1.getBusinessDate());
-                // 第2日
-                StockDay sd2 = history.get(2);
-                if (DoubleUtils.add(sd2.getYesterdayClosePrice()) > 0) {
-                    Double d2 = (sd2.getClosePrice() - sd2.getYesterdayClosePrice()) / sd2.getYesterdayClosePrice();
-                    stockDay.setP2(d2);
-                }
-                // 第3日
-                StockDay sd3 = history.get(3);
-                if (DoubleUtils.add(sd3.getYesterdayClosePrice()) > 0) {
-                    Double d3 = (sd3.getClosePrice() - sd3.getYesterdayClosePrice()) / sd3.getYesterdayClosePrice();
-                    stockDay.setP3(d3);
-                }
-                // 第4日
-                StockDay sd4 = history.get(4);
-                if (DoubleUtils.add(sd4.getYesterdayClosePrice()) > 0) {
-                    Double d4 = (sd4.getClosePrice() - sd4.getYesterdayClosePrice()) / sd4.getYesterdayClosePrice();
-                    stockDay.setP4(d4);
-                }
-                stockDay.setDate3(sd4.getBusinessDate());
-                // 第5日,即昨天
-                StockDay yesterday = history.get(5);
-                if (DoubleUtils.add(yesterday.getYesterdayClosePrice()) > 0) {
-                    Double d5 = (yesterday.getClosePrice() - yesterday.getYesterdayClosePrice()) / yesterday.getYesterdayClosePrice();
-                    stockDay.setP5(d5);
-                }
+
+                // 设置3K数据
+                StockDay yesterday = history.get(history.size() - 1);
                 stockDay.setKey(yesterday.getKey().substring(1) + (stockDay.getUpdown() > 0 ? "1" : "0"));
                 stockDay.setKey3(yesterday.getKey3().substring(1) + (stockDay.getUpdown() > 0 ? "1" : "0"));
+                stockDay.setDate3(history.get(index + 1).getBusinessDate());
+                stockDay.setD1((history.get(index).getClosePrice() - history.get(index).getYesterdayClosePrice()) / history.get(index).getYesterdayClosePrice());
+                stockDay.setD2((history.get(index + 1).getClosePrice() - history.get(index + 1).getYesterdayClosePrice()) / history.get(index + 1).getYesterdayClosePrice());
+                stockDay.setD3((history.get(index + 2).getClosePrice() - history.get(index + 2).getYesterdayClosePrice()) / history.get(index + 2).getYesterdayClosePrice());
                 stockDay.setYesterdayClosePrice(yesterday.getClosePrice());
-                if (yesterday.getClosePrice() > 0) {
-                    // 第七日高（其实就是利用今天设置昨天的第七日高）
-                    yesterday.setNextHigh((stockDay.getHighPrice() - yesterday.getClosePrice()) / yesterday.getClosePrice());
-                    // 第七日低（其实就是利用今天设置昨天的第七日低）
-                    yesterday.setNextLow((stockDay.getLowPrice() - yesterday.getClosePrice()) / yesterday.getClosePrice());
-                }
-                // 七日阴阳
+
+                // 四日、七日的高低
+                yesterday.setNextHigh((stockDay.getHighPrice() - yesterday.getClosePrice()) / yesterday.getClosePrice());
+                yesterday.setNextLow((stockDay.getLowPrice() - yesterday.getClosePrice()) / yesterday.getClosePrice());
+                // 四七日阴阳
                 if (stockDay.getClosePrice() - stockDay.getOpenPrice() == 0) {
                     yesterday.setYang(stockDay.getClosePrice() > DoubleUtils.add(stockDay.getYesterdayClosePrice()));
                 } else {
                     yesterday.setYang(stockDay.getClosePrice() > stockDay.getOpenPrice());
                 }
-
-                // 第6日
-                if (DoubleUtils.add(stockDay.getYesterdayClosePrice()) > 0) {
-                    Double d6 = (stockDay.getClosePrice() - stockDay.getYesterdayClosePrice()) / stockDay.getYesterdayClosePrice();
-                    stockDay.setP6(d6);
+                if (history.size() < 8) {
+                    index++;
+                    session.update(yesterday);
+                    session.update(stockDay);
+                    history.add(stockDay);
+                    business.remove(0);
+                    if (business.isEmpty()) {
+                        // 加载20条继续执行
+                        business.addAll(session.createQuery("from " + StockDay.class.getName() + " o where o.id>? and  o.code=? order by o.id asc")
+                                .setParameter(0, stockDay.getId())
+                                .setParameter(1, code)
+                                .setFirstResult(0)
+                                .setMaxResults(20)
+                                .list());
+                    }
+                    if (business.isEmpty()) {
+                        break;
+                    }
+                    continue;
                 }
 
+                // 设置6k数据
+                // 第1日
+                StockDay sd1 = history.get(1);
+                stockDay.setDate6(sd1.getBusinessDate());
+                stockDay.setP1((history.get(1).getClosePrice() - history.get(1).getYesterdayClosePrice()) / history.get(1).getYesterdayClosePrice());
+                stockDay.setP2((history.get(2).getClosePrice() - history.get(2).getYesterdayClosePrice()) / history.get(2).getYesterdayClosePrice());
+                stockDay.setP3((history.get(3).getClosePrice() - history.get(3).getYesterdayClosePrice()) / history.get(3).getYesterdayClosePrice());
+                stockDay.setP4((history.get(4).getClosePrice() - history.get(4).getYesterdayClosePrice()) / history.get(4).getYesterdayClosePrice());
+                stockDay.setP5((history.get(5).getClosePrice() - history.get(5).getYesterdayClosePrice()) / history.get(5).getYesterdayClosePrice());
+                stockDay.setP6((history.get(6).getClosePrice() - history.get(6).getYesterdayClosePrice()) / history.get(6).getYesterdayClosePrice());
                 session.update(yesterday);
                 session.update(stockDay);
                 // 调整集合顺序
