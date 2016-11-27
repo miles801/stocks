@@ -61,29 +61,31 @@
     </form>
     <div class="ycrl split"></div>
     <div class="row pr">
-        <div style="width: 200px;float: left;padding: 20px;">
+        <div style="width: 200px;float: left;padding: 20px;position: relative;z-index: 1000;">
             <div style="width: 100%;height: 500px;border: 1px solid #ddd;">
                 <div ng-repeat="foo in dates" ng-cloak class="titem">
                     <span style="display: block;">{{foo.dbDate | eccrmDate}}</span>
                 </div>
             </div>
         </div>
-        <div style="width: 350px;float: left;padding: 20px;height: 500px;overflow: auto;">
+        <div style="width: 380px;float: left;padding: 20px;height: 500px;overflow: auto;position: relative;z-index: 1000;">
             <div class="table-responsive panel panel-table" style="padding: 0;">
                 <table class="table table-striped table-hover">
                     <thead class="table-header">
                     <tr>
                         <td style="width: 20px;">序号</td>
+                        <td>原日期</td>
                         <td>计算日期</td>
                         <td>Fn系数</td>
                     </tr>
                     </thead>
                     <tbody class="table-body">
                     <tr ng-show="!beans1.length">
-                        <td colspan="3" class="text-center">没有查询到数据！</td>
+                        <td colspan="4" class="text-center">没有查询到数据！</td>
                     </tr>
                     <tr bindonce ng-repeat="foo in beans1" ng-cloak>
                         <td bo-text="pager.start+$index+1"></td>
+                        <td bo-text="foo.originDate|eccrmDate"></td>
                         <td bo-text="foo.fnDate|eccrmDate"></td>
                         <td bo-text="foo.fn"></td>
                     </tr>

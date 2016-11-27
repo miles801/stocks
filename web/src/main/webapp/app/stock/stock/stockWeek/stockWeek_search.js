@@ -11,6 +11,7 @@
     app.controller('Ctrl', function ($scope, CommonUtils, AlertFactory, ModalFactory, StockWeekService) {
         var defaults = {
             orderBy: 'code',
+            seq: $('#seq').val(),
             reverse: true
         }; // 默认查询条件
 
@@ -31,7 +32,7 @@
             fetch: function () {
                 var param = angular.extend({start: this.start, limit: this.limit}, $scope.condition);
                 $scope.beans = [];
-                if(param.businessDateLt) {
+                if (param.businessDateLt) {
                     param.businessDateLt = moment(param.businessDateLt).add(1, 'd').format('YYYYMMDD');
                 }
                 return CommonUtils.promise(function (defer) {

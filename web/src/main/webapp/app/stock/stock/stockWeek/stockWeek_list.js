@@ -9,7 +9,10 @@
         'stock.stock.stockWeek'
     ]);
     app.controller('Ctrl', function ($scope, CommonUtils, AlertFactory, ModalFactory, StockWeekService, StockWeekParam) {
-        var defaults = {}; // 默认查询条件
+        var defaults = {// 默认查询条件
+            orderBy: 'closeDate',
+            reverse: true
+        };
 
         $scope.condition = angular.extend({}, defaults);
 

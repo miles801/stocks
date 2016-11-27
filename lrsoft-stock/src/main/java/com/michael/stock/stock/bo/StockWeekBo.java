@@ -32,6 +32,17 @@ public class StockWeekBo implements BO {
     @Condition(matchMode = MatchModel.LT, target = "closeDate")
     private Date businessDateLt;
 
+    @Condition(matchMode = MatchModel.GT, target = "seq")
+    private Integer seqGt;
+
+    public Integer getSeqGt() {
+        return seqGt;
+    }
+
+    public void setSeqGt(Integer seqGt) {
+        this.seqGt = seqGt;
+    }
+
     public Date getBusinessDate() {
         return businessDate;
     }

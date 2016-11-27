@@ -9,7 +9,9 @@
         'stock.db.dB'
     ]);
     app.controller('Ctrl', function ($scope, CommonUtils, AlertFactory, ModalFactory, DBService, DBParam) {
-        var defaults = {}; // 默认查询条件
+        var defaults = {// 默认查询条件
+            type: '1'
+        };
 
         $scope.condition = angular.extend({}, defaults);
 
@@ -21,7 +23,7 @@
 
 
         // 参数：类型
-        $scope.types = [{name: '全部'}];
+        $scope.types = [];
         DBParam.type(function (o) {
             $scope.types.push.apply($scope.types, o);
         });
@@ -31,7 +33,7 @@
             $scope.pager.query();
         };
         $scope.pager = {
-            fetch     : function () {
+            fetch: function () {
                 var param = angular.extend({start: this.start, limit: this.limit}, $scope.condition);
                 $scope.beans = [];
                 $scope.items && ($scope.items.length = 0);
@@ -59,8 +61,8 @@
                 id = ids.join(',');
             }
             ModalFactory.confirm({
-                scope   : $scope,
-                content : '<span class="text-danger">数据一旦删除将不可恢复，请确认!</span>',
+                scope: $scope,
+                content: '<span class="text-danger">数据一旦删除将不可恢复，请确认!</span>',
                 callback: function () {
                     var promise = DBService.deleteByIds({ids: id}, function () {
                         AlertFactory.success('删除成功!');
@@ -75,7 +77,7 @@
         $scope.add = function () {
             CommonUtils.addTab({
                 title: '新增导入日期',
-                url     : '/stock/db/dB/add',
+                url: '/stock/db/dB/add',
                 onUpdate: $scope.query
             });
         };
@@ -84,7 +86,7 @@
         $scope.modify = function (id) {
             CommonUtils.addTab({
                 title: '更新导入日期',
-                url     : '/stock/db/dB/modify?id=' + id,
+                url: '/stock/db/dB/modify?id=' + id,
                 onUpdate: $scope.query
             });
         };
@@ -93,7 +95,7 @@
         $scope.view = function (id) {
             CommonUtils.addTab({
                 title: '查看导入日期',
-                url  : '/stock/db/dB/detail?id=' + id
+                url: '/stock/db/dB/detail?id=' + id
             });
         };
 

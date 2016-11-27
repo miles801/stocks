@@ -324,7 +324,7 @@ public class StockDayCtrl extends BaseController {
     @RequestMapping(value = "/sync", method = RequestMethod.POST)
     public void sync(HttpServletRequest request, HttpServletResponse response) {
         StockBusinessSchedule schedule = SystemContainer.getInstance().getBean(StockBusinessSchedule.class);
-        schedule.execute();
+        schedule.syncDayBusiness();
         GsonUtils.printSuccess(response);
     }
 
@@ -333,7 +333,7 @@ public class StockDayCtrl extends BaseController {
     @RequestMapping(value = "/reset7", method = RequestMethod.POST)
     public void reset7(HttpServletRequest request, HttpServletResponse response) {
         StockBusinessSchedule schedule = SystemContainer.getInstance().getBean(StockBusinessSchedule.class);
-        schedule.reset7DayInfo();
+        schedule.resetOtherInfo();
         GsonUtils.printSuccess(response);
     }
 
@@ -343,7 +343,7 @@ public class StockDayCtrl extends BaseController {
     @RequestMapping(value = "/resetDayResult", method = RequestMethod.POST)
     public void resetDayResult(HttpServletRequest request, HttpServletResponse response) {
         StockBusinessSchedule schedule = SystemContainer.getInstance().getBean(StockBusinessSchedule.class);
-        schedule.createTableDay();
+        schedule.resetNewResult();
         GsonUtils.printSuccess(response);
     }
 }

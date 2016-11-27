@@ -13,6 +13,7 @@ import com.michael.core.pager.PageVo;
 import com.michael.core.pager.Pager;
 import com.michael.stock.stock.bo.StockDayBo;
 import com.michael.stock.stock.dao.StockDayDao;
+import com.michael.stock.stock.domain.Stock;
 import com.michael.stock.stock.domain.StockDay;
 import com.michael.stock.stock.domain.StockWeek;
 import com.michael.stock.stock.service.StockDayService;
@@ -41,10 +42,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.michael.core.hibernate.HibernateUtils.getSession;
 
@@ -281,7 +279,7 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
                     .list();
             StockDay stockDay = new StockDay();
             stockDay.setCode(code);
-            stockDay.setName(s.getName());
+            stockDay.setName(s.getName().replaceAll("\\s+", ""));
             stockDay.setBusinessDate(date);
             stockDay.setHighPrice(Double.parseDouble(s.getTodayHighPrice().toString()));
             stockDay.setLowPrice(Double.parseDouble(s.getTodayLowPrice().toString()));
@@ -562,6 +560,12 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
         Session session = getSession(false);
         int index = 0;
         int x = 1;
+        List<Object[]> stockNames = session.createQuery("select s.code,s.name from " + Stock.class.getName() + " s ")
+                .list();
+        Map<String, String> stockMap = new HashMap<>();
+        for (Object[] o : stockNames) {
+            stockMap.put((String) o[0], (String) o[1]);
+        }
         for (String id : attachmentIds) {
             AttachmentVo vo = AttachmentProvider.getInfo(id);
             Assert.notNull(vo, "附件已经不存在，请刷新后重试!");
@@ -574,7 +578,10 @@ public class StockDayServiceImpl implements StockDayService, BeanWrapCallback<St
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
                 String titles[] = content.get(0).split("\\s+");
                 String code = titles[0];
-                String name = titles[1];
+                String name = stockMap.get(code);
+                if (StringUtils.isEmpty(name)) {
+                    name = titles[1];
+                }
                 // 清空这支股票的历史数据
                 session.createQuery("delete from " + StockDay.class.getName() + " s where s.code=?")
                         .setParameter(0, code)

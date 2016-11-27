@@ -30,6 +30,17 @@ public class StockDayBo implements BO {
     @Condition
     private String key3;
 
+    @Condition(matchMode = MatchModel.GT, target = "seq")
+    private Integer seqGt;
+
+    public Integer getSeqGt() {
+        return seqGt;
+    }
+
+    public void setSeqGt(Integer seqGt) {
+        this.seqGt = seqGt;
+    }
+
     public Date getBusinessDate() {
         return businessDate;
     }

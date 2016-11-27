@@ -17,8 +17,11 @@ import java.util.List;
 @Component
 public class StockWeekSchedule {
 
+    /**
+     * 重新产生周线数据（从交易历史中获取）
+     */
     @SuppressWarnings("unchecked")
-    public void execute() {
+    public void reset() {
         Logger logger = Logger.getLogger(StockWeekSchedule.class);
         logger.info("****************** 初始化股票周交易数据:start ******************");
         // 获取所有的股票代码
@@ -33,7 +36,7 @@ public class StockWeekSchedule {
                 logger.info(String.format("股票周交易数据初始化成功：%s,总进度：%d / %d", code, ++index, size));
             }
         }
-        logger.info("****************** 初始化股票周交易数据:start ******************");
+        logger.info("****************** 初始化股票周交易数据:end ******************");
     }
 
 
@@ -43,8 +46,10 @@ public class StockWeekSchedule {
     }
 
 
-    // 产生风险结果分析
-    @Scheduled(cron = "0 0 2 6 * ?")
+    /**
+     * 重新产生最新的周线结果分析数据
+     */
+    @Scheduled(cron = "0 0 2 * * SAT")
     public void createTableWeek() {
         Logger logger = Logger.getLogger(StockWeekSchedule.class);
         try (Session session = HibernateUtils.openSession()) {

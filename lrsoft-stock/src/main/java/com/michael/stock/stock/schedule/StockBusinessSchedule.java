@@ -25,10 +25,13 @@ import java.util.List;
 @Component
 public class StockBusinessSchedule {
 
-    // 同步股票交易数据
-    @Scheduled(cron = "0 30 15 * * ?")
+
+    /**
+     * 同步每日交易数据（每周1-5的下午3点半）
+     */
+    @Scheduled(cron = "0 30 15 ? * MON-FRI")
     @SuppressWarnings("unchecked")
-    public void execute() {
+    public void syncDayBusiness() {
         Logger logger = Logger.getLogger(StockBusinessSchedule.class);
         logger.info("****************** 同步股票交易数据:start ******************");
         try (Session session = HibernateUtils.openSession()) {
@@ -60,10 +63,10 @@ public class StockBusinessSchedule {
 
 
     /**
-     * 重置第7日信息
+     * 重置交易数据外的其他信息（3线、6线等数据）
      */
     @SuppressWarnings("unchecked")
-    public void reset7DayInfo() {
+    public void resetOtherInfo() {
         Logger logger = Logger.getLogger(StockBusinessSchedule.class);
         logger.info("****************** 重置第7日信息:start ******************");
         try (Session session = HibernateUtils.openSession()) {
@@ -96,8 +99,12 @@ public class StockBusinessSchedule {
 
 
     // 产生风险结果分析
-    @Scheduled(cron = "0 0 2 * * ?")
-    public void createTableDay() {
+
+    /**
+     * 重新生成最新的风险结果（默认每周六晚上2点执行）
+     */
+    @Scheduled(cron = "0 0 2 * * SAT")
+    public void resetNewResult() {
         Logger logger = Logger.getLogger(StockBusinessSchedule.class);
         try (Session session = HibernateUtils.openSession()) {
             logger.info("****************** 产生风险估值结果表 6日:start ******************");

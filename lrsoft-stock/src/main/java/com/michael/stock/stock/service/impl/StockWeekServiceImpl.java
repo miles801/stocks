@@ -115,20 +115,30 @@ public class StockWeekServiceImpl implements StockWeekService, BeanWrapCallback<
         // 最近5周的数组
         List<StockWeek> weeks = new ArrayList<>();
 
+        // 取出最早的5只股票
+        List<StockDay> stockDays = session.createQuery("from " + StockDay.class.getName() + " s where s.businessDate>? and  s.code=? order by s.businessDate asc")
+                .setParameter(0, startDate)
+                .setParameter(1, stockCode)
+                .setMaxResults(50)
+                .list();
         while (true) {
-            // 取出最早的5只股票
-            List<StockDay> stockDays = session.createQuery("from " + StockDay.class.getName() + " s where s.businessDate>? and  s.code=? order by s.businessDate asc")
-                    .setParameter(0, startDate)
-                    .setParameter(1, stockCode)
-                    .setMaxResults(5)
-                    .list();
+            int size = stockDays.size();
+            if (size < 5) {
+                stockDays.addAll(session.createQuery("from " + StockDay.class.getName() + " s where s.businessDate>? and  s.code=? order by s.businessDate asc")
+                        .setParameter(0, startDate)
+                        .setParameter(1, stockCode)
+                        .setFirstResult(size)
+                        .setMaxResults(50)
+                        .list());
+            }
             if (CollectionUtils.isEmpty(stockDays)) {
                 break;  // 如果已经没有股票了则退出循环
             }
-
             // 如果最后一个日期的周数和今天的年周数一致,且今天不是周五，则表明读取到了最后
-            if (DateUtils.getYearWeek(startDate) == DateUtils.getWeek(today) && today.getYear() == startDate.getYear() && DateUtils.getWeek(today) != Calendar.FRIDAY) {
-                break;
+            if (stockDays.size() < 5) {
+                if (DateUtils.getYearWeek(startDate) == DateUtils.getWeek(today) && today.getYear() == startDate.getYear() && DateUtils.getWeek(today) != Calendar.FRIDAY) {
+                    break;
+                }
             }
 
             // 设置周K数据并保存
@@ -155,12 +165,17 @@ public class StockWeekServiceImpl implements StockWeekService, BeanWrapCallback<
         int openTimes = 0; // 这一周的开盘天数
         int weekNo = 0;
         final int size = weeks.size();
+        List<StockDay> thisWeekDays = new ArrayList<>();
         for (StockDay day : stockDays) {
             Date businessDate = day.getBusinessDate();
-            int nowWeekDay = DateUtils.getWeek(businessDate);
-            if (nowWeekDay < weekNo) {  // 如果取出的星期要小于上一个星期，则表示进入下一周了，已经取满本周数据
+            int nowWeekDay = DateUtils.getYearWeek(businessDate);
+            if (weekNo == 0) {
+                weekNo = nowWeekDay;
+            }
+            if (weekNo != nowWeekDay) {  // 如果取出的周数不在同一周，则视为下一周的数据
                 break;
             }
+            thisWeekDays.add(day);
             weekNo = nowWeekDay;
             if (openDate == null) {
                 openDate = day.getBusinessDate();
@@ -234,6 +249,7 @@ public class StockWeekServiceImpl implements StockWeekService, BeanWrapCallback<
         if (weeks.size() > 8) {
             weeks.remove(0);
         }
+        stockDays.removeAll(thisWeekDays);  // 删除本周的数据
         return closeDate;
     }
 

@@ -29,6 +29,9 @@
 </head>
 <body>
 <div class="main condition-row-1" ng-app="stock.stock.stockDay.list" ng-controller="Ctrl">
+    <div class="dn">
+        <input type="hidden" id="seq" value="7"/>
+    </div>
     <div class="list-condition">
         <div class="block">
             <div class="block-header">

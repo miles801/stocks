@@ -96,6 +96,7 @@
                         var aDay = 86400000;
                         var date = min;
                         var range = $scope.condition.days;
+                        var map = {};
                         for (; date <= max;) {
                             xAxis.push(moment(date).format('YYYYMMDD'));  // x坐标
                             var minDate = date.valueOf() - 86400000 * range;
@@ -108,6 +109,7 @@
                                 if (minDate <= t && t <= maxDate) {
                                     count++;
                                     fn.push(tmp.fn);
+                                    tmp.count = (tmp.count || 0) + 1;
                                     dates.push(moment(t).format('YYYYMMDD'));
                                 }
                             });

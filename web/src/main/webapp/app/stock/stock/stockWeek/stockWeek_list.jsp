@@ -39,26 +39,23 @@
             <div class="block-content">
                 <div class="content-wrap">
                     <div class="row float">
-                        <div class="item w300">
-                            <div class="form-label w100">
+                        <div class="item w200">
+                            <div class="form-label w80">
                                 <label>股票代码:</label>
                             </div>
-                            <input type="text" class="w200" ng-model="condition.code"
-                                   maxlength="10"/>
+                            <input type="text" class="w120" ng-model="condition.code" maxlength="6"/>
                         </div>
-                        <div class="item w300">
-                            <div class="form-label w100">
-                                <label>股票名称:</label>
+                        <div class="item w200">
+                            <div class="form-label w80">
+                                <label>6线代码:</label>
                             </div>
-                            <input type="text" class="w200" ng-model="condition.name"
-                                   maxlength="20"/>
+                            <input type="text" class="w120" ng-model="condition.key" maxlength="6"/>
                         </div>
-                        <div class="item w300">
-                            <div class="form-label w100">
-                                <label>代码:</label>
+                        <div class="item w200">
+                            <div class="form-label w80">
+                                <label>3线代码:</label>
                             </div>
-                            <input type="text" class="w200" ng-model="condition.key"
-                                   maxlength="10"/>
+                            <input type="text" class="w120" ng-model="condition.key3" maxlength="3"/>
                         </div>
                     </div>
                 </div>

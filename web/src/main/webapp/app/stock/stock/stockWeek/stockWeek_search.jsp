@@ -29,6 +29,9 @@
 </head>
 <body>
 <div class="main condition-row-1" ng-app="stock.stock.stockWeek.list" ng-controller="Ctrl">
+    <div class="dn">
+        <input type="hidden" id="seq" value="7"/>
+    </div>
     <div class="list-condition">
         <div class="block">
             <div class="block-header">
@@ -44,15 +47,13 @@
                             <div class="form-label w80">
                                 <label>股票代码:</label>
                             </div>
-                            <input type="text" class="w120" ng-model="condition.code"
-                                   maxlength="10"/>
+                            <input type="text" class="w120" ng-model="condition.code" maxlength="6"/>
                         </div>
                         <div class="item w200">
                             <div class="form-label w80">
                                 <label>K线组合:</label>
                             </div>
-                            <input type="text" class="w120" ng-model="condition.key"
-                                   maxlength="10"/>
+                            <input type="text" class="w120" ng-model="condition.key" maxlength="6"/>
                         </div>
                         <div class="item w200">
                             <div class="form-label w80">

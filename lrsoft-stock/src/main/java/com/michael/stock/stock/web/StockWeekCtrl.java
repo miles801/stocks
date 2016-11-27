@@ -190,7 +190,7 @@ public class StockWeekCtrl extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/reset", method = RequestMethod.POST)
     public void reset(HttpServletRequest request, HttpServletResponse response) {
-        SystemContainer.getInstance().getBean(StockWeekSchedule.class).execute();
+        SystemContainer.getInstance().getBean(StockWeekSchedule.class).reset();
         GsonUtils.printSuccess(response);
     }
 

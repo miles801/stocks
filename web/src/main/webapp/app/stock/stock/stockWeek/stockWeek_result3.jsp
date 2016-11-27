@@ -93,7 +93,7 @@
                                         </span>
                                     </span>
                                 </td>
-                                <td class="cp" ng-click="order('per')">七阳比
+                                <td class="cp" ng-click="order('per')">四阳比
                                     <span>
                                         <span ng-show="orderBy=='per'">
                                             <span ng-show="reverse">▼</span>
