@@ -154,7 +154,7 @@ public class AttachmentServiceImpl implements AttachmentService, BeanWrapCallbac
 
     @Override
     public void clearTemp() {
-        List<String> tempIdList = attachmentDao.queryHistoryTemp(60 * 1000);
+        List<String> tempIdList = attachmentDao.queryHistoryTemp(600 * 1000);
         if (tempIdList != null && !tempIdList.isEmpty()) {
             for (String id : tempIdList) {
                 deleteById(id);
