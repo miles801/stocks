@@ -26,8 +26,8 @@
 
             // 计算
             calculate: {
-                method: 'GET',
-                params: {method: 'calculate', type: '@type', value: '@value', db: '@db'},
+                method: 'POST',
+                params: {method: 'calculate', xtype: '@xtype', start: '@start', limit: '@limit'},
                 isArray: false
             },
 

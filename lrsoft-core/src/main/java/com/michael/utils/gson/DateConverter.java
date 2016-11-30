@@ -50,7 +50,7 @@ public class DateConverter extends TypeAdapter<Date> {
             return null;
         }
         String json = in.nextString();
-        if (json.matches("\\d{13}")) {
+        if (json.matches("\\d{12,13}")) {
             return new Date(Long.parseLong(json));
         } else {
             return DateUtils.parse(json);

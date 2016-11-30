@@ -30,7 +30,7 @@ public class SessionListener implements HttpSessionListener {
     @Override
     public void sessionCreated(HttpSessionEvent se) {
         count++;
-        logger.info("=========== HttpSession :  new，当前session数量：" + count);
+        logger.info("=========== HttpSession (" + se.getSession().getId() + "):  new，当前session数量：" + count);
     }
 
     @Override

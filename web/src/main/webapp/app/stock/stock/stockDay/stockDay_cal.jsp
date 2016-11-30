@@ -40,12 +40,10 @@
                         </div>
                         <select class="w180" ng-model="condition.db" style="width: 150px;"
                                 ng-options="foo.value as foo.name for foo in types" ng-change="query();"> </select>
-                        <input type="number" name="type" ng-model="condition.value" value="4" placeholder="误差范围"
+                        <input type="number" name="type" ng-model="condition.value" value="4" placeholder="误差范围,最大为10"
                                style="margin-left: 15px;"/>
-                        <input type="text" ng-model="startDate" placeholder="起始日期" ng-change="dateChange();"
-                               style="margin-left: 10px;"/>
-                        <input type="text" ng-model="endDate" placeholder="截止日期" ng-change="dateChange();"
-                               style="margin-left: 10px;"/>
+                        <input type="text" ng-model="startDate" placeholder="起始日期" style="margin-left: 10px;"/>
+                        <input type="text" ng-model="endDate" placeholder="截止日期" style="margin-left: 10px;"/>
                         <a type="button" class="btn btn-blue" ng-click="query();" style="margin-left: 5px;"> 计算 </a>
                     </div>
                 </div>
@@ -102,11 +100,11 @@
                         </tr>
                         </thead>
                         <tbody class="table-body">
-                        <tr ng-show="!beans.length">
+                        <tr ng-show="!beans.total">
                             <td colspan="5" class="text-center" ng-cloak ng-if="type=='3'">没有查询到数据！</td>
                             <td colspan="6" class="text-center" ng-cloak ng-if="type=='4'">没有查询到数据！</td>
                         </tr>
-                        <tr bindonce ng-repeat="foo in beans|orderBy:orderBy:reverse" ng-cloak>
+                        <tr bindonce ng-repeat="foo in beans.data" ng-cloak>
                             <td bo-text="$index+1"></td>
                             <td bo-text="foo.bk|eccrmDate"></td>
                             <td bo-text="foo.a1|eccrmDate"></td>
@@ -116,6 +114,7 @@
                         </tr>
                         </tbody>
                     </table>
+                    <div class="list-pagination" eccrm-page="pager"></div>
                 </div>
             </div>
         </div>
