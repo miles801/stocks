@@ -14,7 +14,8 @@
         $scope.height = $('body').height() - 40;
         $scope.condition = {
             type: '1',
-            days: 10
+            days: 10,
+            orderBy: 'dbDate'
             // fnDateGe: '2011-12-1',
             // fnDateLt: '2011-12-30'
         };
@@ -37,7 +38,7 @@
                     if (count > 0) {
                         str += '<br/>日期对：';
                         for (var i = 0; i < o.data.dates.length; i++) {
-                            str += '<br /> ' + o.data.dates[i] + ' : ' + o.data.fn[i];
+                            str += '<br /> { ' + o.data.dates[i] + ' - ' + o.data.fn[i] + ' - ' + o.data.origin[i] + ' }';
                         }
                     }
                     return str;
@@ -104,11 +105,13 @@
                             var count = 0;
                             var dates = [];
                             var fn = [];
+                            var origin = [];
                             angular.forEach($scope.beans1 || [], function (tmp) {
                                 var t = tmp.fnDate;
                                 if (minDate <= t && t <= maxDate) {
                                     count++;
                                     fn.push(tmp.fn);
+                                    origin.push(moment(tmp.originDate).format('YYYYMMDD'));
                                     tmp.count = (tmp.count || 0) + 1;
                                     dates.push(moment(t).format('YYYYMMDD'));
                                 }
@@ -116,6 +119,7 @@
                             series.push({
                                 value: count,
                                 fn: fn,
+                                origin: origin,
                                 dates: dates
                             });
                             date += aDay;
