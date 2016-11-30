@@ -32,11 +32,12 @@
         };
 
         $scope.pager = {
-            limit: 50,
             fetch: function () {
                 var param = {
                     start: this.start,
                     limit: this.limit,
+                    orderBy: $scope.orderBy,
+                    reverse: $scope.reverse,
                     xtype: $scope.condition.type
                 };
                 if (/^\d{8}$/g.test($scope.startDate)) {
@@ -66,5 +67,12 @@
                 });
             }
         };
+
+        $scope.order = function (key) {
+            $scope.orderBy = key;
+            $scope.reverse = !$scope.reverse;
+            $scope.query();
+        }
+
     });
 })(window, angular, jQuery);

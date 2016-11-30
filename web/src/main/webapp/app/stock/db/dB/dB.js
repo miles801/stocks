@@ -31,7 +31,14 @@
             // 计算
             calculate: {
                 method: 'POST',
-                params: {method: 'calculate', xtype: '@xtype', start: '@start', limit: '@limit'},
+                params: {
+                    method: 'calculate',
+                    xtype: '@xtype',
+                    start: '@start',
+                    limit: '@limit',
+                    orderBy: '@orderBy',
+                    reverse: '@reverse'
+                },
                 isArray: false
             },
 
