@@ -31,8 +31,16 @@
             $scope.pager.query();
         };
 
+        // bk对应的数据
+        $scope.bks = [];
+
         $scope.pager = {
+            allowNav: false,
+            configLimit: false,
+            limit: 10,
             fetch: function () {
+                $scope.bks.length = 0;
+                $scope.bk = null;
                 var param = {
                     start: this.start,
                     limit: this.limit,
@@ -72,7 +80,12 @@
             $scope.orderBy = key;
             $scope.reverse = !$scope.reverse;
             $scope.query();
-        }
+        };
+
+        $scope.view = function (bk, data) {
+            $scope.bk = bk;
+            $scope.bks = data;
+        };
 
     });
 })(window, angular, jQuery);

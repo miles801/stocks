@@ -18,6 +18,20 @@
     <script>
         window.angular.contextPathURL = '<%=contextPath%>';
     </script>
+    <style>
+        .pager-wrap .center {
+            float: left;
+        }
+
+        tr.checked td {
+            background-color: #d34c20 !important;
+            color: #ffffff !important;
+        }
+
+        tr.checked td a {
+            color: #ffffff;
+        }
+    </style>
 </head>
 <body>
 <div class="main" ng-app="stock.db.calculate" ng-controller="Ctrl">
@@ -51,70 +65,61 @@
         </div>
         <div class="block-content">
             <div class="content-wrap">
-                <div class="table-responsive panel panel-table">
-                    <table class="table table-striped table-hover">
+                <div class="table-responsive panel panel-table" style="width: 500px;float: left;">
+                    <table class="table table-striped table-hover" style="margin-top: 26px;">
                         <thead class="table-header">
                         <tr>
                             <td class="width-min">序号</td>
-                            <td class="cp" ng-click="order('bk');">BK
-                                <span>
-                                        <span ng-show="orderBy=='bk'">
-                                            <span ng-show="reverse">▼</span>
-                                            <span ng-show="!reverse">▲</span>
-                                        </span>
-                                </span>
-                            </td>
-                            <td class="cp" ng-click="order('a1')">A1
-                                <span>
-                                        <span ng-show="orderBy=='a1'">
-                                            <span ng-show="reverse">▼</span>
-                                            <span ng-show="!reverse">▲</span>
-                                        </span>
-                                </span>
-                            </td>
-                            <td class="cp" ng-click="order('a2')">A2
-                                <span>
-                                        <span ng-show="orderBy=='a2'">
-                                            <span ng-show="reverse">▼</span>
-                                            <span ng-show="!reverse">▲</span>
-                                        </span>
-                                </span>
-                            </td>
-                            <td class="cp" style="width: inherit" ng-click="order('a3')">A3
-                                <span>
-                                        <span ng-show="orderBy=='a3'">
-                                            <span ng-show="reverse">▼</span>
-                                            <span ng-show="!reverse">▲</span>
-                                        </span>
-                                </span>
-                            </td>
-                            <td style="width: inherit" ng-cloak ng-if="condition.type=='4'" class="cp"
-                                ng-click="order('a4')">A4
-                                <span>
-                                        <span ng-show="orderBy=='a4'">
-                                            <span ng-show="reverse">▼</span>
-                                            <span ng-show="!reverse">▲</span>
-                                        </span>
-                                </span>
-                            </td>
+                            <td class="cp" style="width: 200px;">BK</td>
+                            <td class="cp" style="width: 140px">数量</td>
                         </tr>
                         </thead>
                         <tbody class="table-body">
                         <tr ng-show="!beans.total">
-                            <td colspan="5" class="text-center" ng-cloak ng-if="condition.type=='3'">没有查询到数据！</td>
-                            <td colspan="6" class="text-center" ng-cloak ng-if="condition.type=='4'">没有查询到数据！</td>
+                            <td colspan="3" class="text-center">没有查询到数据！</td>
                         </tr>
-                        <tr bindonce ng-repeat="foo in beans.data" ng-cloak>
+                        <tr bindonce ng-repeat="foo in beans.data" ng-cloak ng-class="{checked:bk==foo.bk}">
                             <td bo-text="$index+1"></td>
-                            <td bo-text="foo.bk|eccrmDate"></td>
-                            <td bo-text="foo.a1|eccrmDate"></td>
-                            <td bo-text="foo.a2|eccrmDate"></td>
-                            <td bo-text="foo.a3|eccrmDate" style="width: inherit"></td>
-                            <td bo-text="foo.a4|eccrmDate" ng-if="condition.type=='4'" style="width: inherit"></td>
+                            <td>
+                                <a ng-click="view(foo.bk,foo.data);" bo-text="foo.bk|eccrmDate" class="cp"></a>
+                            </td>
+                            <td bo-text="foo.bkCount"></td>
                         </tr>
                         </tbody>
                     </table>
                     <div class="list-pagination" eccrm-page="pager"></div>
+                </div>
+                <div class="table-responsive panel panel-table"
+                     style="width: 500px;float: left;margin-left: 20px;height: 400px;">
+                    <table class="table table-striped table-hover">
+                        <caption ng-cloak style="font-size: 14px;font-weight: 700;padding-bottom: 5px;">
+                            {{bk|eccrmDate}}
+                        </caption>
+                        <thead class="table-header">
+                        <tr>
+                            <td class="width-min">序号</td>
+                            <td style="width: 100px;">BK</td>
+                            <td style="width: 100px;">A1</td>
+                            <td style="width: 100px;">A2</td>
+                            <td style="width: 100px;">A3</td>
+                            <td style="width: 100px;" ng-if="condition.type==4">A4</td>
+                        </tr>
+                        </thead>
+                        <tbody class="table-body">
+                        <tr ng-show="!bks.length">
+                            <td colspan="5" class="text-center" ng-if="condition.type==3">无匹配项！</td>
+                            <td colspan="6" class="text-center" ng-if="condition.type==4">无匹配项！</td>
+                        </tr>
+                        <tr bindonce ng-repeat="foo in bks" ng-cloak>
+                            <td bo-text="$index+1"></td>
+                            <td bo-text="foo.bk|eccrmDate"></td>
+                            <td bo-text="foo.a1|eccrmDate"></td>
+                            <td bo-text="foo.a2|eccrmDate"></td>
+                            <td bo-text="foo.a3|eccrmDate"></td>
+                            <td bo-text="foo.a4|eccrmDate" ng-if="condition.type==4"></td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

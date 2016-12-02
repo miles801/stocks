@@ -4,21 +4,29 @@ import com.michael.base.parameter.service.ParameterContainer;
 import com.michael.core.beans.BeanWrapBuilder;
 import com.michael.core.beans.BeanWrapCallback;
 import com.michael.core.hibernate.HibernateUtils;
+import com.michael.core.hibernate.criteria.CriteriaUtils;
 import com.michael.core.hibernate.validator.ValidatorUtils;
 import com.michael.core.pager.PageVo;
+import com.michael.core.pager.Pager;
 import com.michael.stock.db.domain.DB;
 import com.michael.stock.fn.bo.Fn3Bo;
 import com.michael.stock.fn.dao.Fn3Dao;
 import com.michael.stock.fn.domain.Fn3;
 import com.michael.stock.fn.service.Fn3Service;
 import com.michael.stock.fn.vo.Fn3Vo;
+import com.michael.utils.number.IntegerUtils;
 import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
+import org.hibernate.transform.Transformers;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Michael
@@ -48,14 +56,32 @@ public class Fn3ServiceImpl implements Fn3Service, BeanWrapCallback<Fn3, Fn3Vo> 
     @Override
     public PageVo pageQuery(Fn3Bo bo) {
         PageVo vo = new PageVo();
-        Long total = fn3Dao.getTotal(bo);
+        Session session = HibernateUtils.getSession(false);
+        Criteria criteria = session.createCriteria(Fn3.class);
+        criteria.setProjection(Projections.countDistinct("bk"));
+        CriteriaUtils.addCondition(criteria, bo);
+        Long total = (Long) criteria.uniqueResult();
         vo.setTotal(total);
-        if (total == null || total == 0) return vo;
-        List<Fn3> fn3List = fn3Dao.pageQuery(bo);
-        List<Fn3Vo> vos = BeanWrapBuilder.newInstance()
-                .setCallback(this)
-                .wrapList(fn3List, Fn3Vo.class);
-        vo.setData(vos);
+        criteria = session.createCriteria(Fn3.class);
+        criteria.setProjection(Projections.projectionList()
+                .add(Projections.count("bk").as("bkCount"))
+                .add(Projections.groupProperty("bk").as("bk"))
+        );
+
+        CriteriaUtils.addCondition(criteria, bo);
+        criteria.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+        criteria.addOrder(Order.desc("bkCount"));
+        criteria.addOrder(Order.asc("bk"));
+        criteria.setFirstResult(IntegerUtils.add(Pager.getStart()));
+        criteria.setMaxResults(IntegerUtils.add(Pager.getLimit()));
+        List<Map<String, Object>> data = criteria.list();
+
+        for (Map<String, Object> o : data) {
+            Date bk = (Date) o.get("bk");
+            bo.setBk(bk);
+            o.put("data", fn3Dao.query(bo));
+        }
+        vo.setData(data);
         return vo;
     }
 

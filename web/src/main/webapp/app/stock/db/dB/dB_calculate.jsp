@@ -23,7 +23,7 @@
 </head>
 <body>
 <div class="main" ng-app="stock.db.dB.calculate" ng-controller="Ctrl">
-    <form name="form" role="form">
+    <form name="form" role="form" style="position: relative;z-index: 10000">
         <div class="row float">
             <div class="item w200">
                 <div class="form-label w80"><label validate-error="form.type">类型:</label></div>
@@ -57,43 +57,52 @@
                 </div>
             </div>
             <button class="btn btn-blue" ng-click="query();" style="margin-left: 15px;" ng-disabled="form.$invalid" ng-cloak>加载</button>
+            <button class="btn btn-blue" ng-click="calculate();" style="margin-left: 15px;">公式计算</button>
         </div>
     </form>
     <div class="ycrl split"></div>
-    <div class="row pr">
-        <div style="width: 200px;float: left;padding: 20px;position: relative;z-index: 1000;">
-            <div style="width: 100%;height: 500px;border: 1px solid #ddd;">
+    <div class="row pr"
+         style="padding:0;height: 100%; position: absolute; width: 100%; margin-top: -40px; padding-top: 40px;">
+        <div style="width: 200px;float: left;height:100%;padding: 20px;position: relative;z-index: 1000;">
+            <div style="width: 100%;height: 100%;overflow: auto;border: 1px solid #ddd;">
                 <div ng-repeat="foo in dates" ng-cloak class="titem">
                     <span style="display: block;">{{foo.dbDate | eccrmDate}}</span>
                 </div>
             </div>
         </div>
-        <div style="width: 380px;float: left;padding: 20px;height: 500px;overflow: auto;position: relative;z-index: 1000;">
+        <div style="width: 450px;float: left;padding: 20px;position: relative;z-index: 1000;">
             <div class="table-responsive panel panel-table" style="padding: 0;">
                 <table class="table table-striped table-hover">
                     <thead class="table-header">
                     <tr>
+                        <td class="width-min"></td>
                         <td style="width: 20px;">序号</td>
                         <td>原日期</td>
                         <td>计算日期</td>
                         <td>Fn系数</td>
+                        <td>集团数</td>
                     </tr>
                     </thead>
                     <tbody class="table-body">
                     <tr ng-show="!beans1.length">
-                        <td colspan="4" class="text-center">没有查询到数据！</td>
+                        <td colspan="6" class="text-center">没有查询到数据！</td>
                     </tr>
                     <tr bindonce ng-repeat="foo in beans1" ng-cloak>
+                        <td><input type="checkbox" ng-model="foo.isSelected" ng-change="itemChange();"/></td>
                         <td bo-text="pager.start+$index+1"></td>
-                        <td bo-text="foo.originDate|eccrmDate"></td>
+                        <td>
+                            <a ng-click="calculate(foo.originDate,foo.fn);" class="cp"
+                               bo-text="foo.originDate|eccrmDate"></a>
+                        </td>
                         <td bo-text="foo.fnDate|eccrmDate"></td>
                         <td bo-text="foo.fn"></td>
+                        <td>{{foo.count}}</td>
                     </tr>
                     </tbody>
                 </table>
             </div>
         </div>
-        <div style="width: 100%;position:absolute;z-index: 999;padding-left: 550px;" ng-style="{height:height+'px'}">
+        <div style="width: 100%;position:absolute;z-index: 999;padding-left: 600px;" ng-style="{height:height+'px'}">
             <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
             <div id="char1" style="width: 80%;height:400px;margin:0 auto;"></div>
         </div>
