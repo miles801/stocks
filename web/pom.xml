@@ -53,7 +53,7 @@
         </profile>
     </profiles>
     <build>
-        <finalName>itsm</finalName>
+        <finalName>stock</finalName>
         <filters>
             <filter>src/main/resources/config-${name}.properties</filter>
         </filters>
