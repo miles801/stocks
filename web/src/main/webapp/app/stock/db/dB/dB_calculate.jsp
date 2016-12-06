@@ -70,7 +70,7 @@
                 </div>
             </div>
         </div>
-        <div style="width: 450px;float: left;padding: 20px;position: relative;z-index: 1000;">
+        <div style="width: 450px;float: left;padding: 20px;position: relative;z-index: 1000;height: 100%;overflow: auto">
             <div class="table-responsive panel panel-table" style="padding: 0;">
                 <table class="table table-striped table-hover">
                     <thead class="table-header">
