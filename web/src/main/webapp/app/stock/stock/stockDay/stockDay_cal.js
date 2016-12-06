@@ -66,9 +66,15 @@
                     param.type = parseInt($scope.condition.db);
                 }
 
+                $scope.bks.length = 0;
                 return CommonUtils.promise(function (defer) {
                     var promise = DBService.calculate(param, function (data) {
                         $scope.beans = data.data || {};
+                        angular.forEach($scope.beans.data, function (o) {
+                            angular.forEach(o.data, function (foo) {
+                                $scope.bks.push(foo);
+                            });
+                        });
                         defer.resolve($scope.beans);
                     });
                     CommonUtils.loading(promise, 'Loading...');
