@@ -11,7 +11,7 @@
     app.controller('Ctrl', function ($scope, CommonUtils, AlertFactory, ModalFactory, StockDayService, StockDayParam) {
         var defaults = {
             orderBy: 'businessDate',
-            seq: $('#seq').val(),
+            seqGt: $('#seq').val(),
             reverse: false
         }; // 默认查询条件
 

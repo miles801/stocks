@@ -11,7 +11,7 @@
     app.controller('Ctrl', function ($scope, CommonUtils, AlertFactory, ModalFactory, StockWeekService) {
         var defaults = {
             orderBy: 'code',
-            seq: $('#seq').val(),
+            seqGt: $('#seq').val(),
             reverse: true
         }; // 默认查询条件
 
