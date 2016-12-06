@@ -115,7 +115,7 @@ public class StockWeekServiceImpl implements StockWeekService, BeanWrapCallback<
         // 最近5周的数组
         List<StockWeek> weeks = new ArrayList<>();
 
-        // 取出最早的5只股票
+        // 取出最早的50条交易数据
         List<StockDay> stockDays = session.createQuery("from " + StockDay.class.getName() + " s where s.businessDate>? and  s.code=? order by s.businessDate asc")
                 .setParameter(0, startDate)
                 .setParameter(1, stockCode)
@@ -317,12 +317,19 @@ public class StockWeekServiceImpl implements StockWeekService, BeanWrapCallback<
             return;
         }
 
-        // 获取当前股票前5周的数据
+        // 获取当前股票前8周的数据
         List<StockWeek> weeks = session.createQuery("from " + StockWeek.class.getName() + " s where s.code=? order by s.closeDate desc")
                 .setParameter(0, stockCode)
-                .setMaxResults(5)
+                .setMaxResults(8)
                 .list();
 
+        // 对数据进行重排序
+        weeks.sort(new Comparator<StockWeek>() {
+            @Override
+            public int compare(StockWeek o1, StockWeek o2) {
+                return (int) (o1.getCloseDate().getTime() - o2.getCloseDate().getTime());
+            }
+        });
         // 设置并保存
         initAndSave(session, weeks, stockDays);
     }
