@@ -9,6 +9,7 @@ import com.michael.utils.string.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
 
@@ -79,16 +80,18 @@ public class DBDaoImpl extends HibernateDaoHelper implements DBDao {
         if (bo == null) {
             return;
         }
-        String type = bo.getType();
+        DBBo newBo = new DBBo();
+        BeanUtils.copyProperties(bo, newBo);
+        String type = newBo.getType();
         if (StringUtils.equals(type, "5")) {
-            bo.setType(null);
+            newBo.setType(null);
             criteria.add(Restrictions.in("type", new String[]{"1", "2"}));
         }
         if (StringUtils.equals(type, "6")) {
-            bo.setType(null);
+            newBo.setType(null);
             criteria.add(Restrictions.in("type", new String[]{"3", "4"}));
         }
-        CriteriaUtils.addCondition(criteria, bo);
+        CriteriaUtils.addCondition(criteria, newBo);
     }
 
 }
