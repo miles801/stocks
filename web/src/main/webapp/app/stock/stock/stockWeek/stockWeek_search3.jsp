@@ -167,8 +167,6 @@
                                 <td bo-text="pager.start+$index+1"></td>
                                 <td bo-text="foo.code"></td>
                                 <td>
-                                    <span>{{foo.openDate|date:'yyyyMMdd'}}</span>
-                                    <span> -- </span>
                                     <span>{{foo.closeDate|date:'yyyyMMdd'}}</span>
                                 </td>
                                 <td bo-text="foo.key3"></td>

@@ -213,7 +213,7 @@ public class StockWeekServiceImpl implements StockWeekService, BeanWrapCallback<
             // 设置3线数据
             int index = size - 4;
             if (size > 4) {
-                stockWeek.setDate3(weeks.get(index + 1).getOpenDate());
+                stockWeek.setDate3(weeks.get(index + 2).getOpenDate());
                 stockWeek.setD1((weeks.get(index).getClosePrice() - weeks.get(index).getYesterdayClosePrice()) / weeks.get(index).getYesterdayClosePrice());
                 stockWeek.setD2((weeks.get(index + 1).getClosePrice() - weeks.get(index + 1).getYesterdayClosePrice()) / weeks.get(index + 1).getYesterdayClosePrice());
                 stockWeek.setD3((weeks.get(index + 2).getClosePrice() - weeks.get(index + 2).getYesterdayClosePrice()) / weeks.get(index + 2).getYesterdayClosePrice());
@@ -229,8 +229,8 @@ public class StockWeekServiceImpl implements StockWeekService, BeanWrapCallback<
             }
 
             // 设置6线数据
-            if (size == 8) {
-                stockWeek.setDate6(weeks.get(1).getOpenDate());
+            if (size > 7) {
+                stockWeek.setDate6(weeks.get(3).getOpenDate());
                 stockWeek.setP1((weeks.get(1).getClosePrice() - weeks.get(1).getYesterdayClosePrice()) / weeks.get(1).getYesterdayClosePrice());
                 stockWeek.setP2((weeks.get(2).getClosePrice() - weeks.get(2).getYesterdayClosePrice()) / weeks.get(2).getYesterdayClosePrice());
                 stockWeek.setP3((weeks.get(3).getClosePrice() - weeks.get(3).getYesterdayClosePrice()) / weeks.get(3).getYesterdayClosePrice());

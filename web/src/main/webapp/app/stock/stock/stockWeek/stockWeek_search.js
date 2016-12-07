@@ -43,9 +43,6 @@
                     });
                     CommonUtils.loading(promise, 'Loading...');
                 });
-            },
-            finishInit: function () {
-                this.query();
             }
         };
 
