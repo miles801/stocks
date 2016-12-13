@@ -106,7 +106,6 @@
                                         </span>
                                     </span>
                                 </td>
-                                <td>交易时间</td>
                                 <td class="cp" ng-click="order('key3')">3线组合
                                     <span ng-cloak>
                                         <span ng-show="orderBy=='key3'">
@@ -161,17 +160,14 @@
                             </thead>
                             <tbody class="table-body">
                             <tr ng-show="pager.total==0">
-                                <td colspan="11" class="text-center">没有查询到数据！</td>
+                                <td colspan="10" class="text-center">没有查询到数据！</td>
                             </tr>
                             <tr bindonce ng-repeat="foo in beans.data" ng-cloak>
                                 <td bo-text="pager.start+$index+1"></td>
                                 <td bo-text="foo.code"></td>
-                                <td>
-                                    <span>{{foo.closeDate|date:'yyyyMMdd'}}</span>
-                                </td>
                                 <td bo-text="foo.key3"></td>
                                 <td>
-                                    <span>{{foo.date3|date:'yyyyMMdd'}}</span>
+                                    <span>{{foo.openDate|date:'yyyyMMdd'}}</span>
                                     <span> -- </span>
                                     <span>{{foo.closeDate|date:'yyyyMMdd'}}</span>
                                 </td>

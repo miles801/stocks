@@ -28,6 +28,9 @@
             // 根据id查询信息
             get: {method: 'GET', params: {method: 'get', id: '@id'}, isArray: false},
 
+            // 重置投影计算
+            reset: {method: 'POST', params: {method: 'reset'}, isArray: false},
+
             // 计算
             calculate: {
                 method: 'POST',

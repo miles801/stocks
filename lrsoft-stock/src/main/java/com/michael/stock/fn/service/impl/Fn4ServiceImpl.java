@@ -14,6 +14,7 @@ import com.michael.stock.fn.dao.Fn4Dao;
 import com.michael.stock.fn.domain.Fn4;
 import com.michael.stock.fn.service.Fn4Service;
 import com.michael.stock.fn.vo.Fn4Vo;
+import com.michael.utils.date.DateUtils;
 import com.michael.utils.number.IntegerUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
@@ -120,7 +121,8 @@ public class Fn4ServiceImpl implements Fn4Service, BeanWrapCallback<Fn4, Fn4Vo> 
         // 加载所有的日期
         final Session session = HibernateUtils.getSession(false);
         // 删除原有数据
-        session.createQuery("delete from " + Fn4.class.getName()).executeUpdate();
+        session.createSQLQuery("TRUNCATE table stock_fn4").executeUpdate();
+
         for (int i = 1; i < 5; i++) {
             logger.info(" *****************   RESET Fn4 : " + i + " ************************** ");
             List<Date> dates = session
@@ -130,19 +132,23 @@ public class Fn4ServiceImpl implements Fn4Service, BeanWrapCallback<Fn4, Fn4Vo> 
             if (dates.isEmpty()) {
                 continue;
             }
+
+            // 设定最大时间为2050年1月1日
+            long maxDate = DateUtils.getDate(2050, 0, 1).getTime();
+            long minDate = DateUtils.getDate(1990, 0, 1).getTime();
+
             int size = dates.size();
-            int f1 = 0, f2 = 1, f3 = 2, f4 = 3;
-            for (; f1 < size - 3; f1++) {   // 第一层游标
+            for (int f1 = 0; f1 < size; f1++) {   // 第一层游标
                 Date d1 = dates.get(f1);
-                for (f2 = f1 + 1; f2 < size - 2; f2++) {
+                for (int f2 = 0; f2 < size; f2++) {
                     Date d2 = dates.get(f2);
-                    for (f3 = f2 + 1; f3 < size - 1; f3++) {
+                    for (int f3 = 0; f3 < size; f3++) {
                         Date d3 = dates.get(f3);
-                        for (f4 = f3 + 1; f4 < size; f4++) {
+                        for (int f4 = 0; f4 < size; f4++) {
                             Date d4 = dates.get(f4);
                             for (int x = -fn; x <= fn; x++) {
                                 long date = d1.getTime() + d2.getTime() + d3.getTime() - d4.getTime() + f * x;
-                                if (date > 1577808000000L) {
+                                if (date > maxDate || date < minDate) {
                                     continue;
                                 }
                                 Date bk = new Date(date);

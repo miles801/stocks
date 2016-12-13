@@ -56,7 +56,6 @@ public class DBCtrl extends BaseController {
     public void save(HttpServletRequest request, HttpServletResponse response) {
         DB dB = GsonUtils.wrapDataToEntity(request, DB.class);
         dBService.save(dB);
-        SystemContainer.getInstance().getBean(FnSchedule.class).resetFn();
         GsonUtils.printSuccess(response);
     }
 
@@ -72,7 +71,6 @@ public class DBCtrl extends BaseController {
     public void update(HttpServletRequest request, HttpServletResponse response) {
         DB dB = GsonUtils.wrapDataToEntity(request, DB.class);
         dBService.update(dB);
-        SystemContainer.getInstance().getBean(FnSchedule.class).resetFn();
         GsonUtils.printSuccess(response);
     }
 
@@ -111,7 +109,6 @@ public class DBCtrl extends BaseController {
     public void deleteByIds(@RequestParam String ids, HttpServletResponse response) {
         String[] idArr = ids.split(",");
         dBService.deleteByIds(idArr);
-        SystemContainer.getInstance().getBean(FnSchedule.class).resetFn();
         GsonUtils.printSuccess(response);
     }
 
@@ -129,5 +126,12 @@ public class DBCtrl extends BaseController {
         GsonUtils.printData(response, vo);
     }
 
+
+    @ResponseBody
+    @RequestMapping(value = "/reset", method = RequestMethod.POST)
+    public void reset(HttpServletRequest request, HttpServletResponse response) {
+        SystemContainer.getInstance().getBean(FnSchedule.class).resetFn();
+        GsonUtils.printSuccess(response);
+    }
 
 }

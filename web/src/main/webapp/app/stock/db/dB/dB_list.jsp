@@ -56,6 +56,7 @@
                 </div>
                 <span class="header-button">
                         <a type="button" class="btn btn-green btn-min" ng-click="add();"> 新建 </a>
+                        <a type="button" class="btn btn-green btn-min" ng-click="reset();"> 重置投影计算 </a>
                     <a type="button" class="btn btn-green btn-min" ng-click="remove();" ng-disabled="!anyone" ng-cloak> 删除 </a>
                 </span>
             </div>

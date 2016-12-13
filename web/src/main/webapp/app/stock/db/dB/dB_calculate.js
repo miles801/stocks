@@ -132,6 +132,7 @@
 
         $scope.query = function () {
             $scope.beans1 = [];
+            condition = $scope.condition;
             var promise = DBService.query($scope.condition, function (o) {
                 $scope.dates = o.data || [];
                 if ($scope.form.$invalid) {

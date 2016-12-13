@@ -112,5 +112,18 @@
             window.open(CommonUtils.contextPathURL('/stock/db/dB/export?' + encodeURI(encodeURI($.param(o)))));
         };
 
+        $scope.reset = function () {
+            ModalFactory.confirm({
+                scope: $scope,
+                content: '<span class="text-danger">在更改数据库的数据后，需要重新生成投影数据，耗时大约10分钟（每天晚上会自动更新），请确认!</span>',
+                callback: function () {
+                    var promise = DBService.reset({}, function () {
+                        AlertFactory.success('初始化进程启动成功，后台会自动执行脚本，请耐心等候!');
+                        $scope.query();
+                    });
+                    CommonUtils.loading((promise));
+                }
+            });
+        };
     });
 })(window, angular, jQuery);

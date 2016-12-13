@@ -14,6 +14,7 @@ import com.michael.stock.fn.dao.Fn3Dao;
 import com.michael.stock.fn.domain.Fn3;
 import com.michael.stock.fn.service.Fn3Service;
 import com.michael.stock.fn.vo.Fn3Vo;
+import com.michael.utils.date.DateUtils;
 import com.michael.utils.number.IntegerUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
@@ -120,7 +121,10 @@ public class Fn3ServiceImpl implements Fn3Service, BeanWrapCallback<Fn3, Fn3Vo> 
         logger.info(" *****************   RESET Fn3 : Start ************************** ");
         // 加载所有的日期
         // 删除原有数据
-        session.createQuery("delete from " + Fn3.class.getName()).executeUpdate();
+        session.createSQLQuery("TRUNCATE table stock_fn3").executeUpdate();
+        // 设定最大时间为2050年1月1日
+        long maxDate = DateUtils.getDate(2050, 0, 1).getTime();
+        long minDate = DateUtils.getDate(1990, 0, 1).getTime();
         // 加载所有的日期
         for (int i = 1; i < 5; i++) {
             logger.info(" *****************   RESET Fn3 : " + i + " ************************** ");
@@ -132,15 +136,17 @@ public class Fn3ServiceImpl implements Fn3Service, BeanWrapCallback<Fn3, Fn3Vo> 
                 continue;
             }
             int size = dates.size();
-            int f1 = 0, f2 = 1, f3 = 2;
-            for (; f1 < size - 3; f1++) {   // 第一层游标
+            for (int f1 = 0; f1 < size; f1++) {   // 第一层游标
                 long d1 = dates.get(f1).getTime();
-                for (f2 = f1 + 1; f2 < size - 2; f2++) {
+                for (int f2 = 0; f2 < size; f2++) {
                     long d2 = dates.get(f2).getTime();
-                    for (f3 = f2 + 1; f3 < size - 1; f3++) {
+                    for (int f3 = 0; f3 < size; f3++) {
                         long d3 = dates.get(f3).getTime();
                         for (int x = -fn; x <= fn; x++) {
                             Date bk = new Date(d1 + d2 - d3 + f * x);
+                            if (bk.getTime() > maxDate || bk.getTime() < minDate) {
+                                continue;
+                            }
                             Fn3 fn3 = new Fn3();
                             fn3.setA1(new Date(d1));
                             fn3.setA2(new Date(d2));
