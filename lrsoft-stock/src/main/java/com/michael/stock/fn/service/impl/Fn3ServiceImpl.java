@@ -6,6 +6,7 @@ import com.michael.core.beans.BeanWrapCallback;
 import com.michael.core.hibernate.HibernateUtils;
 import com.michael.core.hibernate.criteria.CriteriaUtils;
 import com.michael.core.hibernate.validator.ValidatorUtils;
+import com.michael.core.pager.Order;
 import com.michael.core.pager.PageVo;
 import com.michael.core.pager.Pager;
 import com.michael.stock.db.domain.DB;
@@ -19,7 +20,6 @@ import com.michael.utils.number.IntegerUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.transform.Transformers;
 import org.springframework.stereotype.Service;
@@ -71,8 +71,14 @@ public class Fn3ServiceImpl implements Fn3Service, BeanWrapCallback<Fn3, Fn3Vo> 
 
         CriteriaUtils.addCondition(criteria, bo);
         criteria.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
-        criteria.addOrder(Order.desc("bkCount"));
-        criteria.addOrder(Order.asc("bk"));
+        if (Pager.getOrder() != null && Pager.getOrder().hasNext()) {
+            Order order = Pager.getOrder().next();
+            String propertyName = order.getName();
+            criteria.addOrder(order.isReverse() ? org.hibernate.criterion.Order.desc(propertyName) : org.hibernate.criterion.Order.asc(propertyName));
+        } else {
+            criteria.addOrder(org.hibernate.criterion.Order.desc("bkCount"));
+            criteria.addOrder(org.hibernate.criterion.Order.asc("bk"));
+        }
         criteria.setFirstResult(IntegerUtils.add(Pager.getStart()));
         criteria.setMaxResults(IntegerUtils.add(Pager.getLimit()));
         List<Map<String, Object>> data = criteria.list();
@@ -117,7 +123,7 @@ public class Fn3ServiceImpl implements Fn3Service, BeanWrapCallback<Fn3, Fn3Vo> 
         int fn = 10;    // 系数范围
         long f = 1000L * 60 * 60 * 24;
         final Session session = HibernateUtils.getSession(false);
-        Logger logger = Logger.getLogger(Fn4ServiceImpl.class);
+        Logger logger = Logger.getLogger(Fn3ServiceImpl.class);
         logger.info(" *****************   RESET Fn3 : Start ************************** ");
         // 加载所有的日期
         // 删除原有数据
@@ -126,6 +132,7 @@ public class Fn3ServiceImpl implements Fn3Service, BeanWrapCallback<Fn3, Fn3Vo> 
         long maxDate = DateUtils.getDate(2050, 0, 1).getTime();
         long minDate = DateUtils.getDate(1990, 0, 1).getTime();
         // 加载所有的日期
+        int total = 0;
         for (int i = 1; i < 5; i++) {
             logger.info(" *****************   RESET Fn3 : " + i + " ************************** ");
             List<Date> dates = session
@@ -137,16 +144,27 @@ public class Fn3ServiceImpl implements Fn3Service, BeanWrapCallback<Fn3, Fn3Vo> 
             }
             int size = dates.size();
             for (int f1 = 0; f1 < size; f1++) {   // 第一层游标
+                logger.info(String.format(" *****************   RESET Fn3 : %d (%d/%d) ************************** ", i, f1 + 1, size));
                 long d1 = dates.get(f1).getTime();
                 for (int f2 = 0; f2 < size; f2++) {
+                    if (f1 == f2) {
+                        continue;
+                    }
                     long d2 = dates.get(f2).getTime();
-                    for (int f3 = 0; f3 < size; f3++) {
+                    for (int f3 = size - 1; f3 > -1; f3--) {
+                        if (f1 == f3 || f2 == f3) {
+                            continue;
+                        }
                         long d3 = dates.get(f3).getTime();
+                        long date = d1 + d2 - d3;
+                        if (date > maxDate) {
+                            break;
+                        }
+                        if (date < minDate) {
+                            continue;
+                        }
                         for (int x = -fn; x <= fn; x++) {
-                            Date bk = new Date(d1 + d2 - d3 + f * x);
-                            if (bk.getTime() > maxDate || bk.getTime() < minDate) {
-                                continue;
-                            }
+                            Date bk = new Date(date + f * x);
                             Fn3 fn3 = new Fn3();
                             fn3.setA1(new Date(d1));
                             fn3.setA2(new Date(d2));
@@ -154,15 +172,18 @@ public class Fn3ServiceImpl implements Fn3Service, BeanWrapCallback<Fn3, Fn3Vo> 
                             fn3.setBk(bk);
                             fn3.setType(i);
                             fn3.setFn(x);
+                            total++;
                             session.save(fn3);
                         }
-                        session.flush();
-                        session.clear();
+                        if (total % 20 == 0) {
+                            session.flush();
+                            session.clear();
+                        }
                     }
                 }
             }
         }
-        logger.info(" *****************   RESET Fn3 : End ************************** ");
+        logger.info(" *****************   RESET Fn3 : End，共保存" + total + "条数据 ************************** ");
     }
 
     @Override

@@ -96,7 +96,7 @@
                         </td>
                         <td bo-text="foo.fnDate|eccrmDate"></td>
                         <td bo-text="foo.fn"></td>
-                        <td>{{foo.count}}</td>
+                        <td>{{foo.}}</td>
                     </tr>
                     </tbody>
                 </table>
@@ -112,5 +112,6 @@
 <script type="text/javascript" src="<%=contextPath%>/app/stock/db/dB/dB.js"></script>
 <script type="text/javascript" src="<%=contextPath%>/app/stock/db/fnDB/fnDB.js"></script>
 <script type="text/javascript" src="<%=contextPath%>/vendor/echart/echarts.min.js"></script>
+<script type="text/javascript" src="<%=contextPath%>/vendor/draggable.js"></script>
 <script type="text/javascript" src="<%=contextPath%>/app/stock/db/dB/dB_calculate.js"></script>
 </html>

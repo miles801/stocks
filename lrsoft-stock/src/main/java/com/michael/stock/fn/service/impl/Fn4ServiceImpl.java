@@ -123,6 +123,7 @@ public class Fn4ServiceImpl implements Fn4Service, BeanWrapCallback<Fn4, Fn4Vo> 
         // 删除原有数据
         session.createSQLQuery("TRUNCATE table stock_fn4").executeUpdate();
 
+        int total = 0;
         for (int i = 1; i < 5; i++) {
             logger.info(" *****************   RESET Fn4 : " + i + " ************************** ");
             List<Date> dates = session
@@ -139,19 +140,32 @@ public class Fn4ServiceImpl implements Fn4Service, BeanWrapCallback<Fn4, Fn4Vo> 
 
             int size = dates.size();
             for (int f1 = 0; f1 < size; f1++) {   // 第一层游标
+                logger.info(String.format(" *****************   RESET Fn4 : %d (%d/%d) ************************** ", i, f1 + 1, size));
                 Date d1 = dates.get(f1);
                 for (int f2 = 0; f2 < size; f2++) {
                     Date d2 = dates.get(f2);
+                    if (f1 == f2) {
+                        continue;
+                    }
                     for (int f3 = 0; f3 < size; f3++) {
                         Date d3 = dates.get(f3);
-                        for (int f4 = 0; f4 < size; f4++) {
+                        if (f1 == f3 || f2 == f3) {
+                            continue;
+                        }
+                        for (int f4 = size - 1; f4 > -1; f4--) {
+                            if (f1 == f4 || f2 == f4 || f3 == f4) {
+                                continue;
+                            }
                             Date d4 = dates.get(f4);
+                            long date = d1.getTime() + d2.getTime() + d3.getTime() - d4.getTime();
+                            if (date > maxDate) {
+                                break;
+                            }
+                            if (date < minDate) {
+                                continue;
+                            }
                             for (int x = -fn; x <= fn; x++) {
-                                long date = d1.getTime() + d2.getTime() + d3.getTime() - d4.getTime() + f * x;
-                                if (date > maxDate || date < minDate) {
-                                    continue;
-                                }
-                                Date bk = new Date(date);
+                                Date bk = new Date(date + f * x);
                                 Fn4 fn4 = new Fn4();
                                 fn4.setA1(d1);
                                 fn4.setA2(d2);
@@ -160,16 +174,19 @@ public class Fn4ServiceImpl implements Fn4Service, BeanWrapCallback<Fn4, Fn4Vo> 
                                 fn4.setBk(bk);
                                 fn4.setType(i);
                                 fn4.setFn(x);
+                                total++;
                                 session.save(fn4);
                             }
-                            session.flush();
-                            session.clear();
+                            if (total % 20 == 0) {
+                                session.flush();
+                                session.clear();
+                            }
                         }
                     }
                 }
             }
         }
-        logger.info(" *****************   RESET Fn4 : End ************************** ");
+        logger.info(" *****************   RESET Fn4 : End，共保存" + total + "条数据 ************************** ");
     }
 
     @Override

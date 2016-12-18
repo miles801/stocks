@@ -52,6 +52,12 @@
                                        ng-change="query();"/> 四元运算
                             </label>
                         </div>
+                        <div class="w100">
+                            <label>
+                                <input type="radio" name="type" ng-model="condition.type" value="5"
+                                       ng-change="query();"/> 五元运算
+                            </label>
+                        </div>
                         <select class="w180" ng-model="condition.db" style="width: 150px;"
                                 ng-options="foo.value as foo.name for foo in types" ng-change="query();"> </select>
                         <input type="number" name="type" ng-model="condition.value" value="4" placeholder="误差范围,最大为10"
@@ -70,8 +76,22 @@
                         <thead class="table-header">
                         <tr>
                             <td class="width-min">序号</td>
-                            <td class="cp" style="width: 200px;">BK</td>
-                            <td class="cp" style="width: 140px">数量</td>
+                            <td class="cp" style="width: 200px;" ng-click="order('bk')">BK
+                                <span>
+                                    <span ng-show="orderBy=='bk'">
+                                        <span ng-show="reverse">▼</span>
+                                        <span ng-show="!reverse">▲</span>
+                                    </span>
+                                </span>
+                            </td>
+                            <td class="cp" style="width: 140px" ng-click="order('bkCount')">数量
+                                <span>
+                                    <span ng-show="orderBy=='bkCount'">
+                                        <span ng-show="reverse">▼</span>
+                                        <span ng-show="!reverse">▲</span>
+                                    </span>
+                                </span>
+                            </td>
                         </tr>
                         </thead>
                         <tbody class="table-body">

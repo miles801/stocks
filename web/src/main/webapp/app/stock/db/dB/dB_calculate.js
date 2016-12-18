@@ -16,8 +16,6 @@
             type: '1',
             days: 10,
             orderBy: 'dbDate'
-            // fnDateGe: '2011-12-1',
-            // fnDateLt: '2011-12-30'
         };
 
         var char1 = echarts.init(document.getElementById('char1'));
@@ -27,6 +25,8 @@
             },
             tooltip: {
                 trigger: 'axis',
+                triggerOn: 'click',
+                alwaysShowContent: true,
                 axisPointer: {            // 坐标轴指示器，坐标轴触发有效
                     type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
                 },
@@ -131,35 +131,37 @@
         }
 
         $scope.query = function () {
-            $scope.beans1 = [];
-            condition = $scope.condition;
-            var promise = DBService.query($scope.condition, function (o) {
-                $scope.dates = o.data || [];
-                if ($scope.form.$invalid) {
-                    return;
-                }
+            CommonUtils.delay(function () {
+                $scope.beans1 = [];
+                condition = $scope.condition;
+                var promise = DBService.query($scope.condition, function (o) {
+                    $scope.dates = o.data || [];
+                    if ($scope.form.$invalid) {
+                        return;
+                    }
 
-                var promise = [];
-                angular.forEach($scope.dates, function (d, index) {
-                    var condition = angular.extend({originDate: d.dbDate}, $scope.condition);
-                    // 查询每一个日期计算出来的Fn日期集合
-                    var defer = FnDBService.query(condition, function (foo) {
-                        d.data = foo.data || [];
-                        // fnDate
-                        angular.forEach(d.data || [], function (tmp) {
-                            tmp.isSelected = true;
-                            $scope.beans1.push(tmp);
+                    var promise = [];
+                    angular.forEach($scope.dates, function (d, index) {
+                        var condition = angular.extend({originDate: d.dbDate}, $scope.condition);
+                        // 查询每一个日期计算出来的Fn日期集合
+                        var defer = FnDBService.query(condition, function (foo) {
+                            d.data = foo.data || [];
+                            // fnDate
+                            angular.forEach(d.data || [], function (tmp) {
+                                tmp.isSelected = true;
+                                $scope.beans1.push(tmp);
+                            });
                         });
+                        promise.push(defer);
                     });
-                    promise.push(defer);
+                    CommonUtils.delay(function () {
+                        $q.all(promise).then(function () {
+                            reCalculateBeans();
+                        });
+                    }, 300);
                 });
-                CommonUtils.delay(function () {
-                    $q.all(promise).then(function () {
-                        reCalculateBeans();
-                    });
-                }, 300);
-            });
-            CommonUtils.loading(promise);
+                CommonUtils.loading(promise);
+            }, 500);
         };
 
         $scope.calculate = function (date, f) {
@@ -172,7 +174,7 @@
         $scope.query();
     });
 
-    app.service('CalculateModal', function ($modal, $filter, CommonUtils, AlertFactory) {
+    app.service('CalculateModal', function ($modal, $filter, CommonUtils, AlertFactory, ModalFactory) {
         return {
             open: function (date, f) {
                 var modal = $modal({
@@ -206,6 +208,13 @@
                     var o = moment($scope.date, 'YYYYMMDD').add(parseInt(Math.sqrt(fn($scope.fn)) * $scope.p), 'd');
                     $scope.result = o.valueOf();
                 };
+
+                // 拖动
+                ModalFactory.afterShown(modal, function () {
+                    var $draggable = $('.modal-content').draggabilly({
+                        containment: '.modal'
+                    })
+                });
 
             }
         }

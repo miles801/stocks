@@ -16,8 +16,7 @@
             db: '1',
             value: 0,
             type: 3
-        }
-        ;
+        };
 
         // 参数：类型
         $scope.types = [];
@@ -50,9 +49,13 @@
                 };
                 if (/^\d{8}$/g.test($scope.startDate)) {
                     param.bkGe = moment($scope.startDate, 'YYYYMMDD').valueOf();
+                } else if (/^\d{4}-\d{1,2}-\d{1,2}$/g.test($scope.startDate)) {
+                    param.bkGe = moment($scope.startDate, 'YYYY-MM-DD').valueOf();
                 }
                 if (/^\d{8}$/g.test($scope.endDate)) {
                     param.bkLe = moment($scope.endDate, 'YYYYMMDD').valueOf();
+                } else if (/^\d{4}-\d{1,2}-\d{1,2}$/g.test($scope.endDate)) {
+                    param.bkGe = moment($scope.endDate, 'YYYY-MM-DD').valueOf();
                 }
                 if (/^\d+$/g.test($scope.condition.value)) {
                     param.fnGe = -$scope.condition.value;
