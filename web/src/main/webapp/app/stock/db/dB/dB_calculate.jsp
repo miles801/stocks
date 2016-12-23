@@ -72,10 +72,13 @@
         </div>
         <div style="width: 450px;float: left;padding: 20px;position: relative;z-index: 1000;height: 100%;overflow: auto">
             <div class="table-responsive panel panel-table" style="padding: 0;">
+                <div style="padding: 8px 0">
+                    <input type="text" ng-model="maxFn" placeholder="请输入最大的选取个数，只能是数字" style="width: 220px;padding: 0 5px;"/>
+                    <button class="btn btn-blue" ng-click="doFilter();" ng-disabled="!maxFn" style="height: 28px;line-height: 14px;" ng-cloak>过滤</button>
+                </div>
                 <table class="table table-striped table-hover">
                     <thead class="table-header">
                     <tr>
-                        <td class="width-min"></td>
                         <td style="width: 20px;">序号</td>
                         <td>原日期</td>
                         <td>计算日期</td>
@@ -85,10 +88,9 @@
                     </thead>
                     <tbody class="table-body">
                     <tr ng-show="!beans1.length">
-                        <td colspan="6" class="text-center">没有查询到数据！</td>
+                        <td colspan="5" class="text-center">没有查询到数据！</td>
                     </tr>
                     <tr bindonce ng-repeat="foo in beans1" ng-cloak>
-                        <td><input type="checkbox" ng-model="foo.isSelected" ng-change="itemChange();"/></td>
                         <td bo-text="pager.start+$index+1"></td>
                         <td>
                             <a ng-click="calculate(foo.originDate,foo.fn);" class="cp"
@@ -96,7 +98,7 @@
                         </td>
                         <td bo-text="foo.fnDate|eccrmDate"></td>
                         <td bo-text="foo.fn"></td>
-                        <td>{{foo.}}</td>
+                        <td bo-text="foo.count"></td>
                     </tr>
                     </tbody>
                 </table>

@@ -707,6 +707,30 @@
                         }
                     }
                     return defer.promise;
+                },
+                /**
+                 * 返回一个子数组，注意，如果数组中的元素是对象，那么对该对象的更改会影响到原数组
+                 * @param array 数组
+                 * @param start 起始（从0开始）,如果超出范围则返回空数组
+                 * @param end   结束
+                 */
+                subArray: function (array, start, end) {
+                    var newArray = [];
+                    if (angular.isArray(array)) {
+                        if (end == undefined || end == 0) { // 如果end为0，则取到末尾
+                            end = array.length;
+                        } else if (end < 0) {
+                            end = array.length + end - 1;
+                        }
+                        if (end > array.length) {   // 如果超出，则去掉
+                            end = array.length - 1;
+                        }
+                        for (var i = start; i < end; i++) {
+                            newArray.push(array[i]);
+                        }
+                    }
+                    return newArray;
+
                 }
             };
             context = new CommonUtils();

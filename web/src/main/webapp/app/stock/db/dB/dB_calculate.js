@@ -66,41 +66,36 @@
 
         // 查询数据
         $scope.beans1 = []; // fn列表
-        function reCalculateBeans() {
+        var beans = [];
+
+        function reCalculateBeans(beans, reload) {
             var xAxis = [];     // x横坐标，值为日期范围
             var series = [];    // 图表的具体数据
             // 计算集团数：从日期范围中取出日期，然后+-日期范围指标，得到日期范围
             // 利用日期范围和计算出的fnDate进行比较，如果在这个范围内，则表示是集团数
             var min = moment($scope.condition.fnDateGe).valueOf();
             var max = moment($scope.condition.fnDateLt).valueOf();
-            var aDay = 86400000;
+            var aDay = 86400000;    // 一天的毫秒数
             var date = min;
             var range = $scope.condition.days;
 
-            // 清空个数
-            angular.forEach($scope.beans1, function (o) {
-                if (o.isSelected) {
-                    o.count = 0;
-                }
-            });
+            // 计算x轴每个日期的集团数
             for (; date <= max;) {
                 xAxis.push(moment(date).format('YYYYMMDD'));  // x坐标
                 var minDate = date.valueOf() - 86400000 * range;
                 var maxDate = date.valueOf() + 86400000 * range;
                 var count = 0;
-                var dates = [];
-                var fn = [];
-                var origin = [];
-                angular.forEach($scope.beans1 || [], function (tmp) {
-                    if (!tmp.isSelected) {
-                        return;
-                    }
+                var dates = [];     // 计算后的日期，与下方的fn、origin联合使用，组合成一个日期对
+                var fn = [];        // fn系数
+                var origin = [];    // 原始日期
+
+                // 计算集团数： 日期-范围 < 计算后的日期 < 日期+范围 满足该条件即为一个集团数
+                angular.forEach(beans || [], function (tmp) {
                     var t = tmp.fnDate;
                     if (minDate <= t && t <= maxDate) {
                         count++;
                         fn.push(tmp.fn);
                         origin.push(moment(tmp.originDate).format('YYYYMMDD'));
-                        tmp.count = (tmp.count || 0) + 1;
                         dates.push(moment(t).format('YYYYMMDD'));
                     }
                 });
@@ -110,9 +105,23 @@
                     origin: origin,
                     dates: dates
                 });
-                date += aDay;
+                date += aDay; // 加一天
             }
-            $scope.beans1.sort(function (a, b) {
+
+            // 计算每个“计算日期”对应的集团数
+            angular.forEach(beans, function (bean) {
+                bean.count = 0;
+                var time = moment(bean.fnDate).format('YYYYMMDD');
+                for (var i = 0; i < xAxis.length; i++) {
+                    if (time == xAxis[i]) {
+                        bean.count = series[i].value;
+                        break;
+                    }
+                }
+            });
+
+            // 按照集团数进行排序
+            beans.sort(function (a, b) {
                 if (a.count == b.count) {
                     if (a.fnDate == b.fnDate) {
                         return a.originDate == b.originDate;
@@ -124,6 +133,10 @@
                 }
             });
 
+            if (reload) {
+                $scope.beans1 = beans;
+            }
+
             // 这里已经获取到所有的
             charOption.xAxis.data = xAxis;
             charOption.series[0].data = series;
@@ -131,46 +144,42 @@
         }
 
         $scope.query = function () {
+            $scope.maxFn = null;    // 清空
             CommonUtils.delay(function () {
                 $scope.beans1 = [];
-                condition = $scope.condition;
                 var promise = DBService.query($scope.condition, function (o) {
                     $scope.dates = o.data || [];
                     if ($scope.form.$invalid) {
                         return;
                     }
 
-                    var promise = [];
-                    angular.forEach($scope.dates, function (d, index) {
-                        var condition = angular.extend({originDate: d.dbDate}, $scope.condition);
-                        // 查询每一个日期计算出来的Fn日期集合
-                        var defer = FnDBService.query(condition, function (foo) {
-                            d.data = foo.data || [];
-                            // fnDate
-                            angular.forEach(d.data || [], function (tmp) {
-                                tmp.isSelected = true;
-                                $scope.beans1.push(tmp);
-                            });
-                        });
-                        promise.push(defer);
+                    // 查询当前日期库中符合条件的Fn日期
+                    FnDBService.query($scope.condition, function (foo) {
+                        beans = foo.data || [];
+                        reCalculateBeans(beans, true);
                     });
-                    CommonUtils.delay(function () {
-                        $q.all(promise).then(function () {
-                            reCalculateBeans();
-                        });
-                    }, 300);
                 });
                 CommonUtils.loading(promise);
             }, 500);
         };
 
+        /**
+         * 执行过滤
+         */
+        $scope.doFilter = function () {
+            if (!/^[1-9]\d*$/g.test($scope.maxFn)) {
+                AlertFactory.error('只能输入正整数!');
+                return;
+            }
+            $scope.beans1 = CommonUtils.subArray(beans, 0, parseInt($scope.maxFn));
+            reCalculateBeans($scope.beans1, false);
+        };
+
+
         $scope.calculate = function (date, f) {
             CalculateModal.open(date, f);
         };
 
-        $scope.itemChange = function () {
-            reCalculateBeans();
-        };
         $scope.query();
     });
 
