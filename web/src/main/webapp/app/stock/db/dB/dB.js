@@ -57,6 +57,24 @@
         })
     });
 
+    app.service('Fn5Service', function (CommonUtils, $resource) {
+        return $resource(CommonUtils.contextPathURL('/stock/fn/fn5/:method'), {}, {
+            // 重置
+            reset: {method: 'POST', params: {method: 'reset'}, isArray: false},
+            // 最后一次处理时间
+            lastHandle: {method: 'GET', params: {method: 'lastHandle', type: '@type'}, isArray: false}
+        })
+    });
+
+    app.service('Fn4Service', function (CommonUtils, $resource) {
+        return $resource(CommonUtils.contextPathURL('/stock/fn/fn4/:method'), {}, {
+            // 重置
+            reset: {method: 'POST', params: {method: 'reset'}, isArray: false},
+            // 最后一次处理时间
+            lastHandle: {method: 'GET', params: {method: 'lastHandle', type: '@type'}, isArray: false}
+        })
+    });
+
     app.service('DBParam', function (ParameterLoader) {
         var o = {};
 

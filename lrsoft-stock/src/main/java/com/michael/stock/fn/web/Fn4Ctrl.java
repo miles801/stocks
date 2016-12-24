@@ -6,6 +6,7 @@ import com.michael.core.web.BaseController;
 import com.michael.stock.fn.bo.Fn4Bo;
 import com.michael.stock.fn.domain.Fn4;
 import com.michael.stock.fn.service.Fn4Service;
+import com.michael.stock.fn.service.Handle;
 import com.michael.stock.fn.vo.Fn4Vo;
 import com.michael.utils.gson.GsonUtils;
 import org.springframework.stereotype.Controller;
@@ -99,6 +100,22 @@ public class Fn4Ctrl extends BaseController {
         String[] idArr = ids.split(",");
         fn4Service.deleteByIds(idArr);
         GsonUtils.printSuccess(response);
+    }
+
+
+    @ResponseBody
+    @RequestMapping(value = "/reset", method = RequestMethod.POST)
+    public void reset(HttpServletRequest request, HttpServletResponse response) {
+        Fn4Bo bo = GsonUtils.wrapDataToEntity(request, Fn4Bo.class);
+        fn4Service.reset(bo);
+        GsonUtils.printSuccess(response);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/lastHandle", params = "type", method = RequestMethod.GET)
+    public void lastHandle(int type, HttpServletRequest request, HttpServletResponse response) {
+        Handle handle = fn4Service.lastHandle(type);
+        GsonUtils.printData(response, handle);
     }
 
 

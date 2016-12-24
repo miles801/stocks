@@ -13,6 +13,7 @@ import com.michael.stock.fn.bo.Fn4Bo;
 import com.michael.stock.fn.dao.Fn4Dao;
 import com.michael.stock.fn.domain.Fn4;
 import com.michael.stock.fn.service.Fn4Service;
+import com.michael.stock.fn.service.Handle;
 import com.michael.stock.fn.vo.Fn4Vo;
 import com.michael.utils.date.DateUtils;
 import com.michael.utils.number.IntegerUtils;
@@ -23,11 +24,10 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.transform.Transformers;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Michael
@@ -36,6 +36,8 @@ import java.util.Map;
 public class Fn4ServiceImpl implements Fn4Service, BeanWrapCallback<Fn4, Fn4Vo> {
     @Resource
     private Fn4Dao fn4Dao;
+
+    private Map<Integer, Handle> handleMap = new HashMap<>();
 
     @Override
     public String save(Fn4 fn4) {
@@ -112,33 +114,54 @@ public class Fn4ServiceImpl implements Fn4Service, BeanWrapCallback<Fn4, Fn4Vo> 
     }
 
     @Override
+    public Handle lastHandle(Integer type) {
+        return handleMap.get(type);
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
-    public void reset() {
+    public void reset(Fn4Bo bo) {
         int fn = 10;    // 系数范围
         long f = 1000L * 60 * 60 * 24;
         Logger logger = Logger.getLogger(Fn4ServiceImpl.class);
-        logger.info(" *****************   RESET Fn4 : Start ************************** ");
-        // 加载所有的日期
-        final Session session = HibernateUtils.getSession(false);
-        // 删除原有数据
-        session.createSQLQuery("TRUNCATE table stock_fn4").executeUpdate();
+        Integer type = bo.getType();
+        Assert.notNull(type, "操作失败!类型不能为空!");
+        Date date1 = bo.getDate1();
+        Assert.notNull(date1, "操作失败!日期范围不能为空!");
+        Date date2 = bo.getDate2();
+        Assert.notNull(date2, "操作失败!日期范围不能为空!");
 
+        logger.info(" *****************   RESET Fn4 : Start ************************** ");
+        final Session session = HibernateUtils.getSession(false);
+
+        List<Integer> types = new ArrayList<>();
+        if (type == 5) {
+            types.add(1);
+            types.add(2);
+        } else if (type == 6) {
+            types.add(3);
+            types.add(4);
+        } else {
+            types.add(type);
+        }
         int total = 0;
-        for (int i = 1; i < 5; i++) {
-            logger.info(" *****************   RESET Fn4 : " + i + " ************************** ");
+        for (Integer i : types) {
+            // 删除原有数据
+            session.createQuery("delete from " + Fn4.class.getName() + " f where f.type=?").setParameter(0, i).executeUpdate();
             List<Date> dates = session
-                    .createQuery("select d.dbDate from " + DB.class.getName() + " d where d.type=? order by d.dbDate asc")
+                    .createQuery("select d.dbDate from " + DB.class.getName() + " d where d.type=? and d.dbDate>? and d.dbDate<? order by d.dbDate asc")
                     .setParameter(0, i + "")
+                    .setParameter(1, bo.getDate1())
+                    .setParameter(2, bo.getDate2())
                     .list();
-            if (dates.isEmpty()) {
-                continue;
-            }
+            final int size = dates.size();
+            Assert.isTrue(size < 16, "处理失败!数据量过大,最多只能匹配10个日期库中的日期，当前匹配[" + size + "]个!请缩小日期范围!");
+            Assert.isTrue(size > 0, "查询失败!没有查询到符合条件的数据库日期，请扩大范围!");
 
             // 设定最大时间为2050年1月1日
             long maxDate = DateUtils.getDate(2050, 0, 1).getTime();
             long minDate = DateUtils.getDate(1990, 0, 1).getTime();
 
-            int size = dates.size();
             for (int f1 = 0; f1 < size; f1++) {   // 第一层游标
                 logger.info(String.format(" *****************   RESET Fn4 : %d (%d/%d) ************************** ", i, f1 + 1, size));
                 Date d1 = dates.get(f1);
@@ -187,6 +210,7 @@ public class Fn4ServiceImpl implements Fn4Service, BeanWrapCallback<Fn4, Fn4Vo> 
             }
         }
         logger.info(" *****************   RESET Fn4 : End，共保存" + total + "条数据 ************************** ");
+        handleMap.put(type, new Handle(new Date(), date1, date2));
     }
 
     @Override

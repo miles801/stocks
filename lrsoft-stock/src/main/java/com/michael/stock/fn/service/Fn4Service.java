@@ -43,6 +43,13 @@ public interface Fn4Service {
     void deleteByIds(String[] ids);
 
 
-    void reset();
+    void reset(Fn4Bo bo);
+
+    /**
+     * 获取最后一次处理信息
+     * @param type
+     * @return
+     */
+    Handle lastHandle(Integer type);
 
 }

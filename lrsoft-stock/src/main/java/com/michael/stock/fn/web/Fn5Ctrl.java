@@ -6,6 +6,7 @@ import com.michael.core.web.BaseController;
 import com.michael.stock.fn.bo.Fn5Bo;
 import com.michael.stock.fn.domain.Fn5;
 import com.michael.stock.fn.service.Fn5Service;
+import com.michael.stock.fn.service.Handle;
 import com.michael.stock.fn.vo.Fn5Vo;
 import com.michael.utils.gson.GsonUtils;
 import org.springframework.stereotype.Controller;
@@ -101,5 +102,20 @@ public class Fn5Ctrl extends BaseController {
         GsonUtils.printSuccess(response);
     }
 
+
+    @ResponseBody
+    @RequestMapping(value = "/reset", method = RequestMethod.POST)
+    public void reset(HttpServletRequest request, HttpServletResponse response) {
+        Fn5Bo bo = GsonUtils.wrapDataToEntity(request, Fn5Bo.class);
+        fn5Service.reset(bo);
+        GsonUtils.printSuccess(response);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/lastHandle", params = "type", method = RequestMethod.GET)
+    public void lastHandle(int type, HttpServletRequest request, HttpServletResponse response) {
+        Handle handle = fn5Service.lastHandle(type);
+        GsonUtils.printData(response, handle);
+    }
 
 }

@@ -39,7 +39,7 @@
         <div class="block-header">
             <div class="header-text">
                 <div class="row float">
-                    <div class="item w900">
+                    <div class="item w900" style="width: 100%">
                         <div class="w100">
                             <label>
                                 <input type="radio" name="type" ng-model="condition.type" value="3"
@@ -62,9 +62,11 @@
                                 ng-options="foo.value as foo.name for foo in types" ng-change="query();"> </select>
                         <input type="number" name="type" ng-model="condition.value" value="4" placeholder="误差范围,最大为10"
                                style="margin-left: 15px;"/>
-                        <input type="text" ng-model="startDate" placeholder="起始日期" style="margin-left: 10px;"/>
-                        <input type="text" ng-model="endDate" placeholder="截止日期" style="margin-left: 10px;"/>
+                        <input type="text" ng-model="startDate" placeholder="bk起始日期" style="margin-left: 10px;"/>
+                        <input type="text" ng-model="endDate" placeholder="bk截止日期" style="margin-left: 10px;"/>
                         <a type="button" class="btn btn-blue" ng-click="query();" style="margin-left: 5px;"> 计算 </a>
+                        <a type="button" class="btn btn-blue" ng-click="handle(condition.type);"
+                           style="margin-left: 5px;" ng-cloak ng-show="condition.type==4||condition.type==5"> 处理 </a>
                     </div>
                 </div>
             </div>
@@ -147,5 +149,6 @@
 </div>
 </body>
 <script type="text/javascript" src="<%=contextPath%>/app/stock/db/dB/dB.js"></script>
+<script type="text/javascript" src="<%=contextPath%>/vendor/draggable.js"></script>
 <script type="text/javascript" src="<%=contextPath%>/app/stock/stock/stockDay/stockDay_cal.js"></script>
 </html>

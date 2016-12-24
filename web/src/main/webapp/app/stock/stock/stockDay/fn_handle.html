@@ -1,0 +1,58 @@
+<style>
+    .modal-body form > .row {
+        padding-left: 80px;
+    }
+</style>
+<div class="modal" tabindex="-1" role="dialog" style="z-index: 10000">
+    <div class="modal-dialog" style="width: 550px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" ng-click="$hide()">&times;</button>
+                <h4 class="modal-title">
+                    <span>日期处理</span>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <form name="form" class="form-horizontal">
+                    <div class="row">
+                        <div class="float w300">
+                            <div class="form-label w100">
+                                <label>开始日期:</label>
+                            </div>
+                            <div class="pr w200">
+                                <input class="w200" type="text" ng-model="date1" validate validate-required
+                                       placeholder="请输入日期"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="float w300">
+                            <div class="form-label w100">
+                                <label>截止日期:</label>
+                            </div>
+                            <div class="pr w200">
+                                <input class="w200" type="text" ng-model="date2" validate validate-required
+                                       placeholder="请输入日期"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="box-info">
+                            <p style="font-size: 14px;font-weight: 700;">注意：</p>
+
+                            <p >· 上次处理时间：<span class="text-danger">{{ lastHandle|eccrmDatetime }}</span></p>
+                            <p>· 日期格式：yyyyMMdd，例如：20161201</p>
+                            <p>· 日期范围尽可能的小，不然计算周期会很长！</p>
+                            <p>· 短时间内不要重复计算，不然会影响系统正常运行！</p>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" ng-cloak class="btn btn-primary" ng-click="ok();" ng-disabled="form.$invalid">处理</button>
+                <button type="button" class="btn btn-default" ng-click="$hide()">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+

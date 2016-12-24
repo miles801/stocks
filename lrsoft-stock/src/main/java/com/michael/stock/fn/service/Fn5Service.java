@@ -42,6 +42,12 @@ public interface Fn5Service {
      */
     void deleteByIds(String[] ids);
 
-    void reset();
+    void reset(Fn5Bo bo);
 
+    /**
+     * 获取最后一次处理信息
+     * @param type
+     * @return
+     */
+    Handle lastHandle(Integer type);
 }
