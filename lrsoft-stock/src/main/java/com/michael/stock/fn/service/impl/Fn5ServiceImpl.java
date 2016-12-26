@@ -4,8 +4,10 @@ import com.michael.base.parameter.service.ParameterContainer;
 import com.michael.core.beans.BeanWrapBuilder;
 import com.michael.core.beans.BeanWrapCallback;
 import com.michael.core.hibernate.HibernateUtils;
+import com.michael.core.hibernate.criteria.CriteriaUtils;
 import com.michael.core.hibernate.validator.ValidatorUtils;
 import com.michael.core.pager.PageVo;
+import com.michael.core.pager.Pager;
 import com.michael.stock.db.domain.DB;
 import com.michael.stock.fn.bo.Fn5Bo;
 import com.michael.stock.fn.dao.Fn5Dao;
@@ -14,8 +16,13 @@ import com.michael.stock.fn.service.Fn5Service;
 import com.michael.stock.fn.service.Handle;
 import com.michael.stock.fn.vo.Fn5Vo;
 import com.michael.utils.date.DateUtils;
+import com.michael.utils.number.IntegerUtils;
 import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
+import org.hibernate.transform.Transformers;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -41,7 +48,7 @@ public class Fn5ServiceImpl implements Fn5Service, BeanWrapCallback<Fn5, Fn5Vo> 
 
     @Override
     public void update(Fn5 fn5) {
-        validate(fn5);
+     validate(fn5);
         fn5Dao.update(fn5);
     }
 
@@ -52,14 +59,32 @@ public class Fn5ServiceImpl implements Fn5Service, BeanWrapCallback<Fn5, Fn5Vo> 
     @Override
     public PageVo pageQuery(Fn5Bo bo) {
         PageVo vo = new PageVo();
-        Long total = fn5Dao.getTotal(bo);
+        Session session = HibernateUtils.getSession(false);
+        Criteria criteria = session.createCriteria(Fn5.class);
+        criteria.setProjection(Projections.countDistinct("bk"));
+        CriteriaUtils.addCondition(criteria, bo);
+        Long total = (Long) criteria.uniqueResult();
         vo.setTotal(total);
-        if (total == null || total == 0) return vo;
-        List<Fn5> fn5List = fn5Dao.pageQuery(bo);
-        List<Fn5Vo> vos = BeanWrapBuilder.newInstance()
-                .setCallback(this)
-                .wrapList(fn5List, Fn5Vo.class);
-        vo.setData(vos);
+        criteria = session.createCriteria(Fn5.class);
+        criteria.setProjection(Projections.projectionList()
+                .add(Projections.count("bk").as("bkCount"))
+                .add(Projections.groupProperty("bk").as("bk"))
+        );
+
+        CriteriaUtils.addCondition(criteria, bo);
+        criteria.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+        criteria.addOrder(Order.desc("bkCount"));
+        criteria.addOrder(Order.asc("bk"));
+        criteria.setFirstResult(IntegerUtils.add(Pager.getStart()));
+        criteria.setMaxResults(IntegerUtils.add(Pager.getLimit()));
+        List<Map<String, Object>> data = criteria.list();
+
+        for (Map<String, Object> o : data) {
+            Date bk = (Date) o.get("bk");
+            bo.setBk(bk);
+            o.put("data", fn5Dao.query(bo));
+        }
+        vo.setData(data);
         return vo;
     }
 

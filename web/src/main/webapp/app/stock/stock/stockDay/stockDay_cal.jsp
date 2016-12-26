@@ -112,7 +112,7 @@
                     <div class="list-pagination" eccrm-page="pager"></div>
                 </div>
                 <div class="table-responsive panel panel-table"
-                     style="width: 500px;float: left;margin-left: 20px;height: 400px;">
+                     style="width: 600px;float: left;margin-left: 20px;height: 400px;">
                     <table class="table table-striped table-hover">
                         <caption ng-cloak style="font-size: 14px;font-weight: 700;padding-bottom: 5px;">
                             {{bk|eccrmDate}}
@@ -124,13 +124,14 @@
                             <td style="width: 100px;">A1</td>
                             <td style="width: 100px;">A2</td>
                             <td style="width: 100px;">A3</td>
-                            <td style="width: 100px;" ng-if="condition.type==4">A4</td>
+                            <td style="width: 100px;" ng-if="condition.type>3">A4</td>
+                            <td style="width: 100px;" ng-if="condition.type==5">A5</td>
                         </tr>
                         </thead>
                         <tbody class="table-body">
                         <tr ng-show="!bks.length">
                             <td colspan="5" class="text-center" ng-if="condition.type==3">无匹配项！</td>
-                            <td colspan="6" class="text-center" ng-if="condition.type==4">无匹配项！</td>
+                            <td colspan="7" class="text-center" ng-if="condition.type>3">无匹配项！</td>
                         </tr>
                         <tr bindonce ng-repeat="foo in bks" ng-cloak>
                             <td bo-text="$index+1"></td>
@@ -138,7 +139,8 @@
                             <td bo-text="foo.a1|eccrmDate"></td>
                             <td bo-text="foo.a2|eccrmDate"></td>
                             <td bo-text="foo.a3|eccrmDate"></td>
-                            <td bo-text="foo.a4|eccrmDate" ng-if="condition.type==4"></td>
+                            <td bo-text="foo.a4|eccrmDate" ng-if="condition.type>3"></td>
+                            <td bo-text="foo.a5|eccrmDate" ng-if="condition.type==5"></td>
                         </tr>
                         </tbody>
                     </table>

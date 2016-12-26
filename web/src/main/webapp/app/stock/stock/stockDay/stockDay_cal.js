@@ -28,7 +28,7 @@
         // 查询数据
         $scope.query = function () {
             var type = $scope.condition.type;
-            $scope.bks.length = 0;
+            $scope.bks && ($scope.bks.length = 0);
             if (type == '3') {
                 $scope.pager.query();
             } else if (type == '4') {
